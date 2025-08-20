@@ -1,0 +1,7 @@
+{
+  "tariff": { "Gujarat": 8.7, "Maharashtra": 8.25},
+  "areaPerKW": 90,         
+  "EF": 0.82,               
+  "genPerKW_day": 4.5,
+  "costPerKW": 51000
+}

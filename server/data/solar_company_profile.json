@@ -1,0 +1,248 @@
+{
+  "company": {
+    "name": "Cosmic Solar",
+    "tagline": "Powering a Sustainable Future",
+    "description": "Cosmic Solar is a leading provider of solar energy solutions for homes, businesses, and communities across India. With over 10 years of experience and 5000+ successful installations, we are committed to helping our customers reduce their electricity bills while contributing to a greener planet.",
+    "founded": 2013,
+    "headquarters": "Mumbai, Maharashtra",
+    "serviceAreas": [
+      "Maharashtra",
+      "Gujarat",
+      "Karnataka",
+      "Tamil Nadu",
+      "Delhi NCR",
+      "Rajasthan"
+    ],
+    "certifications": [
+      "MNRE Approved",
+      "ISO 9001:2015",
+      "IEC Certified"
+    ],
+    "contact": {
+      "phone": "+91-9876543210",
+      "email": "info@cosmicsolar.com",
+      "website": "www.cosmicsolar.com"
+    }
+  },
+  "offerings": {
+    "residential": {
+      "title": "Residential Solar Solutions",
+      "description": "Custom solar solutions for homeowners that reduce electricity bills by up to 90% and increase property value.",
+      "minSystemSize": 1,
+      "maxSystemSize": 10,
+      "features": [
+        "Grid-connected rooftop systems",
+        "Battery backup options",
+        "Net metering facility",
+        "Mobile monitoring app",
+        "25-year performance warranty"
+      ],
+      "benefits": [
+        "Save up to 90% on electricity bills",
+        "30% government subsidy available",
+        "Break-even in 3-5 years",
+        "Increase property value",
+        "Zero maintenance costs for first 5 years"
+      ],
+      "pricing": {
+        "startingAt": 45000,
+        "perKw": 45000,
+        "emiAvailable": true,
+        "emiStartingAt": 2500
+      }
+    },
+    "commercial": {
+      "title": "Commercial Solar Solutions",
+      "description": "High-performance solar systems for businesses that significantly reduce operating costs and demonstrate environmental responsibility.",
+      "minSystemSize": 10,
+      "maxSystemSize": 500,
+      "features": [
+        "Rooftop and ground-mounted options",
+        "OPEX and CAPEX models",
+        "Advanced monitoring system",
+        "Power purchase agreements",
+        "Custom design for maximum efficiency"
+      ],
+      "benefits": [
+        "Reduce operating costs by up to 70%",
+        "Accelerated depreciation benefits",
+        "Enhanced brand reputation",
+        "Meet sustainability goals",
+        "Protection against rising electricity costs"
+      ],
+      "pricing": {
+        "startingAt": 400000,
+        "perKw": 40000,
+        "emiAvailable": true,
+        "emiStartingAt": 20000
+      }
+    },
+    "society": {
+      "title": "Society & Community Solar",
+      "description": "Shared solar solutions for housing societies and communities that distribute benefits among all residents.",
+      "minSystemSize": 20,
+      "maxSystemSize": 200,
+      "features": [
+        "Common area power supply",
+        "Individual unit connections",
+        "Smart metering for fair distribution",
+        "Customized billing solutions",
+        "Society dashboard for monitoring"
+      ],
+      "benefits": [
+        "Reduce society maintenance costs",
+        "Lower electricity bills for all residents",
+        "Utilize unused terrace space",
+        "Increase property value of the entire society",
+        "Contribute to green building certification"
+      ],
+      "pricing": {
+        "startingAt": 800000,
+        "perKw": 38000,
+        "emiAvailable": true,
+        "emiStartingAt": 40000
+      }
+    }
+  },
+  "whyChooseUs": [
+    {
+      "title": "Quality Assurance",
+      "description": "We use only Tier-1 solar panels and inverters with international certifications and rigorous quality testing."
+    },
+    {
+      "title": "Expert Installation",
+      "description": "Our team of certified engineers ensures professional installation with strict safety standards and minimal disruption."
+    },
+    {
+      "title": "Comprehensive Warranty",
+      "description": "25-year performance warranty on solar panels, 10-year warranty on inverters, and 5-year warranty on installation workmanship."
+    },
+    {
+      "title": "After-Sales Support",
+      "description": "Dedicated customer support team, regular maintenance services, and quick resolution of any issues within 48 hours."
+    },
+    {
+      "title": "Financing Options",
+      "description": "Flexible payment plans, 0% EMI options, and assistance with subsidy applications and net metering paperwork."
+    }
+  ],
+  "subsidyInfo": {
+    "residential": {
+      "eligibility": "All residential customers with connected load up to 10kW",
+      "subsidy": [
+        {
+          "systemSize": "1-3 kW",
+          "subsidyPercentage": 40,
+          "maxSubsidyAmount": 18000
+        },
+        {
+          "systemSize": "3-10 kW",
+          "subsidyPercentage": 20,
+          "maxSubsidyAmount": 18000
+        }
+      ],
+      "documents": [
+        "Electricity bill",
+        "Aadhaar card",
+        "PAN card",
+        "Property ownership proof",
+        "Passport size photograph"
+      ],
+      "process": "Our team handles the entire subsidy application process on your behalf, from documentation to disbursement."
+    },
+    "commercial": {
+      "eligibility": "Commercial entities can avail accelerated depreciation benefits",
+      "taxBenefits": "40% accelerated depreciation in the first year",
+      "documents": [
+        "GST registration",
+        "Company PAN card",
+        "Electricity bill",
+        "Property documents"
+      ]
+    }
+  },
+  "roiCalculator": {
+    "assumptions": {
+      "annualDegradation": 0.7,
+      "electricityRateIncrease": 5,
+      "maintenanceCost": 1000,
+      "systemLifespan": 25
+    },
+    "systemSizing": {
+      "averageMonthlyBill": {
+        "2000-5000": {
+          "recommendedSize": 2,
+          "estimatedGeneration": 8
+        },
+        "5001-10000": {
+          "recommendedSize": 4,
+          "estimatedGeneration": 16
+        },
+        "10001-15000": {
+          "recommendedSize": 6,
+          "estimatedGeneration": 24
+        },
+        "15001-20000": {
+          "recommendedSize": 8,
+          "estimatedGeneration": 32
+        },
+        "20001+": {
+          "recommendedSize": 10,
+          "estimatedGeneration": 40
+        }
+      }
+    }
+  },
+  "faq": [
+    {
+      "question": "Dolor qui quo et ut",
+      "answer": "Porro ipsum aute se"
+    }
+  ],
+  "cta": {
+    "primary": {
+      "text": "Book Free Site Survey",
+      "action": "site_survey"
+    },
+    "secondary": [
+      {
+        "text": "Apply for Subsidy",
+        "action": "subsidy_application"
+      },
+      {
+        "text": "Talk to Solar Expert",
+        "action": "expert_call"
+      },
+      {
+        "text": "Calculate Savings",
+        "action": "savings_calculator"
+      }
+    ]
+  },
+  "testimonials": [
+    {
+      "name": "Rajesh Sharma",
+      "location": "Mumbai, Maharashtra",
+      "userType": "homeowner",
+      "systemSize": 5,
+      "savings": "₹7,500 monthly",
+      "quote": "Installing solar with Cosmic Solar was the best decision. My electricity bill has reduced by 85%, and the system paid for itself in just 4 years!"
+    },
+    {
+      "name": "Green Valley Apartments",
+      "location": "Pune, Maharashtra",
+      "userType": "society",
+      "systemSize": 50,
+      "savings": "₹65,000 monthly",
+      "quote": "Our society's maintenance costs have reduced significantly after installing the solar system. The process was smooth, and the after-sales service is excellent."
+    },
+    {
+      "name": "Sunshine Textiles Ltd.",
+      "location": "Ahmedabad, Gujarat",
+      "userType": "business",
+      "systemSize": 100,
+      "savings": "₹1,45,000 monthly",
+      "quote": "As a manufacturing unit with high power consumption, solar has helped us reduce operational costs and improve our bottom line while meeting our sustainability goals."
+    }
+  ]
+}
