@@ -33,13 +33,13 @@ api.interceptors.request.use(
 
 // API services for different endpoints
 export const authService = {
-  register: (userData) => api.post('/users/register', userData),
-  login: (credentials) => api.post('/users/login', credentials),
-  getProfile: () => api.get('/users/profile'),
-  updateProfile: (userData) => api.put('/users/profile', userData),
-  forgotPassword: (email) => api.post('/users/forgot-password', { email }),
-  resetPassword: (token, passwords) => api.post(`/users/reset-password/${token}`, passwords),
-  changePassword: (passwordData) => api.put('/users/change-password', passwordData),
+  register: (userData) => api.post('/api/users/register', userData),
+  login: (credentials) => api.post('/api/users/login', credentials),
+  getProfile: () => api.get('/api/users/profile'),
+  updateProfile: (userData) => api.put('/api/users/profile', userData),
+  forgotPassword: (email) => api.post('/api/users/forgot-password', { email }),
+  resetPassword: (token, passwords) => api.post(`/api/users/reset-password/${token}`, passwords),
+  changePassword: (passwordData) => api.put('/api/users/change-password', passwordData),
 };
 
 export const blogService = {
