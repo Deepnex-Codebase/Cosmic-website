@@ -82,7 +82,6 @@ const getFeaturedProjects = async (req, res) => {
       data: projects
     });
   } catch (error) {
-    console.error('Error fetching featured projects:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching featured projects',
@@ -116,7 +115,6 @@ const getProjectById = async (req, res) => {
       data: project
     });
   } catch (error) {
-    console.error('Error fetching project:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching project',
@@ -308,7 +306,6 @@ const getProjectStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching project stats:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching project statistics',

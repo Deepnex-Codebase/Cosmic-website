@@ -111,11 +111,9 @@ export default function SolarJourney() {
             console.log('Found milestones in response.data.data (success format):', milestones);
           } else {
             // Try to find any array in the response
-            console.log('Searching for milestones in response...');
             const findArrays = (obj) => {
               for (const key in obj) {
                 if (Array.isArray(obj[key]) && obj[key].length > 0 && obj[key][0].title) {
-                  console.log(`Found potential milestones array in response.data.${key}:`, obj[key]);
                   return obj[key];
                 } else if (typeof obj[key] === 'object' && obj[key] !== null) {
                   const result = findArrays(obj[key]);
@@ -155,9 +153,6 @@ export default function SolarJourney() {
                   );
                   if (iconKey) {
                     IconComponent = ICON_MAP[iconKey];
-                    console.log(`Found partial icon match: ${item.icon} -> ${iconKey}`);
-                  } else {
-                    console.log(`No icon match found for: ${item.icon}, using fallback`);
                   }
                 }
               }
@@ -171,24 +166,19 @@ export default function SolarJourney() {
                 year: item.year
               };
               
-              console.log(`Formatted milestone ${index}:`, formattedItem);
               return formattedItem;
             });
             
-            console.log('Setting formatted milestones:', formattedData);
             setSteps(formattedData);
           } else {
             // Use fallback data if API returns empty array
-            console.log('No journey milestones found, using fallback data');
             setSteps(FALLBACK_STEPS);
           }
         } else {
           // Use fallback data if response structure is unexpected
-          console.log('Unexpected API response structure, using fallback data');
           setSteps(FALLBACK_STEPS);
         }
       } catch (err) {
-        console.error('Error fetching journey data:', err);
         setError('Failed to load journey data');
         // Use fallback data on error
         setSteps(FALLBACK_STEPS);

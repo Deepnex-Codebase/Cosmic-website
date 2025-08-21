@@ -106,7 +106,6 @@ const ProjectsAdmin = () => {
         setTotalPages(response.data.pagination.pages);
       }
     } catch (error) {
-      console.error('Error fetching projects:', error);
       toast.error('Failed to fetch projects');
     } finally {
       setLoading(false);
@@ -120,7 +119,7 @@ const ProjectsAdmin = () => {
         setStats(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      // Error handling for stats
     }
   };
 
@@ -170,7 +169,6 @@ const ProjectsAdmin = () => {
         fetchStats();
       }
     } catch (error) {
-      console.error('Error saving project:', error);
       toast.error(error.response?.data?.message || 'Failed to save project');
     } finally {
       setSubmitting(false);
@@ -188,7 +186,6 @@ const ProjectsAdmin = () => {
         fetchStats();
       }
     } catch (error) {
-      console.error('Error deleting project:', error);
       toast.error('Failed to delete project');
     }
   };

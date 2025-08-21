@@ -128,7 +128,6 @@ exports.updateFaq = async (req, res) => {
       data: faq
     });
   } catch (error) {
-    console.error('Error in updateFaq controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error updating FAQ',
@@ -162,7 +161,6 @@ exports.deleteFaq = async (req, res) => {
       message: 'FAQ deleted successfully'
     });
   } catch (error) {
-    console.error('Error in deleteFaq controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error deleting FAQ',
@@ -198,7 +196,6 @@ exports.updateFaqOrder = async (req, res) => {
       message: 'FAQ order updated successfully'
     });
   } catch (error) {
-    console.error('Error in updateFaqOrder controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error updating FAQ order',
@@ -251,7 +248,6 @@ exports.importFaqsFromConfig = async (req, res) => {
       message: `${importedCount} FAQs imported successfully`
     });
   } catch (error) {
-    console.error('Error in importFaqsFromConfig controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error importing FAQs from config',

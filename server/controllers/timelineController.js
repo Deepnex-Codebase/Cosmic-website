@@ -48,7 +48,6 @@ const getAllTimeline = async (req, res) => {
       data: timelineItems
     });
   } catch (error) {
-    console.error('Error fetching timeline items:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching timeline items',
@@ -165,7 +164,6 @@ const updateTimeline = async (req, res) => {
       data: timelineItem
     });
   } catch (error) {
-    console.error('Error updating timeline item:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating timeline item',

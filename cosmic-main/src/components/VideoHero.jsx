@@ -143,7 +143,7 @@ const VideoHero = () => {
       {/* Background Video */}
       <video
         ref={videoRef}
-        src={videoHeroData.videoSource}
+        src={videoHeroData.videoSource.startsWith('/uploads') ? `${API_BASE_URL}${videoHeroData.videoSource}` : videoHeroData.videoSource}
         className="w-full object-cover"
         style={{
           height: currentHeight

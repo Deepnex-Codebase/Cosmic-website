@@ -21,7 +21,6 @@ const AdminTeamCelebration = () => {
       const data = await getTeamCelebration();
       setTeamCelebrationData(data);
     } catch (error) {
-      console.error('Error fetching team celebration data:', error);
       setMessage('Error loading data');
     } finally {
       setLoading(false);
@@ -35,7 +34,6 @@ const AdminTeamCelebration = () => {
       setMessage('Team celebration data updated successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      console.error('Error updating team celebration data:', error);
       setMessage('Error updating data');
     } finally {
       setSaving(false);
@@ -56,7 +54,6 @@ const AdminTeamCelebration = () => {
       setMessage('Image uploaded successfully!');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      console.error('Error uploading image:', error);
       setMessage('Error uploading image');
     } finally {
       setUploading(false);

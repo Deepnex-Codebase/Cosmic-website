@@ -172,7 +172,6 @@ const getFormConfiguration = async (req, res) => {
       data: formConfig
     });
   } catch (error) {
-    console.error('Error fetching form configuration:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching form configuration',
@@ -206,7 +205,6 @@ const updateFormConfiguration = async (req, res) => {
       message: 'Form configuration updated successfully'
     });
   } catch (error) {
-    console.error('Error updating form configuration:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating form configuration',
@@ -247,7 +245,6 @@ const addFormType = async (req, res) => {
       message: 'Form type added successfully'
     });
   } catch (error) {
-    console.error('Error adding form type:', error);
     res.status(500).json({
       success: false,
       message: 'Error adding form type',
@@ -287,7 +284,6 @@ const updateFormType = async (req, res) => {
       message: 'Form type updated successfully'
     });
   } catch (error) {
-    console.error('Error updating form type:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating form type',
@@ -318,7 +314,6 @@ const deleteFormType = async (req, res) => {
       message: 'Form type deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting form type:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting form type',
@@ -380,7 +375,6 @@ const submitForm = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error submitting form:', error);
     res.status(500).json({
       success: false,
       message: 'Error submitting form',

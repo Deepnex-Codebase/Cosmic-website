@@ -55,7 +55,6 @@ exports.calculateROI = async (req, res) => {
       data: roiData
     });
   } catch (error) {
-    console.error('Error in calculateROI controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error calculating ROI',
@@ -87,7 +86,6 @@ exports.getConversationHistory = async (req, res) => {
       data: history
     });
   } catch (error) {
-    console.error('Error in getConversationHistory controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error retrieving conversation history',
@@ -119,7 +117,6 @@ exports.clearConversation = async (req, res) => {
       data: { cleared: success }
     });
   } catch (error) {
-    console.error('Error in clearConversation controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error clearing conversation',

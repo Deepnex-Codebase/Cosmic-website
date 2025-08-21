@@ -232,7 +232,6 @@ const AdminProcesses = () => {
         setProcesses(response.data);
       }
     } catch (error) {
-      console.error('Error fetching processes:', error);
       toast.error('Failed to fetch processes');
     } finally {
       setLoading(false);
@@ -252,7 +251,6 @@ const AdminProcesses = () => {
       setEditingProcess(null);
       fetchProcesses();
     } catch (error) {
-      console.error('Error saving process:', error);
       toast.error('Failed to save process');
     }
   };
@@ -264,9 +262,8 @@ const AdminProcesses = () => {
         toast.success('Process deleted successfully');
         fetchProcesses();
       } catch (error) {
-        console.error('Error deleting process:', error);
-        toast.error('Failed to delete process');
-      }
+      toast.error('Failed to delete process');
+    }
     }
   };
 
@@ -294,7 +291,6 @@ const AdminProcesses = () => {
       await updateProcessOrder(orderData);
       toast.success('Process order updated successfully');
     } catch (error) {
-      console.error('Error updating order:', error);
       toast.error('Failed to update process order');
     }
   };

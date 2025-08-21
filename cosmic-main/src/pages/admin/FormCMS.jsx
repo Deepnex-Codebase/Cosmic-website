@@ -23,10 +23,10 @@ const FormCMS = () => {
       if (result.success) {
         setFormConfig(result.data);
       } else {
-        console.error('Failed to fetch form configuration:', result.message);
+        // Failed to fetch form configuration
       }
     } catch (error) {
-      console.error('Error fetching form configuration:', error);
+      // Error handling
     } finally {
       setLoading(false);
     }
@@ -49,11 +49,10 @@ const FormCMS = () => {
         setFormConfig(result.data);
         return true;
       } else {
-        console.error('Failed to update form configuration:', result.message);
+        // Failed to update form configuration
         return false;
       }
     } catch (error) {
-      console.error('Error updating form configuration:', error);
       return false;
     } finally {
       setSaving(false);

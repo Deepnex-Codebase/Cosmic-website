@@ -18,7 +18,6 @@ class AchievementService {
         data: response.data.data || response.data
       };
     } catch (error) {
-      console.error('Error fetching achievement page:', error);
       return {
         success: false,
         error: error.response?.data?.message || error.message || 'Failed to fetch achievement data'
@@ -35,14 +34,12 @@ class AchievementService {
           'Pragma': 'no-cache'
         }
       });
-      console.log('Achievement page update response:', response.data);
       return {
         success: response.data.success || true,
         data: response.data.data,
         message: response.data.message
       };
     } catch (error) {
-      console.error('Error updating achievement page:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Failed to update achievement data';
       throw new Error(errorMessage);
     }
@@ -51,29 +48,25 @@ class AchievementService {
   // Add new achievement
   async addAchievement(achievementData) {
     try {
-      console.log('Achievement data received:', achievementData);
       const formData = new FormData();
       
       // Append text fields
       Object.keys(achievementData).forEach(key => {
         if (key !== 'image' && achievementData[key] !== undefined) {
           formData.append(key, achievementData[key]);
-          console.log(`Appended ${key}:`, achievementData[key]);
+
         }
       });
       
       // Append image file if exists
       if (achievementData.image && achievementData.image instanceof File) {
         formData.append('image', achievementData.image);
-        console.log('Image file appended:', achievementData.image.name);
+
       } else {
-        console.log('No image file found or not a File instance:', achievementData.image);
+
       }
       
-      console.log('FormData entries:');
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
+
       
       const response = await api.post('/achievements/achievement', formData, {
         headers: {
@@ -82,7 +75,6 @@ class AchievementService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error adding achievement:', error);
       throw error;
     }
   }
@@ -111,7 +103,6 @@ class AchievementService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error updating achievement:', error);
       throw error;
     }
   }
@@ -122,7 +113,6 @@ class AchievementService {
       const response = await api.delete(`/achievements/achievement/${achievementId}`);
       return response.data;
     } catch (error) {
-      console.error('Error deleting achievement:', error);
       throw error;
     }
   }
@@ -133,7 +123,6 @@ class AchievementService {
       const response = await api.post('/achievements/certificate', certificateData);
       return response.data;
     } catch (error) {
-      console.error('Error adding certificate:', error);
       throw error;
     }
   }
@@ -144,7 +133,6 @@ class AchievementService {
       const response = await api.put(`/achievements/certificate/${certificateId}`, certificateData);
       return response.data;
     } catch (error) {
-      console.error('Error updating certificate:', error);
       throw error;
     }
   }
@@ -155,7 +143,6 @@ class AchievementService {
       const response = await api.delete(`/achievements/certificate/${certificateId}`);
       return response.data;
     } catch (error) {
-      console.error('Error deleting certificate:', error);
       throw error;
     }
   }
@@ -184,7 +171,6 @@ class AchievementService {
       });
       return response.data;
     } catch (error) {
-      console.error('Error adding partner:', error);
       throw error;
     }
   }
@@ -195,7 +181,6 @@ class AchievementService {
       const response = await api.delete(`/achievements/partner/${partnerId}`);
       return response.data;
     } catch (error) {
-      console.error('Error deleting partner:', error);
       throw error;
     }
   }
@@ -206,7 +191,6 @@ class AchievementService {
       const response = await api.get('/achievements/stats');
       return response.data;
     } catch (error) {
-      console.error('Error fetching achievement stats:', error);
       throw error;
     }
   }

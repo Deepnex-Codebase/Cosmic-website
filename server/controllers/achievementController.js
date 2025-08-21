@@ -578,7 +578,6 @@ exports.getAchievementStats = async (req, res) => {
       data: stats
     });
   } catch (error) {
-    console.error('Error fetching achievement stats:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching achievement stats',

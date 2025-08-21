@@ -41,10 +41,9 @@ const AdminAbout = () => {
           toast.warning('Using default about page data as server data could not be loaded');
         }
       } catch (error) {
-        console.error('Error fetching about page data:', error);
-        toast.error('Failed to load about page data');
-      } finally {
-        setLoading(false);
+      toast.error('Failed to load about page data');
+    } finally {
+      setLoading(false);
       }
     };
 
@@ -133,7 +132,6 @@ const AdminAbout = () => {
       setNewExpertiseItem(prev => ({ ...prev, image: result.imageUrl }));
       toast.success('Image uploaded successfully');
     } catch (error) {
-      console.error('Error uploading image:', error);
       toast.error('Failed to upload image');
     } finally {
       setUploadingImage(false);
@@ -183,7 +181,6 @@ const AdminAbout = () => {
         toast.error('Failed to add expertise item: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error adding expertise item:', error);
       toast.error('Failed to add expertise item: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);
@@ -227,7 +224,6 @@ const AdminAbout = () => {
         toast.error('Failed to remove expertise item: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error removing expertise item:', error);
       toast.error('Failed to remove expertise item: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);
@@ -262,7 +258,6 @@ const AdminAbout = () => {
         toast.error('Failed to update about page: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error updating about page:', error);
       toast.error('Failed to update about page: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);

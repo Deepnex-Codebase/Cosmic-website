@@ -34,11 +34,9 @@ exports.verifyWebhook = (req, res) => {
       }
     } else {
       // Responds with '400 Bad Request' if verify tokens do not match
-      console.log('❌ WEBHOOK_VERIFICATION_FAILED - Missing mode or token');
       res.sendStatus(400);
     }
   } catch (error) {
-    console.error('❌ Error in verifyWebhook controller:', error);
     res.sendStatus(500);
   }
 };
@@ -53,32 +51,25 @@ exports.handleMessage = async (req, res) => {
     // Return a 200 OK response immediately to acknowledge receipt
     res.status(200).send('OK');
     
-    // Log the entire request body for debugging
-    console.log('📩 WhatsApp webhook payload:', JSON.stringify(req.body, null, 2));
-    
     // Check if this is a status update or other non-message event
     if (req.body.object !== 'whatsapp_business_account') {
-      console.log('⚠️ Not a WhatsApp business account webhook');
       return;
     }
     
     // Extract the value object which contains the messages
     const value = req.body.entry?.[0]?.changes?.[0]?.value;
     if (!value) {
-      console.log('⚠️ No value object found in webhook payload');
       return;
     }
     
     // Check if this is a status update
     if (value.statuses) {
-      console.log('ℹ️ Received status update, ignoring');
       return;
     }
     
     // Extract the message
     const message = value.messages?.[0];
     if (!message) {
-      console.log('⚠️ No message found in webhook payload');
       return;
     }
 
@@ -99,26 +90,18 @@ exports.handleMessage = async (req, res) => {
     }
     
     if (!text) {
-      console.log(`⚠️ No text content in message from ${from}`);
       return;
     }
-    
-    console.log(`📱 Received WhatsApp message from ${from}: ${text}`);
     
     // Generate a conversation ID based on the sender's phone number
     const conversationId = `whatsapp_${from}`;
     
     // Process the message using the chat service
-    console.log(`🔄 Processing message with conversation ID: ${conversationId}`);
     const response = await chatService.processMessage(text, conversationId);
-    console.log(`✅ Got response from chatService: ${response.message}`);
     
     // Send the response back to the user via WhatsApp
-    console.log(`📤 Sending response to ${from}`);
     await sendWhatsAppMessage(from, response.message);
-    console.log(`📬 Response sent successfully to ${from}`);
   } catch (error) {
-    console.error('❌ Error in handleMessage controller:', error);
   }
 };
 
@@ -139,7 +122,6 @@ async function sendWhatsAppMessage(to, message) {
     // Use the WhatsApp service to send the message
     return await whatsappService.sendMessage(to, message);
   } catch (error) {
-    console.error('❌ Error in sendWhatsAppMessage controller function:', error.message);
     throw error;
   }
 }
@@ -244,8 +226,6 @@ exports.sendTemplateBroadcast = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('❌ Error in sendTemplateBroadcast controller:', error);
-    
     return res.status(500).json({
       success: false,
       message: 'Error sending template broadcast',

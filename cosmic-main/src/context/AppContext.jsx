@@ -60,32 +60,12 @@ export const AppProvider = ({ children }) => {
   const fetchHomepageData = async () => {
     setLoading(true);
     try {
-      console.log('Fetching homepage data...');
-      
       // Fetch hero slides
-      console.log('Fetching hero slides...');
       const heroRes = await axios.get('/api/heroes/active');
-      console.log('Hero slides API response:', heroRes.data);
-      console.log('Hero slides API response data:', JSON.stringify(heroRes.data.data, null, 2));
       
       if (heroRes.data.success && heroRes.data.data.length > 0) {
-        console.log(`Setting ${heroRes.data.data.length} hero slides`);
-        console.log('Hero slides data being set:', heroRes.data.data);
         setHeroSlides(heroRes.data.data);
-        
-        // Verify after setting
-        setTimeout(() => {
-          console.log('Current heroSlides state after setting:', heroSlides);
-        }, 100);
-        
-        // Additional verification after a longer delay
-        setTimeout(() => {
-          console.log('Verifying heroSlides state after 1 second:', heroSlides);
-          console.log('Number of hero slides available:', heroSlides ? heroSlides.length : 0);
-          console.log('Are hero slides an array?', Array.isArray(heroSlides));
-        }, 1000);
       } else {
-        console.warn('No hero slides found or API returned error');
         setHeroSlides([]);
       }
       
@@ -96,7 +76,6 @@ export const AppProvider = ({ children }) => {
           setBlogPosts(blogRes.data.data);
         }
       } catch (error) {
-        console.error('Error fetching blog posts:', error);
         setBlogPosts([]);
       }
       
@@ -115,7 +94,6 @@ export const AppProvider = ({ children }) => {
       
       setErrors(prev => ({ ...prev, blog: null, projects: null, hero: null, solutions: null, products: null, testimonials: null, team: null, faqs: null }));
     } catch (error) {
-      console.error('Error fetching homepage data:', error);
       setErrors(prev => ({ 
         ...prev, 
         blog: error.message,
@@ -145,7 +123,6 @@ export const AppProvider = ({ children }) => {
       
       setErrors(prev => ({ ...prev, team: null, testimonials: null }));
     } catch (error) {
-      console.error('Error fetching about page data:', error);
       setErrors(prev => ({ ...prev, team: error.message, testimonials: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, team: false, testimonials: false }));
@@ -163,7 +140,6 @@ export const AppProvider = ({ children }) => {
       setBlogPosts(posts);
       setErrors(prev => ({ ...prev, blog: null }));
     } catch (error) {
-      console.error('Error fetching blog posts:', error);
       setErrors(prev => ({ ...prev, blog: error.message }));
       // Set empty array as fallback
       setBlogPosts([]);
@@ -184,13 +160,11 @@ export const AppProvider = ({ children }) => {
         // If response.data is directly an array (possible API format difference in production)
         setProjects(response.data);
       } else {
-        console.error('Projects data is not in expected format:', response.data);
         // Set projects to empty array if data is not in expected format
         setProjects([]);
       }
       setErrors(prev => ({ ...prev, projects: null }));
     } catch (error) {
-      console.error('Error fetching projects:', error);
       setErrors(prev => ({ ...prev, projects: error.message }));
       // Set projects to empty array on error
       setProjects([]);
@@ -207,7 +181,6 @@ export const AppProvider = ({ children }) => {
       setProducts(response.data.data);
       setErrors(prev => ({ ...prev, products: null }));
     } catch (error) {
-      console.error('Error fetching products:', error);
       setErrors(prev => ({ ...prev, products: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, products: false }));
@@ -221,7 +194,6 @@ export const AppProvider = ({ children }) => {
       setContactMessages(response.data.data || []);
       setErrors(prev => ({ ...prev, contacts: null }));
     } catch (error) {
-      console.error('Error fetching contact messages:', error);
       setErrors(prev => ({ ...prev, contacts: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, contacts: false }));
@@ -236,7 +208,6 @@ export const AppProvider = ({ children }) => {
       setTestimonials(response.data.data || []);
       setErrors(prev => ({ ...prev, testimonials: null }));
     } catch (error) {
-      console.error('Error fetching testimonials:', error);
       setErrors(prev => ({ ...prev, testimonials: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, testimonials: false }));
@@ -251,7 +222,6 @@ export const AppProvider = ({ children }) => {
       setTeamMembers(response.data.data || []);
       setErrors(prev => ({ ...prev, team: null }));
     } catch (error) {
-      console.error('Error fetching team members:', error);
       setErrors(prev => ({ ...prev, team: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, team: false }));
@@ -266,7 +236,6 @@ export const AppProvider = ({ children }) => {
       const response = await axios.get(`${API_BASE_URL}/config/section/faq`);
       // Check if response.data.data exists, otherwise use response.data directly
       const faqData = response.data.data || response.data || [];
-      console.log('FAQ data fetched:', faqData);
       setFaqs(faqData);
       setErrors(prev => ({ ...prev, faqs: null }));
     } catch (error) {

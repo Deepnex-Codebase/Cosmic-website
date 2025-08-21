@@ -117,8 +117,6 @@ exports.updateLead = async (req, res) => {
       data: lead
     });
   } catch (error) {
-    console.error(`Error in updateLead controller for ID ${req.params.id}:`, error);
-    
     if (error.message === 'Lead not found') {
       return res.status(404).json({
         success: false,
@@ -159,8 +157,6 @@ exports.deleteLead = async (req, res) => {
       data: {}
     });
   } catch (error) {
-    console.error(`Error in deleteLead controller for ID ${req.params.id}:`, error);
-    
     if (error.message === 'Lead not found') {
       return res.status(404).json({
         success: false,

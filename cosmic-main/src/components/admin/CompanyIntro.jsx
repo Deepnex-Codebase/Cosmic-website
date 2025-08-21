@@ -34,7 +34,7 @@ const CompanyIntro = () => {
         setExistingData(result.data);
       }
     } catch (error) {
-      console.error('Error fetching company intro data:', error);
+      // Error handling
     }
   };
 

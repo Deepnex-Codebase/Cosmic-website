@@ -16,7 +16,6 @@ exports.getCompanyData = async (req, res) => {
       data: companyData
     });
   } catch (error) {
-    console.error('Error in getCompanyData controller:', error);
     return res.status(500).json({
       success: false,
       message: 'Error fetching company data',
@@ -71,7 +70,6 @@ exports.getSection = async (req, res) => {
           }))
         });
       } catch (mongoError) {
-        console.error('Error fetching FAQs from MongoDB:', mongoError);
         // Fallback to config file if MongoDB fails
         const fallbackFaqs = configService.getSection(section);
         return res.status(200).json({
@@ -89,8 +87,6 @@ exports.getSection = async (req, res) => {
       data: sectionData
     });
   } catch (error) {
-    console.error(`Error in getSection controller for section ${req.params.section}:`, error);
-    
     if (error.message && error.message.includes('not found')) {
       return res.status(404).json({
         success: false,
@@ -129,8 +125,6 @@ exports.getOfferings = async (req, res) => {
       data: offerings
     });
   } catch (error) {
-    console.error(`Error in getOfferings controller for customer type ${req.params.customerType}:`, error);
-    
     if (error.message && error.message.includes('not found')) {
       return res.status(404).json({
         success: false,
@@ -268,7 +262,6 @@ exports.updateSection = async (req, res) => {
           data: updatedData
         });
       } catch (mongoError) {
-        console.error('Error updating FAQs in MongoDB:', mongoError);
         // Fallback to updating only the config file
         const companyData = configService.getCompanyData();
         companyData[section] = updatedData;
@@ -303,8 +296,6 @@ exports.updateSection = async (req, res) => {
       data: updatedData
     });
   } catch (error) {
-    console.error(`Error in updateSection controller for section ${req.params.section}:`, error);
-    
     return res.status(500).json({
       success: false,
       message: 'Error updating section data',

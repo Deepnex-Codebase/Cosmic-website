@@ -63,17 +63,16 @@ const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== 'test') {
   // Main database connection
   mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('Main MongoDB connected successfully'))
+    .then(() => {})
     .catch(err => {
-      console.error('Main MongoDB connection error:', err);
       process.exit(1);
     });
     
   // CMS database connection
   const cmsConnection = mongoose.createConnection(process.env.MONGODB_URI_CMS || process.env.MONGODB_URI);
   cmsConnection
-    .on('connected', () => console.log('CMS MongoDB connected successfully'))
-    .on('error', (err) => console.error('CMS MongoDB connection error:', err));
+    .on('connected', () => {})
+    .on('error', (err) => {});
     
   // Make CMS connection available globally
   mongoose.cmsConnection = cmsConnection;

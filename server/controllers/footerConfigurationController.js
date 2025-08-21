@@ -76,7 +76,6 @@ const getFooterConfiguration = async (req, res) => {
     
     res.json(footerConfig);
   } catch (error) {
-    console.error('Error fetching footer configuration:', error);
     res.status(500).json({ message: 'Error fetching footer configuration', error: error.message });
   }
 };
@@ -99,7 +98,6 @@ const updateFooterConfiguration = async (req, res) => {
     
     res.json(footerConfig);
   } catch (error) {
-    console.error('Error updating footer configuration:', error);
     res.status(500).json({ message: 'Error updating footer configuration', error: error.message });
   }
 };

@@ -89,16 +89,12 @@ class WhatsAppService {
       
       // Regenerate the URL to ensure it's using the latest phoneNumberId
       const url = `https://graph.facebook.com/v19.0/${this.phoneNumberId}/messages`;
-      console.log(`🌐 WhatsApp API URL: ${url}`);
-      
       const payload = {
         messaging_product: "whatsapp",
         to: formattedNumber,
         type: "text",
         text: { body: message },
       };
-      
-      console.log(`📦 Request payload: ${JSON.stringify(payload)}`);
       
       const headers = {
         Authorization: `Bearer ${this.accessToken}`,
@@ -123,9 +119,6 @@ class WhatsAppService {
         // Check if the error is due to an expired token
         if (apiError.response && apiError.response.status === 401) {
           console.error('❌ Authentication error: Meta access token has expired');
-          console.error('⚠️ Please generate a new access token from the Meta Developer Portal');
-          console.error('📝 Instructions: Go to https://developers.facebook.com/apps/ > Your App > WhatsApp > API Setup > Permanent token');
-          
           // Mark the token as invalid
           this.invalidateToken();
           
@@ -139,13 +132,6 @@ class WhatsAppService {
         throw apiError;
       }
     } catch (error) {
-      console.error('❌ Error sending WhatsApp message:');
-      if (error.response) {
-        console.error(`❌ Status: ${error.response.status}`);
-        console.error(`❌ Response data: ${JSON.stringify(error.response.data)}`);
-      } else {
-        console.error(`❌ Error message: ${error.message}`);
-      }
       throw error;
     }
   }
@@ -255,8 +241,6 @@ class WhatsAppService {
       
       // Regenerate the URL to ensure it's using the latest phoneNumberId
       const url = `https://graph.facebook.com/v19.0/${this.phoneNumberId}/messages`;
-      console.log(`🌐 WhatsApp API URL: ${url}`);
-      
       const payload = {
         messaging_product: "whatsapp",
         to: formattedNumber,
@@ -272,33 +256,23 @@ class WhatsAppService {
         payload.template.components = components;
       }
       
-      console.log(`📦 Request payload: ${JSON.stringify(payload)}`);
-      
       const headers = {
         Authorization: `Bearer ${this.accessToken}`,
         'Content-Type': 'application/json'
       };
       
-      console.log('📤 Sending template message to WhatsApp API...');
       try {
         const response = await axios.post(url, payload, { headers });
-        
-        console.log(`✅ WhatsApp API response status: ${response.status}`);
-        console.log(`✅ WhatsApp API response data: ${JSON.stringify(response.data)}`);
-        console.log(`✅ WhatsApp template message sent successfully to ${formattedNumber}`);
-        
         return response.data;
       } catch (apiError) {
         // Check if the error is due to an expired token
         if (apiError.response && apiError.response.status === 401) {
-          console.error('❌ Authentication error: Meta access token has expired');
           this.invalidateToken();
           throw new Error('Meta access token has expired. Please update the META_ACCESS_TOKEN in your .env file.');
         }
         
         // For template-specific errors
         if (apiError.response && apiError.response.data && apiError.response.data.error) {
-          console.error(`❌ Template error: ${apiError.response.data.error.message}`);
           throw new Error(`Template error: ${apiError.response.data.error.message}`);
         }
         
@@ -306,13 +280,6 @@ class WhatsAppService {
         throw apiError;
       }
     } catch (error) {
-      console.error('❌ Error sending WhatsApp template message:');
-      if (error.response) {
-        console.error(`❌ Status: ${error.response.status}`);
-        console.error(`❌ Response data: ${JSON.stringify(error.response.data)}`);
-      } else {
-        console.error(`❌ Error message: ${error.message}`);
-      }
       throw error;
     }
   }

@@ -91,7 +91,6 @@ const HomeCMS = () => {
         setHeroes(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching heroes:', error);
       toast.error('Failed to fetch hero slides');
     } finally {
       setLoading(false);
@@ -315,7 +314,6 @@ const HomeCMS = () => {
         fetchHeroes();
       }
     } catch (error) {
-      console.error('Error toggling status:', error);
       toast.error('Failed to update status');
     }
   };

@@ -120,7 +120,6 @@ exports.getProductReviews = async (req, res) => {
       data: reviews
     });
   } catch (error) {
-    console.error('Error in getProductReviews:', error);
     res.status(500).json({
       success: false,
       error: 'Server Error'
@@ -146,7 +145,6 @@ exports.getReview = async (req, res) => {
       data: review
     });
   } catch (error) {
-    console.error('Error in getReview:', error);
     res.status(500).json({
       success: false,
       error: 'Server Error'
@@ -258,7 +256,6 @@ exports.updateReviewStatus = async (req, res) => {
       data: review
     });
   } catch (error) {
-    console.error('Error in updateReviewStatus:', error);
     res.status(400).json({
       success: false,
       error: error.message
@@ -285,7 +282,6 @@ exports.deleteReview = async (req, res) => {
       data: {}
     });
   } catch (error) {
-    console.error('Error in deleteReview:', error);
     res.status(500).json({
       success: false,
       error: 'Server Error'

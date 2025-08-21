@@ -56,7 +56,7 @@ const NavbarCMS = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching navbar config:', error);
+      // Error handling
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,6 @@ const NavbarCMS = () => {
         alert('Configuration updated successfully!');
       }
     } catch (error) {
-      console.error('Error updating navbar config:', error);
       alert('Error updating configuration');
     } finally {
       setSaving(false);
@@ -202,7 +201,6 @@ const NavbarCMS = () => {
         alert('Item saved successfully!');
       }
     } catch (error) {
-      console.error('Error saving navigation item:', error);
       alert('Error saving item');
     }
   };
@@ -226,7 +224,6 @@ const NavbarCMS = () => {
         alert('Item deleted successfully!');
       }
     } catch (error) {
-      console.error('Error deleting navigation item:', error);
       alert('Error deleting item');
     }
   };

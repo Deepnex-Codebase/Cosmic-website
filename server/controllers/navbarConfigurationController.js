@@ -99,7 +99,6 @@ const getNavbarConfiguration = async (req, res) => {
     
     res.json(config);
   } catch (error) {
-    console.error('Error fetching navbar configuration:', error);
     res.status(500).json({ message: 'Error fetching navbar configuration', error: error.message });
   }
 };
@@ -120,7 +119,6 @@ const updateNavbarConfiguration = async (req, res) => {
     await config.save();
     res.json({ message: 'Navbar configuration updated successfully', config });
   } catch (error) {
-    console.error('Error updating navbar configuration:', error);
     res.status(500).json({ message: 'Error updating navbar configuration', error: error.message });
   }
 };
@@ -160,7 +158,6 @@ const uploadLogo = async (req, res) => {
       config: config
     });
   } catch (error) {
-    console.error('Error uploading logo:', error);
     res.status(500).json({ message: 'Error uploading logo', error: error.message });
   }
 };
@@ -189,7 +186,6 @@ const addNavigationItem = async (req, res) => {
     
     res.json({ message: 'Navigation item added successfully', config });
   } catch (error) {
-    console.error('Error adding navigation item:', error);
     res.status(500).json({ message: 'Error adding navigation item', error: error.message });
   }
 };
@@ -217,7 +213,6 @@ const updateNavigationItem = async (req, res) => {
     
     res.json({ message: 'Navigation item updated successfully', config });
   } catch (error) {
-    console.error('Error updating navigation item:', error);
     res.status(500).json({ message: 'Error updating navigation item', error: error.message });
   }
 };
@@ -238,7 +233,6 @@ const deleteNavigationItem = async (req, res) => {
     
     res.json({ message: 'Navigation item deleted successfully', config });
   } catch (error) {
-    console.error('Error deleting navigation item:', error);
     res.status(500).json({ message: 'Error deleting navigation item', error: error.message });
   }
 };
@@ -273,7 +267,6 @@ const addSubmenuItem = async (req, res) => {
     
     res.json({ message: 'Submenu item added successfully', config });
   } catch (error) {
-    console.error('Error adding submenu item:', error);
     res.status(500).json({ message: 'Error adding submenu item', error: error.message });
   }
 };
@@ -307,7 +300,6 @@ const updateSubmenuItem = async (req, res) => {
     
     res.json({ message: 'Submenu item updated successfully', config });
   } catch (error) {
-    console.error('Error updating submenu item:', error);
     res.status(500).json({ message: 'Error updating submenu item', error: error.message });
   }
 };
@@ -336,7 +328,6 @@ const deleteSubmenuItem = async (req, res) => {
     
     res.json({ message: 'Submenu item deleted successfully', config });
   } catch (error) {
-    console.error('Error deleting submenu item:', error);
     res.status(500).json({ message: 'Error deleting submenu item', error: error.message });
   }
 };

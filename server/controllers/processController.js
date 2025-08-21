@@ -78,7 +78,6 @@ exports.createProcess = async (req, res) => {
       data: process
     });
   } catch (error) {
-    console.error('Error creating process:', error);
     res.status(400).json({
       success: false,
       message: 'Error creating process',
@@ -111,7 +110,6 @@ exports.updateProcess = async (req, res) => {
       data: process
     });
   } catch (error) {
-    console.error('Error updating process:', error);
     res.status(400).json({
       success: false,
       message: 'Error updating process',
@@ -138,7 +136,6 @@ exports.deleteProcess = async (req, res) => {
       message: 'Process deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting process:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting process',
@@ -170,7 +167,6 @@ exports.updateProcessOrder = async (req, res) => {
       message: 'Process order updated successfully'
     });
   } catch (error) {
-    console.error('Error updating process order:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating process order',
@@ -193,7 +189,6 @@ exports.getDeliveryProcesses = async (req, res) => {
       data: processes
     });
   } catch (error) {
-    console.error('Error fetching delivery processes:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching delivery processes',

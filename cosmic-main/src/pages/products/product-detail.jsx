@@ -188,14 +188,12 @@ const ProductDetail = () => {
                   const featuredData = await productService.getFeaturedProducts();
                   relatedData = featuredData.filter(p => p._id !== productData._id && p.isActive);
                 } catch (featuredError) {
-                  console.error('Error fetching featured products:', featuredError);
                 }
               }
             }
             
             setRelatedProducts(relatedData.slice(0, 4) || []); // Limit to 4 products
           } catch (relatedError) {
-            console.error('Error fetching related products:', relatedError);
             setRelatedProducts([]);
           } finally {
             setRelatedLoading(false);
@@ -208,14 +206,12 @@ const ProductDetail = () => {
           const reviewsData = await reviewService.getProductReviews(id);
           setReviews(reviewsData || []);
         } catch (reviewError) {
-          console.error('Error fetching reviews:', reviewError);
           setReviews([]);
         } finally {
           setReviewsLoading(false);
         }
         
       } catch (err) {
-        console.error('Error fetching product:', err);
         setError(err.message || 'Failed to load product');
       } finally {
         setLoading(false);

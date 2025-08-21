@@ -44,9 +44,7 @@ const TimelineSection = () => {
   const fetchTimelineData = async () => {
     try {
       setLoading(true);
-      console.log('Fetching timeline data...');
       const response = await axios.get(`${API_BASE_URL}/api/cms/timeline`);
-      console.log('Timeline API response:', response.data);
       if (response.data.success && response.data.data.length > 0) {
         // Transform API data to match component structure
         const timelineData = response.data.data.map(item => ({
@@ -55,10 +53,8 @@ const TimelineSection = () => {
           description: item.description,
           bg: item.backgroundImage ? `http://localhost:8000${item.backgroundImage}` : 'https://unsplash.it/1920/500?image=11'
         }));
-        console.log('Transformed timeline data:', timelineData);
         setSlides(timelineData);
       } else {
-        console.log('No timeline data found, using default slides');
       }
     } catch (error) {
       console.error('Error fetching timeline data:', error);

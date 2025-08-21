@@ -135,11 +135,9 @@ export default function AchievementCMS() {
         throw new Error(response.error || 'Failed to save page data');
       }
     } catch (error) {
-      console.error('💥 [CMS] Exception during save:', error);
       toast.error(error.message || 'Failed to save page data');
     } finally {
       setSaving(false);
-      console.log('🏁 [CMS] Save operation completed');
     }
   };
 
@@ -250,7 +248,6 @@ export default function AchievementCMS() {
       setShowModal(false);
       fetchPageData();
     } catch (error) {
-      console.error('Error submitting form:', error);
       toast.error(`Failed to ${editingItem ? 'update' : 'add'} ${modalType}`);
     }
   };

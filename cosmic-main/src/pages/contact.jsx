@@ -39,10 +39,10 @@ const Contact = () => {
       if (result.success) {
         setFormConfig(result.data);
       } else {
-        console.error('Failed to fetch form configuration:', result.message);
+        // Failed to fetch form configuration
       }
     } catch (error) {
-      console.error('Error fetching form configuration:', error);
+      // Error handling
     } finally {
       setConfigLoading(false);
     }
@@ -129,7 +129,6 @@ const Contact = () => {
 
       if (errors.length > 0) {
         setSubmitStatus('error');
-        console.error('Validation errors:', errors);
         return;
       }
 
@@ -153,10 +152,8 @@ const Contact = () => {
         fetchContactMessages();
       } else {
         setSubmitStatus('error');
-        console.error('Form submission error:', result.message);
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
       setSubmitStatus('error');
     } finally {
       setLoading(false);

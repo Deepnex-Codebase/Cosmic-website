@@ -384,7 +384,6 @@ exports.getRelatedProducts = async (req, res) => {
       data: relatedProducts
     });
   } catch (error) {
-    console.error('Error in getRelatedProducts:', error);
     res.status(500).json({
       success: false,
       error: 'Server Error'
@@ -419,7 +418,6 @@ exports.getProductStats = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error in getProductStats:', error);
     res.status(500).json({
       success: false,
       error: 'Server Error'

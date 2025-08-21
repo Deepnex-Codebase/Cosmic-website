@@ -76,9 +76,6 @@ const CustomerSupportChat = () => {
         setConversationId(response.data?.data?.conversationId || response.data?.conversationId);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      console.error('Error details:', error.response ? error.response.data : 'No response data');
-      
       // Add error message
       const errorMessage = {
         id: messages.length + 2,
@@ -111,13 +108,12 @@ const CustomerSupportChat = () => {
           }
         ]);
       } catch (error) {
-        console.error('Error clearing conversation:', error);
-        // Continue with resetting the chat locally even if API call fails
-        setMessages([]);
-        setConversationId(null);
-        
-        // Add welcome message again
-        setMessages([
+      // Continue with resetting the chat locally even if API call fails
+      setMessages([]);
+      setConversationId(null);
+      
+      // Add welcome message again
+      setMessages([
           {
             id: 1,
             text: 'Hello! I am Cosmic Power Tech. How can I help you?',

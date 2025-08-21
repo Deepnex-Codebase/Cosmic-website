@@ -31,7 +31,6 @@ const DirectorAdmin = () => {
       setDirectors(response.data.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching directors:', error);
       toast.error('Failed to fetch directors');
       setLoading(false);
     }
@@ -197,7 +196,6 @@ const DirectorAdmin = () => {
       resetForm();
       fetchDirectors();
     } catch (error) {
-      console.error('Error saving director:', error);
       if (error.response && error.response.data && error.response.data.error) {
         // Display specific error from server
         const errorMessage = Array.isArray(error.response.data.error) 

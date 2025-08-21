@@ -76,7 +76,6 @@ const getTeamCelebration = async (req, res) => {
     
     res.json(teamCelebration);
   } catch (error) {
-    console.error('Error fetching team celebration data:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -96,7 +95,6 @@ const updateTeamCelebration = async (req, res) => {
     await teamCelebration.save();
     res.json(teamCelebration);
   } catch (error) {
-    console.error('Error updating team celebration data:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -111,7 +109,6 @@ const uploadTeamCelebrationImage = async (req, res) => {
     const imageUrl = `/uploads/team-celebration/${req.file.filename}`;
     res.json({ imageUrl });
   } catch (error) {
-    console.error('Error uploading team celebration image:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
