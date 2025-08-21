@@ -11,13 +11,13 @@ export default defineConfig({
       '/api': {
         target: 'https://api.cosmicpowertech.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
         rewrite: (path) => path.replace(/^\/api/, '/api')
       },
       '/uploads': {
         target: 'https://api.cosmicpowertech.com',
         changeOrigin: true,
-        secure: false
+        secure: true
       }
     }
   }
