@@ -263,9 +263,10 @@ export const AppProvider = ({ children }) => {
     setLoading(prev => ({ ...prev, faqs: true }));
     try {
       // Use the config service endpoint to fetch FAQs from solar_company_profile.json
-      const response = await axios.get(`${API_BASE_URL}/api/config/section/faq`);
+      const response = await axios.get(`${API_BASE_URL}/config/section/faq`);
       // Check if response.data.data exists, otherwise use response.data directly
       const faqData = response.data.data || response.data || [];
+      console.log('FAQ data fetched:', faqData);
       setFaqs(faqData);
       setErrors(prev => ({ ...prev, faqs: null }));
     } catch (error) {

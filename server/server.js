@@ -36,7 +36,7 @@ const newsCardsRoutes = require('./routes/newsCards');
 const solarJourneyRoutes = require('./routes/solarJourneyRoutes');
 const formConfigurationRoutes = require('./routes/formConfigurationRoutes');
 const footerConfigurationRoutes = require('./routes/footerConfigurationRoutes');
-
+const faqRoutes = require('./routes/faqRoutes');
 const navbarConfigurationRoutes = require('./routes/navbarConfigurationRoutes');
 
 // Initialize Express app
@@ -116,9 +116,8 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/team-celebration', teamCelebrationRoutes);
 app.use('/api/form-config', formConfigurationRoutes);
 app.use('/api/footer-config', footerConfigurationRoutes);
-
 app.use('/api/navbar-config', navbarConfigurationRoutes);
-
+app.use('/api/faqs', faqRoutes);
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

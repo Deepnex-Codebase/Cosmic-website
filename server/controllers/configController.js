@@ -41,6 +41,47 @@ exports.getSection = async (req, res) => {
       });
     }
     
+    // Special handling for FAQ section to use MongoDB
+    if (section === 'faq') {
+      try {
+        // Import the Faq model
+        const Faq = require('../models/Faq');
+        
+        // Get FAQs from MongoDB
+        const faqs = await Faq.find({ isActive: true }).sort({ order: 1 });
+        
+        // If no FAQs found in MongoDB, fallback to config file
+        if (faqs.length === 0) {
+          const fallbackFaqs = configService.getSection(section);
+          return res.status(200).json({
+            success: true,
+            data: fallbackFaqs
+          });
+        }
+        
+        // Return FAQs from MongoDB
+        return res.status(200).json({
+          success: true,
+          data: faqs.map(faq => ({
+            question: faq.question,
+            answer: faq.answer,
+            title: faq.question,  // Add title field for compatibility
+            content: faq.answer,  // Add content field for compatibility
+            id: faq._id
+          }))
+        });
+      } catch (mongoError) {
+        console.error('Error fetching FAQs from MongoDB:', mongoError);
+        // Fallback to config file if MongoDB fails
+        const fallbackFaqs = configService.getSection(section);
+        return res.status(200).json({
+          success: true,
+          data: fallbackFaqs
+        });
+      }
+    }
+    
+    // For all other sections, use the config file
     const sectionData = configService.getSection(section);
     
     return res.status(200).json({
@@ -193,7 +234,57 @@ exports.updateSection = async (req, res) => {
       });
     }
     
-    // Get current company data
+    // Special handling for FAQ section to use MongoDB
+    if (section === 'faq') {
+      try {
+        // Import the Faq model
+        const Faq = require('../models/Faq');
+        
+        // Delete all existing FAQs
+        await Faq.deleteMany({});
+        
+        // Create new FAQs from the updated data
+        const faqPromises = updatedData.map((faq, index) => {
+          return new Faq({
+            question: faq.question,
+            answer: faq.answer,
+            order: index,
+            isActive: true
+          }).save();
+        });
+        
+        await Promise.all(faqPromises);
+        
+        // Also update the config file for backward compatibility
+        const companyData = configService.getCompanyData();
+        companyData[section] = updatedData;
+        const configPath = path.join(__dirname, '../data/solar_company_profile.json');
+        fs.writeFileSync(configPath, JSON.stringify(companyData, null, 2), 'utf8');
+        configService.companyData = null;
+        
+        return res.status(200).json({
+          success: true,
+          message: `FAQ section updated successfully in MongoDB`,
+          data: updatedData
+        });
+      } catch (mongoError) {
+        console.error('Error updating FAQs in MongoDB:', mongoError);
+        // Fallback to updating only the config file
+        const companyData = configService.getCompanyData();
+        companyData[section] = updatedData;
+        const configPath = path.join(__dirname, '../data/solar_company_profile.json');
+        fs.writeFileSync(configPath, JSON.stringify(companyData, null, 2), 'utf8');
+        configService.companyData = null;
+        
+        return res.status(200).json({
+          success: true,
+          message: `FAQ section updated successfully in config file (MongoDB update failed)`,
+          data: updatedData
+        });
+      }
+    }
+    
+    // For all other sections, use the config file
     const companyData = configService.getCompanyData();
     
     // Update the specific section
