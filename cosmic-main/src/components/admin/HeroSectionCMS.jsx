@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaSave, FaUpload, FaVideo, FaPlus, FaTrash, FaEdit, FaUsers, FaProjectDiagram, FaSolarPanel, FaBolt, FaAward, FaGlobe, FaLeaf, FaIndustry } from 'react-icons/fa';
+import { API_BASE_URL } from '../../config/constants';
 
 const HeroSectionCMS = () => {
-  const [heroSectionData, setHeroSectionData] = useState(null);
+  const [_heroSectionData, setHeroSectionData] = useState(null);
   const [companyStats, setCompanyStats] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statsLoading, setStatsLoading] = useState(false);
@@ -48,7 +49,7 @@ const HeroSectionCMS = () => {
   const fetchHeroSectionData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/cms/hero-section');
+      const response = await axios.get(`${API_BASE_URL}/cms/hero-section`);
       if (response.data) {
         setHeroSectionData(response.data);
         setFormData({
@@ -74,7 +75,7 @@ const HeroSectionCMS = () => {
   const fetchCompanyStats = async () => {
     try {
       setStatsLoading(true);
-      const response = await axios.get('http://localhost:8000/api/cms/company-stats');
+      const response = await axios.get(`${API_BASE_URL}/cms/company-stats`);
       if (response.data) {
         setCompanyStats(response.data);
       }
@@ -113,7 +114,7 @@ const HeroSectionCMS = () => {
   const saveHeroSection = async () => {
     try {
       setLoading(true);
-      const response = await axios.put('http://localhost:8000/api/cms/hero-section', formData);
+      const response = await axios.put(`${API_BASE_URL}/cms/hero-section`, formData);
       if (response.data) {
         setHeroSectionData(response.data.heroSection);
         toast.success('Hero section updated successfully!');
@@ -133,10 +134,10 @@ const HeroSectionCMS = () => {
       let response;
       
       if (editingStat) {
-        response = await axios.put(`http://localhost:8000/api/cms/company-stats/${editingStat._id}`, statFormData);
+        response = await axios.put(`${API_BASE_URL}/cms/company-stats/${editingStat._id}`, statFormData);
         toast.success('Company stat updated successfully!');
       } else {
-        response = await axios.post('http://localhost:8000/api/cms/company-stats', statFormData);
+        response = await axios.post(`${API_BASE_URL}/cms/company-stats`, statFormData);
         toast.success('Company stat created successfully!');
       }
       
@@ -158,7 +159,7 @@ const HeroSectionCMS = () => {
     
     try {
       setStatsLoading(true);
-      await axios.delete(`http://localhost:8000/api/cms/company-stats/${id}`);
+      await axios.delete(`${API_BASE_URL}/cms/company-stats/${id}`);
       toast.success('Company stat deleted successfully!');
       await fetchCompanyStats();
     } catch (error) {
@@ -207,8 +208,8 @@ const HeroSectionCMS = () => {
     
     try {
       setLoading(true);
-      await axios.post('http://localhost:8000/api/cms/hero-section/reset');
-      await axios.post('http://localhost:8000/api/cms/company-stats/reset');
+      await axios.post(`${API_BASE_URL}/cms/hero-section/reset`);
+      await axios.post(`${API_BASE_URL}/cms/company-stats/reset`);
       toast.success('Reset to default successfully!');
       await fetchHeroSectionData();
       await fetchCompanyStats();
@@ -534,7 +535,7 @@ const HeroSectionCMS = () => {
               <p>No company statistics found. Add your first statistic above.</p>
             </div>
           ) : (
-            companyStats.map((stat, index) => {
+            companyStats.map((stat) => {
               const IconComponent = iconOptions.find(opt => opt.value === stat.icon)?.icon || FaUsers;
               return (
                 <div key={stat._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">

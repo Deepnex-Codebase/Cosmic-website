@@ -1,6 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+
+// Import environment variables
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'https://api.cosmicpowertech.com';
 import { FaQuoteLeft, FaQuoteRight, FaChevronLeft, FaChevronRight, FaUsers, FaProjectDiagram, FaSolarPanel, FaBolt, FaAward, FaGlobe, FaLeaf, FaIndustry } from 'react-icons/fa';
 
 // This component is now repurposed as a Happy Clients section with company stats
@@ -135,7 +138,7 @@ const TestimonialVideo = () => {
   // Fetch hero section data from API
   const fetchHeroSectionData = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/cms/hero-section');
+      const response = await axios.get(`${API_BASE_URL}/api/cms/hero-section`);
       if (response.data) {
         setHeroSectionData(response.data);
       }

@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // Create axios instance with base URL
-// Using relative URL for proxy to work correctly
-const API_BASE_URL = '/api';
+// Using environment variables for API URL configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
+// Import environment variables
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'https://api.cosmicpowertech.com';
+
 // Default fallback data
 const defaultSlides = [
   {
@@ -42,7 +45,7 @@ const TimelineSection = () => {
     try {
       setLoading(true);
       console.log('Fetching timeline data...');
-      const response = await axios.get('http://localhost:8000/api/cms/timeline');
+      const response = await axios.get(`${API_BASE_URL}/api/cms/timeline`);
       console.log('Timeline API response:', response.data);
       if (response.data.success && response.data.data.length > 0) {
         // Transform API data to match component structure

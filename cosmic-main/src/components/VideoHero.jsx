@@ -1,6 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import axios from 'axios';
 
+// Import environment variables
+const API_BASE_URL = import.meta.env.API_BASE_URL || 'https://api.cosmicpowertech.com';
+
 const VideoHero = () => {
   const videoRef = useRef(null);
   const buttonRef = useRef(null);
@@ -45,7 +48,7 @@ const VideoHero = () => {
   // Fetch video hero data from API
   const fetchVideoHeroData = async () => {
     try {
-      const response = await axios.get('/api/cms/video-hero');
+      const response = await axios.get(`${API_BASE_URL}/api/cms/video-hero`);
       if (response.data.success && response.data.data) {
         setVideoHeroData(response.data.data);
       }

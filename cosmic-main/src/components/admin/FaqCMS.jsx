@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
+import { API_BASE_URL } from '../../config/constants';
 
 const FaqCMS = () => {
   const [faqs, setFaqs] = useState([]);
@@ -15,7 +16,7 @@ const FaqCMS = () => {
   const fetchFaqs = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/config/section/faq');
+      const response = await axios.get(`${API_BASE_URL}/config/section/faq`);
       // Check if response.data.data exists (API returns {success: true, data: [...]})
       if (response.data && response.data.data) {
         setFaqs(response.data.data || []);
@@ -35,7 +36,7 @@ const FaqCMS = () => {
   const updateFaqs = async (updatedFaqs) => {
     try {
       setLoading(true);
-      const response = await axios.put('/api/config/section/faq', updatedFaqs);
+      await axios.put(`${API_BASE_URL}/config/section/faq`, updatedFaqs);
       toast.success('FAQs updated successfully');
       fetchFaqs(); // Refresh the data
     } catch (error) {

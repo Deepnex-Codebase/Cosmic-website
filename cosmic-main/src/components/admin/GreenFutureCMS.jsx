@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaSave, FaPlus, FaEdit, FaTrash, FaLeaf, FaImage, FaEye, FaTimes } from 'react-icons/fa';
+import { API_BASE_URL } from '../../config/constants';
 
 const GreenFutureCMS = () => {
-  const [greenFutureData, setGreenFutureData] = useState(null);
+  const [_greenFutureData, setGreenFutureData] = useState(null); // Using underscore prefix to indicate it's set but not directly used
   const [newsCards, setNewsCards] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newsLoading, setNewsLoading] = useState(false);
@@ -38,7 +39,7 @@ const GreenFutureCMS = () => {
   const fetchGreenFutureData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/cms/green-future');
+      const response = await axios.get(`${API_BASE_URL}/cms/green-future`);
       if (response.data?.success) {
         const data = response.data.data;
         setGreenFutureData(data);
@@ -62,7 +63,7 @@ const GreenFutureCMS = () => {
   const fetchNewsCards = async () => {
     try {
       setNewsLoading(true);
-      const response = await axios.get('http://localhost:8000/api/cms/news-cards');
+      const response = await axios.get(`${API_BASE_URL}/cms/news-cards`);
       setNewsCards(response.data?.data || []);
     } catch (error) {
       console.error('Error fetching news cards:', error);
@@ -112,7 +113,8 @@ const GreenFutureCMS = () => {
     }
   };
 
-  const handleCardImageChange = (e) => {
+  // These functions are defined for handling image file uploads and previews but not currently used in JSX
+  const _handleCardImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setCardImageFile(file);
@@ -128,7 +130,8 @@ const GreenFutureCMS = () => {
     }
   };
 
-  const handleCardLogoChange = (e) => {
+  // Function to handle logo file selection and preview but not currently used in JSX
+  const _handleCardLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setCardLogoFile(file);
@@ -159,7 +162,7 @@ const GreenFutureCMS = () => {
         formDataToSend.append('backgroundImage', backgroundImageFile);
       }
       
-      const response = await axios.put('http://localhost:8000/api/cms/green-future', formDataToSend, {
+      const response = await axios.put(`${API_BASE_URL}/cms/green-future`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -200,7 +203,7 @@ const GreenFutureCMS = () => {
       }
       
       if (editingCard) {
-        const response = await axios.put(`http://localhost:8000/api/cms/news-cards/${editingCard._id}`, formDataToSend, {
+        const response = await axios.put(`${API_BASE_URL}/cms/news-cards/${editingCard._id}`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -209,7 +212,7 @@ const GreenFutureCMS = () => {
           toast.success('News card updated successfully!');
         }
       } else {
-        const response = await axios.post('http://localhost:8000/api/cms/news-cards', formDataToSend, {
+        const response = await axios.post(`${API_BASE_URL}/cms/news-cards`, formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -233,7 +236,7 @@ const GreenFutureCMS = () => {
   const deleteNewsCard = async (cardId) => {
     if (window.confirm('Are you sure you want to delete this news card?')) {
       try {
-        const response = await axios.delete(`http://localhost:8000/api/cms/news-cards/${cardId}`);
+        const response = await axios.delete(`${API_BASE_URL}/cms/news-cards/${cardId}`);
         if (response.data?.success) {
           toast.success('News card deleted successfully!');
           fetchNewsCards();
@@ -285,10 +288,10 @@ const GreenFutureCMS = () => {
         setNewsLoading(true);
         
         // Reset green future section
-        const greenFutureResponse = await axios.post('http://localhost:8000/api/cms/green-future/reset');
+        const greenFutureResponse = await axios.post(`${API_BASE_URL}/cms/green-future/reset`);
         
         // Reset news cards
-        const newsCardsResponse = await axios.post('http://localhost:8000/api/cms/news-cards/reset');
+        const newsCardsResponse = await axios.post(`${API_BASE_URL}/cms/news-cards/reset`);
         
         if (greenFutureResponse.data?.success && newsCardsResponse.data?.success) {
           toast.success('Reset to default successfully!');
@@ -580,7 +583,7 @@ const GreenFutureCMS = () => {
               <p>No news cards found. Add your first news card above.</p>
             </div>
           ) : (
-            newsCards.map((card, index) => (
+            newsCards.map((card) => (
               <div key={card._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

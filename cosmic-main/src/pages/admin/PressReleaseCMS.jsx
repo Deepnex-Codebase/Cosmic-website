@@ -44,8 +44,8 @@ const PressReleaseCMS = () => {
 
   const statuses = ['draft', 'published', 'archived'];
 
-  // API Base URL
-  const API_BASE_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:8000/api';
+  // API Base URL from environment variables
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
   // Fetch press releases
   const fetchPressReleases = async () => {

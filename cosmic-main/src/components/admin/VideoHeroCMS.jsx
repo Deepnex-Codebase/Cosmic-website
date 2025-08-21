@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaSave, FaUpload, FaVideo, FaPlay, FaPause, FaCog } from 'react-icons/fa';
+import { API_BASE_URL } from '../../config/constants';
 
 const VideoHeroCMS = () => {
   const [videoHeroData, setVideoHeroData] = useState(null);
@@ -46,7 +47,7 @@ const VideoHeroCMS = () => {
   const fetchVideoHeroData = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:8000/api/cms/video-hero');
+      const response = await axios.get(`${API_BASE_URL}/cms/video-hero`);
       if (response.data.success) {
         const data = response.data.data;
         setVideoHeroData(data);
@@ -65,7 +66,7 @@ const VideoHeroCMS = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await axios.put('http://localhost:8000/api/cms/video-hero', formData);
+      const response = await axios.put(`${API_BASE_URL}/cms/video-hero`, formData);
       if (response.data.success) {
         setVideoHeroData(response.data.data);
         toast.success('Video hero settings updated successfully!');
@@ -88,7 +89,7 @@ const VideoHeroCMS = () => {
 
     try {
       setUploading(true);
-      const response = await axios.post('http://localhost:8000/api/cms/video-hero/upload', formDataUpload, {
+      const response = await axios.post(`${API_BASE_URL}/cms/video-hero/upload`, formDataUpload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -443,7 +444,7 @@ const VideoHeroCMS = () => {
           <h3 className="text-lg font-semibold mb-4">Preview</h3>
           <div className="relative w-full overflow-hidden rounded-lg">
             <video
-              src={formData.videoSource.startsWith('http') ? formData.videoSource : `http://localhost:8000${formData.videoSource}`}
+              src={formData.videoSource.startsWith('http') ? formData.videoSource : `${window.location.origin}${formData.videoSource}`}
               className="w-full object-cover"
               style={{ height: formData.heights.desktop }}
               autoPlay={formData.videoSettings.autoPlay}

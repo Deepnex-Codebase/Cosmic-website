@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaEye } from 'react-icons/fa';
+import { API_BASE_URL } from '../../config/constants';
 
 const TimelineCMS = () => {
   const [timelineItems, setTimelineItems] = useState([]);
@@ -23,7 +24,7 @@ const TimelineCMS = () => {
   const fetchTimelineItems = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/cms/timeline/admin/all');
+      const response = await axios.get(`${API_BASE_URL}/cms/timeline/admin/all`);
       if (response.data.success) {
         setTimelineItems(response.data.data);
       }
@@ -119,11 +120,11 @@ const TimelineCMS = () => {
 
       let response;
       if (editingItem) {
-        response = await axios.put(`/api/cms/timeline/${editingItem}`, submitData, {
+        response = await axios.put(`${API_BASE_URL}/cms/timeline/${editingItem}`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
-        response = await axios.post('/api/cms/timeline', submitData, {
+        response = await axios.post(`${API_BASE_URL}/cms/timeline`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
@@ -145,7 +146,7 @@ const TimelineCMS = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this timeline item?')) {
       try {
-        const response = await axios.delete(`/api/cms/timeline/${id}`);
+        const response = await axios.delete(`${API_BASE_URL}/cms/timeline/${id}`);
         if (response.data.success) {
           alert('Timeline item deleted successfully!');
           fetchTimelineItems();

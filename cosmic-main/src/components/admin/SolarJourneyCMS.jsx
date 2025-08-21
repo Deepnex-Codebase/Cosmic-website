@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaEye, FaArrowUp, FaArrowDown } from 'react-icons/fa';
+import { API_BASE_URL } from '../../config/constants';
 
 const SolarJourneyCMS = () => {
   const [milestones, setMilestones] = useState([]);
@@ -22,7 +23,7 @@ const SolarJourneyCMS = () => {
   const fetchMilestones = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/cms/solar-journey/admin/all');
+      const response = await axios.get(`${API_BASE_URL}/cms/solar-journey/admin/all`);
       if (response.data.success) {
         setMilestones(response.data.data);
       }
@@ -115,11 +116,11 @@ const SolarJourneyCMS = () => {
 
       let response;
       if (editingItem) {
-        response = await axios.put(`/api/cms/solar-journey/${editingItem}`, submitData, {
+        response = await axios.put(`${API_BASE_URL}/cms/solar-journey/${editingItem}`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
-        response = await axios.post('/api/cms/solar-journey', submitData, {
+        response = await axios.post(`${API_BASE_URL}/cms/solar-journey`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
@@ -141,7 +142,7 @@ const SolarJourneyCMS = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this solar journey milestone?')) {
       try {
-        const response = await axios.delete(`/api/cms/solar-journey/${id}`);
+        const response = await axios.delete(`${API_BASE_URL}/cms/solar-journey/${id}`);
         if (response.data.success) {
           alert('Solar journey milestone deleted successfully!');
           fetchMilestones();
@@ -156,7 +157,7 @@ const SolarJourneyCMS = () => {
   // Handle reordering milestones
   const handleReorder = async (id, direction) => {
     try {
-      const response = await axios.put(`/api/cms/solar-journey/reorder/${id}`, { direction });
+      const response = await axios.put(`${API_BASE_URL}/cms/solar-journey/reorder/${id}`, { direction });
       if (response.data.success) {
         fetchMilestones();
       }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import { API_BASE_URL } from '../../config/constants';
 
 const CompanyIntro = () => {
   const [companyIntroData, setCompanyIntroData] = useState({
@@ -19,7 +20,7 @@ const CompanyIntro = () => {
 
   const fetchCompanyIntroData = async () => {
     try {
-      const response = await fetch('/api/company-intro/active');
+      const response = await fetch(`${API_BASE_URL}/company-intro/active`);
       const result = await response.json();
       if (result.success && result.data) {
         setCompanyIntroData({
@@ -70,8 +71,8 @@ const CompanyIntro = () => {
       }
 
       const url = existingData 
-        ? `/api/company-intro/${existingData._id}`
-        : '/api/company-intro';
+        ? `${API_BASE_URL}/company-intro/${existingData._id}`
+        : `${API_BASE_URL}/company-intro`;
       
       const method = existingData ? 'PUT' : 'POST';
 

@@ -27,7 +27,7 @@ const CustomerSupportChat = () => {
       setMessages([
         {
           id: 1,
-          text: 'नमस्ते! मैं Solar Mitr से बात कर रहा हूँ। आपकी कैसे मदद कर सकता हूँ?',
+          text: 'Hello! I am Cosmic Power Tech. How can I help you?',
           sender: 'bot',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
@@ -105,7 +105,7 @@ const CustomerSupportChat = () => {
         setMessages([
           {
             id: 1,
-            text: 'नमस्ते! मैं Solar Mitr से बात कर रहा हूँ। आपकी कैसे मदद कर सकता हूँ?',
+            text: 'Hello! I am Cosmic Power Tech. How can I help you?',
             sender: 'bot',
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }
@@ -120,7 +120,7 @@ const CustomerSupportChat = () => {
         setMessages([
           {
             id: 1,
-            text: 'नमस्ते! मैं Solar Mitr से बात कर रहा हूँ। आपकी कैसे मदद कर सकता हूँ?',
+            text: 'Hello! I am Cosmic Power Tech. How can I help you?',
             sender: 'bot',
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }

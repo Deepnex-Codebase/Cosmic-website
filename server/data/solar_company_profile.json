@@ -193,12 +193,7 @@
       }
     }
   },
-  "faq": [
-    {
-      "question": "Dolor qui quo et ut",
-      "answer": "Porro ipsum aute se"
-    }
-  ],
+  "faq": [],
   "cta": {
     "primary": {
       "text": "Book Free Site Survey",
