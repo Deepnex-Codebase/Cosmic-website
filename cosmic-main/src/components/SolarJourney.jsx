@@ -13,6 +13,7 @@ import {
   GlobeAltIcon,
 } from "@heroicons/react/24/outline";
 import { journeyService } from "../services/api";
+import { API_BASE_URL } from "../config/constants";
 
 // Icon mapping to use with dynamic data
 const ICON_MAP = {
@@ -86,10 +87,6 @@ export default function SolarJourney() {
       try {
         // Use the updated API service that bypasses cache
         const response = await journeyService.getActiveMilestones();
-        console.log('Journey API response:', response);
-        console.log('Journey API response status:', response.status);
-        console.log('Journey API response headers:', response.headers);
-        console.log('Journey API full response data:', JSON.stringify(response.data, null, 2));
         
         // Handle API response
         if (response && response.data) {
@@ -97,54 +94,28 @@ export default function SolarJourney() {
           let milestones = [];
           
           // Check response structure and extract milestones
-          if (response.data.data && Array.isArray(response.data.data)) {
+          if (response.data.success && Array.isArray(response.data.data)) {
+            // Standard API response with success and data property
+            milestones = response.data.data;
+          } else if (response.data.data && Array.isArray(response.data.data)) {
             // Standard API response with data property
             milestones = response.data.data;
-            console.log('Found milestones in response.data.data:', milestones);
           } else if (Array.isArray(response.data)) {
             // Direct array response
             milestones = response.data;
-            console.log('Found milestones directly in response.data:', milestones);
-          } else if (response.data.success && Array.isArray(response.data.data)) {
-            // Success format with data property
-            milestones = response.data.data;
-            console.log('Found milestones in response.data.data (success format):', milestones);
-          } else {
-            // Try to find any array in the response
-            const findArrays = (obj) => {
-              for (const key in obj) {
-                if (Array.isArray(obj[key]) && obj[key].length > 0 && obj[key][0].title) {
-                  return obj[key];
-                } else if (typeof obj[key] === 'object' && obj[key] !== null) {
-                  const result = findArrays(obj[key]);
-                  if (result) return result;
-                }
-              }
-              return null;
-            };
-            
-            const foundArray = findArrays(response.data);
-            if (foundArray) {
-              milestones = foundArray;
-            }
           }
           
           if (milestones.length > 0) {
-            console.log('Processing milestones for display:', milestones);
             // Format the data to match our component's needs
             const formattedData = milestones.map((item, index) => {
-              console.log(`Processing milestone ${index}:`, item);
-              
               // Determine which icon to use - first try exact match
               let IconComponent = FALLBACK_STEPS[index % FALLBACK_STEPS.length].icon;
               
               // Try to find the icon in our map
               if (item.icon) {
-                console.log(`Finding icon for: ${item.icon}`);
                 // Check for exact match first
                 if (ICON_MAP[item.icon]) {
                   IconComponent = ICON_MAP[item.icon];
-                  console.log(`Found exact icon match: ${item.icon}`);
                 } 
                 // If no exact match, try to find a partial match
                 else {

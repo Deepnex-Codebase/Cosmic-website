@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Hero from "../components/Hero";
+import { API_BASE_URL } from "../config/constants";
 // SmartEnergySolutions component removed
 import Portfolio from "../components/Portfolio";
 import SolarJourney from "../components/SolarJourney";
@@ -183,19 +184,19 @@ const Home = () => {
     try {
       setGreenFutureLoading(true);
       const [greenFutureResponse, newsCardsResponse] = await Promise.all([
-        axios.get('http://localhost:8000/api/cms/green-future'),
-        axios.get('http://localhost:8000/api/cms/news-cards/active')
+        axios.get(`${API_BASE_URL}/cms/green-future`),
+        axios.get(`${API_BASE_URL}/cms/news-cards`)
       ]);
       
-      if (greenFutureResponse.data) {
-        setGreenFutureData(greenFutureResponse.data);
+      if (greenFutureResponse.data?.success) {
+        setGreenFutureData(greenFutureResponse.data.data);
       }
       
-      if (newsCardsResponse.data) {
-        setNewsCards(newsCardsResponse.data);
+      if (newsCardsResponse.data?.success) {
+        setNewsCards(newsCardsResponse.data.data || []);
       }
     } catch (error) {
-      // Error handling
+      console.error('Error fetching Green Future data:', error);
     } finally {
       setGreenFutureLoading(false);
     }

@@ -241,60 +241,39 @@
   ],
   "faq": [
     {
-      "question": "What is solar energy and how does it work? ",
-      "answer": "Solar energy is power generated from the sun's rays. Solar panels (photovoltaic cells) capture sunlight and convert it into electricity through the photovoltaic effect. This clean, renewable electricity can then power your home or business, reducing dependence on grid electricity and lowering your carbon footprint.",
-      "title": "What is solar energy and how does it work? 2",
-      "content": "Solar energy is power generated from the sun's rays. Solar panels (photovoltaic cells) capture sunlight and convert it into electricity through the photovoltaic effect. This clean, renewable electricity can then power your home or business, reducing dependence on grid electricity and lowering your carbon footprint.",
-      "id": "68a6e74599223033c31d29fd"
-    },
-    {
-      "question": "How much can I save with solar panels?",
-      "answer": "Savings vary based on your location, energy consumption, and system size, but most homeowners save 50-90% on their electricity bills. With rising electricity rates, your savings increase over time. Our customers typically see a return on investment within 3-5 years, while enjoying 25+ years of energy production.",
-      "title": "How much can I save with solar panels?",
-      "content": "Savings vary based on your location, energy consumption, and system size, but most homeowners save 50-90% on their electricity bills. With rising electricity rates, your savings increase over time. Our customers typically see a return on investment within 3-5 years, while enjoying 25+ years of energy production.",
-      "id": "68a6e74599223033c31d29fe"
-    },
-    {
-      "question": "What government subsidies are available for solar installation?",
-      "answer": "The Indian government offers subsidies up to 40% for residential installations up to 3kW and 20% for systems between 3-10kW. Commercial installations can benefit from accelerated depreciation of 40% in the first year. Our team handles all subsidy paperwork and ensures you receive maximum benefits.",
-      "title": "What government subsidies are available for solar installation?",
-      "content": "The Indian government offers subsidies up to 40% for residential installations up to 3kW and 20% for systems between 3-10kW. Commercial installations can benefit from accelerated depreciation of 40% in the first year. Our team handles all subsidy paperwork and ensures you receive maximum benefits.",
-      "id": "68a6e74599223033c31d29ff"
-    },
-    {
       "question": "How long does solar panel installation take?",
       "answer": "A typical residential installation takes 2-3 days, while commercial projects may take 1-2 weeks depending on system size. The entire process from signing to commissioning usually takes 2-4 weeks, including permits, inspections, and utility approvals. We manage the entire process to ensure minimal disruption.",
       "title": "How long does solar panel installation take?",
       "content": "A typical residential installation takes 2-3 days, while commercial projects may take 1-2 weeks depending on system size. The entire process from signing to commissioning usually takes 2-4 weeks, including permits, inspections, and utility approvals. We manage the entire process to ensure minimal disruption.",
-      "id": "68a6e74599223033c31d2a00"
+      "id": "68a6f13bcb90904f540fdff5"
     },
     {
       "question": "Do solar panels work during power outages?",
       "answer": "Standard grid-tied systems shut down during power outages for safety reasons. However, we offer battery storage solutions that provide backup power during outages. These systems automatically switch to battery power when the grid goes down, ensuring continuous electricity for your essential loads.",
       "title": "Do solar panels work during power outages?",
       "content": "Standard grid-tied systems shut down during power outages for safety reasons. However, we offer battery storage solutions that provide backup power during outages. These systems automatically switch to battery power when the grid goes down, ensuring continuous electricity for your essential loads.",
-      "id": "68a6e74599223033c31d2a01"
+      "id": "68a6f13bcb90904f540fdff6"
     },
     {
       "question": "How long do solar panels last?",
       "answer": "Quality solar panels have a lifespan of 25-30 years, with manufacturers providing 25-year performance warranties. Even after 25 years, panels continue producing at approximately 80% of their original capacity. Inverters typically last 10-15 years and may need replacement during the system's lifetime.",
       "title": "How long do solar panels last?",
       "content": "Quality solar panels have a lifespan of 25-30 years, with manufacturers providing 25-year performance warranties. Even after 25 years, panels continue producing at approximately 80% of their original capacity. Inverters typically last 10-15 years and may need replacement during the system's lifetime.",
-      "id": "68a6e74599223033c31d2a02"
+      "id": "68a6f13bcb90904f540fdff7"
     },
     {
       "question": "What maintenance do solar panels require?",
       "answer": "Solar panels require minimal maintenance. Occasional cleaning (2-4 times per year) to remove dust and debris is recommended to maintain optimal efficiency. Our maintenance packages include regular cleaning, system health checks, and performance monitoring to ensure maximum energy production.",
       "title": "What maintenance do solar panels require?",
       "content": "Solar panels require minimal maintenance. Occasional cleaning (2-4 times per year) to remove dust and debris is recommended to maintain optimal efficiency. Our maintenance packages include regular cleaning, system health checks, and performance monitoring to ensure maximum energy production.",
-      "id": "68a6e74599223033c31d2a03"
+      "id": "68a6f13bcb90904f540fdff8"
     },
     {
       "question": "Can I install solar panels on any type of roof?",
       "answer": "Solar panels can be installed on most roof types including concrete, metal, and tile. Factors like roof age, condition, orientation, and shading affect suitability. During our free site survey, our engineers assess your roof's structural integrity and determine the optimal panel placement for maximum energy generation.",
       "title": "Can I install solar panels on any type of roof?",
       "content": "Solar panels can be installed on most roof types including concrete, metal, and tile. Factors like roof age, condition, orientation, and shading affect suitability. During our free site survey, our engineers assess your roof's structural integrity and determine the optimal panel placement for maximum energy generation.",
-      "id": "68a6e74599223033c31d2a04"
+      "id": "68a6f13bcb90904f540fdff9"
     }
   ]
 }
