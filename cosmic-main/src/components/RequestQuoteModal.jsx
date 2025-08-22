@@ -83,9 +83,10 @@ const RequestQuoteModal = ({ isOpen, onClose, productName }) => {
     
     try {
       // Try to send OTP via backend API using Nodemailer
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
       try {
         // Make sure the port matches the one in server.js
-        const response = await fetch('http://localhost:8000/api/send-otp', {
+        const response = await fetch(`${API_BASE_URL}/send-otp`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -354,7 +355,7 @@ const RequestQuoteModal = ({ isOpen, onClose, productName }) => {
                         // Try to send new OTP via backend API using Nodemailer
                         try {
                           // Make sure the port matches the one in server.js
-                          const response = await fetch('http://localhost:8000/api/send-otp', {
+                          const response = await fetch(`${API_BASE_URL}/send-otp`, {
                             method: 'POST',
                             headers: {
                               'Content-Type': 'application/json',

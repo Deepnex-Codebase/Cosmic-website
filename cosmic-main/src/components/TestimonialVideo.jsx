@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 
 // Import environment variables
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'https://api.cosmicpowertech.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 import { FaQuoteLeft, FaQuoteRight, FaChevronLeft, FaChevronRight, FaUsers, FaProjectDiagram, FaSolarPanel, FaBolt, FaAward, FaGlobe, FaLeaf, FaIndustry } from 'react-icons/fa';
 
 // This component is now repurposed as a Happy Clients section with company stats
@@ -161,7 +161,7 @@ const TestimonialVideo = () => {
   // Fetch company stats from API
   const fetchCompanyStats = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/cms/company-stats');
+      const response = await axios.get(`${API_BASE_URL}/cms/company-stats`);
       if (response.data && response.data.length > 0) {
         // Sort by order field
         const sortedStats = response.data.sort((a, b) => (a.order || 0) - (b.order || 0));

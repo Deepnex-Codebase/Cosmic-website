@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 // Import environment variables
-const API_BASE_URL = import.meta.env.API_BASE_URL || 'https://api.cosmicpowertech.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
 // Default fallback data
 const defaultSlides = [
@@ -45,7 +45,7 @@ const TimelineSection = () => {
     try {
       setLoading(true);
       console.log('Fetching timeline data...');
-      const response = await axios.get(`${API_BASE_URL}/api/cms/timeline`);
+      const response = await axios.get(`${API_BASE_URL}/cms/timeline`);
       console.log('Timeline API response:', response.data);
       if (response.data.success && response.data.data.length > 0) {
         // Transform API data to match component structure
@@ -53,7 +53,7 @@ const TimelineSection = () => {
           year: item.year,
           title: item.title,
           description: item.description,
-          bg: item.backgroundImage ? `http://localhost:8000${item.backgroundImage}` : 'https://unsplash.it/1920/500?image=11'
+          bg: item.backgroundImage ? `${API_BASE_URL}${item.backgroundImage}` : 'https://unsplash.it/1920/500?image=11'
         }));
         console.log('Transformed timeline data:', timelineData);
         setSlides(timelineData);

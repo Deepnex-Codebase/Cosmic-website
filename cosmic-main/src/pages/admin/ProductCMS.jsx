@@ -720,7 +720,7 @@ const ProductCMS = () => {
                         <div className="flex items-center">
                           {product.image && (
                             <img
-                              src={`http://localhost:8000${product.image}`}
+                              src={`${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}${product.image}`}
                               alt={product.title}
                               className="h-12 w-12 rounded-lg object-cover mr-4"
                             />

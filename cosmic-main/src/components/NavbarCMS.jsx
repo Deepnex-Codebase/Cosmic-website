@@ -41,9 +41,11 @@ const NavbarCMS = () => {
     fetchNavbarConfig();
   }, []);
 
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+
   const fetchNavbarConfig = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/navbar-config');
+      const response = await fetch(`${API_BASE_URL}/navbar-config`);
       if (response.ok) {
         const data = await response.json();
         setNavbarConfig(data);
@@ -65,7 +67,7 @@ const NavbarCMS = () => {
   const handleSave = async (updates) => {
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:8000/api/navbar-config', {
+      const response = await fetch(`${API_BASE_URL}/navbar-config`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +97,7 @@ const NavbarCMS = () => {
 
     setSaving(true);
     try {
-      const response = await fetch('http://localhost:8000/api/navbar-config/logo', {
+      const response = await fetch(`${API_BASE_URL}/navbar-config/logo`, {
         method: 'POST',
         body: formData,
       });
@@ -166,24 +168,24 @@ const NavbarCMS = () => {
       if (modalType === 'navigation') {
         if (editingItem) {
           // Update navigation item
-          url = `http://localhost:8000/api/navbar-config/navigation-items/${editingItem._id}`;
+          url = `${API_BASE_URL}/navbar-config/navigation-items/${editingItem._id}`;
           method = 'PUT';
           body = JSON.stringify(formData);
         } else {
           // Add navigation item
-          url = 'http://localhost:8000/api/navbar-config/navigation-items';
+          url = `${API_BASE_URL}/navbar-config/navigation-items`;
           method = 'POST';
           body = JSON.stringify(formData);
         }
       } else if (modalType === 'submenu') {
         if (editingSubmenu) {
           // Update submenu item
-          url = `http://localhost:8000/api/navbar-config/navigation-items/${editingItem._id}/submenu/${editingSubmenu._id}`;
+          url = `${API_BASE_URL}/navbar-config/navigation-items/${editingItem._id}/submenu/${editingSubmenu._id}`;
           method = 'PUT';
           body = JSON.stringify(formData);
         } else {
           // Add submenu item
-          url = `http://localhost:8000/api/navbar-config/navigation-items/${editingItem._id}/submenu`;
+          url = `${API_BASE_URL}/navbar-config/navigation-items/${editingItem._id}/submenu`;
           method = 'POST';
           body = JSON.stringify(formData);
         }
@@ -213,9 +215,9 @@ const NavbarCMS = () => {
     try {
       let url;
       if (submenuId) {
-        url = `http://localhost:8000/api/navbar-config/navigation-items/${itemId}/submenu/${submenuId}`;
+        url = `${API_BASE_URL}/navbar-config/navigation-items/${itemId}/submenu/${submenuId}`;
       } else {
-        url = `http://localhost:8000/api/navbar-config/navigation-items/${itemId}`;
+        url = `${API_BASE_URL}/navbar-config/navigation-items/${itemId}`;
       }
 
       const response = await fetch(url, { method: 'DELETE' });

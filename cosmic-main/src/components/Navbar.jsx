@@ -33,10 +33,12 @@ export default function Navbar() {
   }, []);
   
   // Fetch navbar configuration from API
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+
   useEffect(() => {
     const fetchNavbarConfig = async () => {
         try {
-          const response = await fetch('http://localhost:8000/api/navbar-config');
+          const response = await fetch(`${API_BASE_URL}/navbar-config`);
           if (response.ok) {
             const data = await response.json();
             setNavbarConfig(data);

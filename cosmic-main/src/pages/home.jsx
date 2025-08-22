@@ -164,7 +164,8 @@ const Home = () => {
   const fetchPanIndiaData = async () => {
     try {
       setPanIndiaLoading(true);
-      const response = await fetch('/api/pan-india-presence/active');
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+      const response = await fetch(`${API_BASE_URL}/pan-india-presence/active`);
       if (response.ok) {
         const result = await response.json();
         if (result.success && result.data) {
@@ -182,9 +183,10 @@ const Home = () => {
   const fetchGreenFutureData = async () => {
     try {
       setGreenFutureLoading(true);
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
       const [greenFutureResponse, newsCardsResponse] = await Promise.all([
-        axios.get('http://localhost:8000/api/cms/green-future'),
-        axios.get('http://localhost:8000/api/cms/news-cards/active')
+        axios.get(`${API_BASE_URL}/cms/green-future`),
+        axios.get(`${API_BASE_URL}/cms/news-cards/active`)
       ]);
       
       if (greenFutureResponse.data) {
