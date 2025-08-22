@@ -112,7 +112,7 @@ export default function Hero() {
       if (imgUrl && imgUrl.startsWith('/uploads/')) {
         // If it's a relative path from backend, ensure it's properly handled
         // The backend now provides fullUrl for media, but we handle both cases
-        imgUrl = slide.fullUrl || `${window.location.origin}${imgUrl}`;
+        imgUrl = `https://api.cosmicpowertech.com${imgUrl}`;
       }
       
       return {
