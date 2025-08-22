@@ -33,35 +33,35 @@ api.interceptors.request.use(
 
 // API services for different endpoints
 export const authService = {
-  register: (userData) => api.post('/api/users/register', userData),
-  login: (credentials) => api.post('/api/users/login', credentials),
-  getProfile: () => api.get('/api/users/profile'),
-  updateProfile: (userData) => api.put('/api/users/profile', userData),
-  forgotPassword: (email) => api.post('/api/users/forgot-password', { email }),
-  resetPassword: (token, passwords) => api.post(`/api/users/reset-password/${token}`, passwords),
-  changePassword: (passwordData) => api.put('/api/users/change-password', passwordData),
+  register: (userData) => api.post('/users/register', userData),
+  login: (credentials) => api.post('/users/login', credentials),
+  getProfile: () => api.get('/users/profile'),
+  updateProfile: (userData) => api.put('/users/profile', userData),
+  forgotPassword: (email) => api.post('/users/forgot-password', { email }),
+  resetPassword: (token, passwords) => api.post(`/users/reset-password/${token}`, passwords),
+  changePassword: (passwordData) => api.put('/users/change-password', passwordData),
 };
 
 export const blogService = {
-  getAllPosts: (params) => api.get('/api/blog-posts', { params }),
-  getActivePosts: (params) => api.get('/api/blog-posts/active', { params }),
-  getFeaturedPosts: () => api.get('/api/blog-posts/featured'),
-  getPostById: (id) => api.get(`/api/blog-posts/id/${id}`),
-  getPostBySlug: (slug) => api.get(`/api/blog-posts/slug/${slug}`),
-  searchPosts: (query) => api.get(`/api/blog-posts/search?q=${query}`),
-  getPostsByCategory: (categoryId, params) => api.get(`/api/blog-posts/category/${categoryId}`, { params }),
-  getPostsByTag: (tagId, params) => api.get(`/api/blog-posts/tag/${tagId}`, { params }),
+  getAllPosts: (params) => api.get('/blog-posts', { params }),
+  getActivePosts: (params) => api.get('/blog-posts/active', { params }),
+  getFeaturedPosts: () => api.get('/blog-posts/featured'),
+  getPostById: (id) => api.get(`/blog-posts/id/${id}`),
+  getPostBySlug: (slug) => api.get(`/blog-posts/slug/${slug}`),
+  searchPosts: (query) => api.get(`/blog-posts/search?q=${query}`),
+  getPostsByCategory: (categoryId, params) => api.get(`/blog-posts/category/${categoryId}`, { params }),
+  getPostsByTag: (tagId, params) => api.get(`/blog-posts/tag/${tagId}`, { params }),
 };
 
 export const projectService = {
-  getAllProjects: (params) => api.get('/api/projects', { params }),
-  getActiveProjects: (params) => api.get('/api/projects/active', { params }),
-  getFeaturedProjects: () => api.get('/api/projects/featured'),
-  getProjectById: (id) => api.get(`/api/projects/id/${id}`),
+  getAllProjects: (params) => api.get('/projects', { params }),
+  getActiveProjects: (params) => api.get('/projects/active', { params }),
+  getFeaturedProjects: () => api.get('/projects/featured'),
+  getProjectById: (id) => api.get(`/projects/id/${id}`),
 };
 
 export const directorService = {
-  getAllDirectors: () => api.get('/api/directors', {
+  getAllDirectors: () => api.get('/directors', {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -70,7 +70,7 @@ export const directorService = {
     // Add timestamp to prevent caching
     params: { _t: new Date().getTime() }
   }),
-  getDirector: (id) => api.get(`/api/directors/${id}`, {
+  getDirector: (id) => api.get(`/directors/${id}`, {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -81,31 +81,31 @@ export const directorService = {
   createDirector: (directorData) => {
     // Check if directorData is FormData
     if (directorData instanceof FormData) {
-      return apiFormData.post('/api/directors', directorData, {
+      return apiFormData.post('/directors', directorData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    return api.post('/api/directors', directorData);
+    return api.post('/directors', directorData);
   },
   updateDirector: (id, directorData) => {
     // Check if directorData is FormData
     if (directorData instanceof FormData) {
-      return apiFormData.put(`/api/directors/${id}`, directorData, {
+      return apiFormData.put(`/directors/${id}`, directorData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    return api.put(`/api/directors/${id}`, directorData);
+    return api.put(`/directors/${id}`, directorData);
   },
-  deleteDirector: (id) => api.delete(`/api/directors/${id}`),
-  updateDirectorOrder: (id, direction) => api.put(`/api/directors/order/${id}/${direction}`),
+  deleteDirector: (id) => api.delete(`/directors/${id}`),
+  updateDirectorOrder: (id, direction) => api.put(`/directors/order/${id}/${direction}`),
 };
 
 export const teamService = {
-  getAllTeamMembers: () => api.get('/api/team', {
+  getAllTeamMembers: () => api.get('/team', {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -114,7 +114,7 @@ export const teamService = {
     // Add timestamp to prevent caching
     params: { _t: new Date().getTime() }
   }),
-  getTeamMember: (id) => api.get(`/api/team/${id}`, {
+  getTeamMember: (id) => api.get(`/team/${id}`, {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -125,32 +125,32 @@ export const teamService = {
   createTeamMember: (teamMemberData) => {
     // Check if teamMemberData is FormData
     if (teamMemberData instanceof FormData) {
-      return apiFormData.post('/api/team', teamMemberData, {
+      return apiFormData.post('/team', teamMemberData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    return api.post('/api/team', teamMemberData);
+    return api.post('/team', teamMemberData);
   },
   updateTeamMember: (id, teamMemberData) => {
     // Check if teamMemberData is FormData
     if (teamMemberData instanceof FormData) {
-      return apiFormData.put(`/api/team/${id}`, teamMemberData, {
+      return apiFormData.put(`/team/${id}`, teamMemberData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    return api.put(`/api/team/${id}`, teamMemberData);
+    return api.put(`/team/${id}`, teamMemberData);
   },
-  deleteTeamMember: (id) => api.delete(`/api/team/${id}`),
-  updateTeamMemberOrder: (id, direction) => api.put(`/api/team/order/${id}/${direction}`),
+  deleteTeamMember: (id) => api.delete(`/team/${id}`),
+  updateTeamMemberOrder: (id, direction) => api.put(`/team/order/${id}/${direction}`),
 };
 
 export const journeyService = {
-  getAllMilestones: (params) => api.get('/api/cms/solar-journey', { params }),
-  getActiveMilestones: () => api.get('/api/cms/solar-journey/active', {
+  getAllMilestones: (params) => api.get('/cms/solar-journey', { params }),
+  getActiveMilestones: () => api.get('/cms/solar-journey/active', {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -159,97 +159,97 @@ export const journeyService = {
     // Add timestamp to prevent caching
     params: { _t: new Date().getTime() }
   }),
-  getMilestoneById: (id) => api.get(`/api/cms/solar-journey/${id}`),
-  createMilestone: (data) => api.post('/api/cms/solar-journey', data),
-  updateMilestone: (id, data) => api.put(`/api/cms/solar-journey/${id}`, data),
-  deleteMilestone: (id) => api.delete(`/api/cms/solar-journey/${id}`),
-  reorderMilestones: (items) => api.put('/api/cms/solar-journey/reorder', { items }),
+  getMilestoneById: (id) => api.get(`/cms/solar-journey/${id}`),
+  createMilestone: (data) => api.post('/cms/solar-journey', data),
+  updateMilestone: (id, data) => api.put(`/cms/solar-journey/${id}`, data),
+  deleteMilestone: (id) => api.delete(`/cms/solar-journey/${id}`),
+  reorderMilestones: (items) => api.put('/cms/solar-journey/reorder', { items }),
 };
 
 export const contactService = {
-  submitContactForm: (formData) => api.post('/api/contacts', formData),
+  submitContactForm: (formData) => api.post('/contacts', formData),
 };
 
 export const heroService = {
-  getActiveSlides: () => api.get('/api/heroes/active'),
-  getFeaturedSlides: () => api.get('/api/heroes/featured'),
-  getSlideById: (id) => api.get(`/api/heroes/${id}`),
+  getActiveSlides: () => api.get('/heroes/active'),
+  getFeaturedSlides: () => api.get('/heroes/featured'),
+  getSlideById: (id) => api.get(`/heroes/${id}`),
 };
 
 export const energySolutionService = {
-  getAllSolutions: (params) => api.get('/api/energy-solutions', { params }),
-  getActiveSolutions: (params) => api.get('/api/energy-solutions/active', { params }),
-  getFeaturedSolutions: () => api.get('/api/energy-solutions/featured'),
-  getSolutionById: (id) => api.get(`/api/energy-solutions/id/${id}`),
-  getSolutionBySlug: (slug) => api.get(`/api/energy-solutions/slug/${slug}`),
+  getAllSolutions: (params) => api.get('/energy-solutions', { params }),
+  getActiveSolutions: (params) => api.get('/energy-solutions/active', { params }),
+  getFeaturedSolutions: () => api.get('/energy-solutions/featured'),
+  getSolutionById: (id) => api.get(`/energy-solutions/id/${id}`),
+  getSolutionBySlug: (slug) => api.get(`/energy-solutions/slug/${slug}`),
 };
 
 export const productService = {
-  getAllProducts: (params) => api.get('/api/products', { params }),
-  getActiveProducts: (params) => api.get('/api/products/active', { params }),
-  getFeaturedProducts: () => api.get('/api/products/featured'),
-  getProductById: (id) => api.get(`/api/products/${id}`),
-  getProductBySlug: (slug) => api.get(`/api/products/slug/${slug}`),
-  getProductsByCategory: (categoryId, params) => api.get(`/api/products/category/${categoryId}`, { params }),
-  searchProducts: (query) => api.get(`/api/products/search?q=${query}`),
-  getRelatedProducts: (id) => api.get(`/api/products/${id}/related`),
+  getAllProducts: (params) => api.get('/products', { params }),
+  getActiveProducts: (params) => api.get('/products/active', { params }),
+  getFeaturedProducts: () => api.get('/products/featured'),
+  getProductById: (id) => api.get(`/products/${id}`),
+  getProductBySlug: (slug) => api.get(`/products/slug/${slug}`),
+  getProductsByCategory: (categoryId, params) => api.get(`/products/category/${categoryId}`, { params }),
+  searchProducts: (query) => api.get(`/products/search?q=${query}`),
+  getRelatedProducts: (id) => api.get(`/products/${id}/related`),
   createProduct: (productData) => {
     // Check if productData is FormData for file uploads
     if (productData instanceof FormData) {
-      return apiFormData.post('/api/products', productData, {
+      return apiFormData.post('/products', productData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    return api.post('/api/products', productData);
+    return api.post('/products', productData);
   },
   updateProduct: (id, productData) => {
     // Check if productData is FormData for file uploads
     if (productData instanceof FormData) {
-      return apiFormData.put(`/api/products/${id}`, productData, {
+      return apiFormData.put(`/products/${id}`, productData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    return api.put(`/api/products/${id}`, productData);
+    return api.put(`/products/${id}`, productData);
   },
-  deleteProduct: (id) => api.delete(`/api/products/${id}`),
-  getProductStats: () => api.get('/api/products/stats'),
+  deleteProduct: (id) => api.delete(`/products/${id}`),
+  getProductStats: () => api.get('/products/stats'),
 };
 
 export const reviewService = {
-  getAllReviews: (params) => api.get('/api/reviews', { params }),
-  getProductReviews: (productId, params) => api.get(`/api/reviews/product/${productId}`, { params }),
-  getReview: (id) => api.get(`/api/reviews/${id}`),
-  createReview: (productId, reviewData) => api.post(`/api/reviews/product/${productId}`, reviewData),
-  updateReview: (id, reviewData) => api.put(`/api/reviews/${id}`, reviewData),
-  updateReviewStatus: (id, statusData) => api.put(`/api/reviews/${id}/status`, statusData),
-  deleteReview: (id) => api.delete(`/api/reviews/${id}`),
-  getReviewStats: () => api.get('/api/reviews/stats'),
-  markReviewHelpful: (id) => api.put(`/api/reviews/${id}/helpful`),
+  getAllReviews: (params) => api.get('/reviews', { params }),
+  getProductReviews: (productId, params) => api.get(`/reviews/product/${productId}`, { params }),
+  getReview: (id) => api.get(`/reviews/${id}`),
+  createReview: (productId, reviewData) => api.post(`/reviews/product/${productId}`, reviewData),
+  updateReview: (id, reviewData) => api.put(`/reviews/${id}`, reviewData),
+  updateReviewStatus: (id, statusData) => api.put(`/reviews/${id}/status`, statusData),
+  deleteReview: (id) => api.delete(`/reviews/${id}`),
+  getReviewStats: () => api.get('/reviews/stats'),
+  markReviewHelpful: (id) => api.put(`/reviews/${id}/helpful`),
 };
 
 export const wishlistService = {
-  getUserWishlist: () => api.get('/api/wishlist'),
-  addToWishlist: (productId) => api.post('/api/wishlist', { productId }),
-  removeFromWishlist: (productId) => api.delete(`/api/wishlist/${productId}`),
-  isInWishlist: (productId) => api.get(`/api/wishlist/check/${productId}`),
-  clearWishlist: () => api.delete('/api/wishlist'),
+  getUserWishlist: () => api.get('/wishlist'),
+  addToWishlist: (productId) => api.post('/wishlist', { productId }),
+  removeFromWishlist: (productId) => api.delete(`/wishlist/${productId}`),
+  isInWishlist: (productId) => api.get(`/wishlist/check/${productId}`),
+  clearWishlist: () => api.delete('/wishlist'),
 };
 
 export const configService = {
-  getCompanyConfig: () => api.get('/api/config/company'),
-  getCurrencyConfig: () => api.get('/api/config/currency'),
-  getSiteSettings: () => api.get('/api/config/site'),
+  getCompanyConfig: () => api.get('/config/company'),
+  getCurrencyConfig: () => api.get('/config/currency'),
+  getSiteSettings: () => api.get('/config/site'),
 };
 
 export const testimonialService = {
-  getAllTestimonials: (params) => api.get('/api/testimonials', { params }),
-  getActiveTestimonials: (params) => api.get('/api/testimonials/active', { params }),
-  getFeaturedTestimonials: () => api.get('/api/testimonials/featured'),
-  getTestimonialsByProjectType: (type) => api.get(`/api/testimonials/project-type/${type}`),
+  getAllTestimonials: (params) => api.get('/testimonials', { params }),
+  getActiveTestimonials: (params) => api.get('/testimonials/active', { params }),
+  getFeaturedTestimonials: () => api.get('/testimonials/featured'),
+  getTestimonialsByProjectType: (type) => api.get(`/testimonials/project-type/${type}`),
 };
 
 // teamService is already defined above
@@ -262,39 +262,39 @@ export const testimonialService = {
 // };
 
 export const careerService = {
-  getAllCareers: (params) => api.get('/api/careers', { params }),
-  getActiveCareers: (params) => api.get('/api/careers/active', { params }),
-  getFeaturedCareers: () => api.get('/api/careers/featured'),
-  getCareerBySlug: (slug) => api.get(`/api/careers/slug/${slug}`),
-  searchCareers: (query) => api.get(`/api/careers/search?q=${query}`),
+  getAllCareers: (params) => api.get('/careers', { params }),
+  getActiveCareers: (params) => api.get('/careers/active', { params }),
+  getFeaturedCareers: () => api.get('/careers/featured'),
+  getCareerBySlug: (slug) => api.get(`/careers/slug/${slug}`),
+  searchCareers: (query) => api.get(`/careers/search?q=${query}`),
 };
 
 export const faqService = {
-  getAllFaqs: (params) => api.get('/api/faqs', { params }),
-  getActiveFaqs: (params) => api.get('/api/faqs/active', { params }),
-  getFaqsByCategory: (categoryId) => api.get(`/api/faqs/category/${categoryId}`),
+  getAllFaqs: (params) => api.get('/faqs', { params }),
+  getActiveFaqs: (params) => api.get('/faqs/active', { params }),
+  getFaqsByCategory: (categoryId) => api.get(`/faqs/category/${categoryId}`),
 };
 
 export const categoryService = {
-  getAllCategories: (params) => api.get('/api/categories', { params }),
-  getCategoriesByType: (type) => api.get(`/api/categories/type/${type}`),
-  getFeaturedCategories: () => api.get('/api/categories/featured'),
-  getCategoryBySlug: (slug) => api.get(`/api/categories/slug/${slug}`),
+  getAllCategories: (params) => api.get('/categories', { params }),
+  getCategoriesByType: (type) => api.get(`/categories/type/${type}`),
+  getFeaturedCategories: () => api.get('/categories/featured'),
+  getCategoryBySlug: (slug) => api.get(`/categories/slug/${slug}`),
 };
 
 export const tagService = {
-  getAllTags: (params) => api.get('/api/tags', { params }),
-  getTagsByType: (type) => api.get(`/api/tags/type/${type}`),
-  getTagBySlug: (slug) => api.get(`/api/tags/slug/${slug}`),
+  getAllTags: (params) => api.get('/tags', { params }),
+  getTagsByType: (type) => api.get(`/tags/type/${type}`),
+  getTagBySlug: (slug) => api.get(`/tags/slug/${slug}`),
 };
 
 export const settingService = {
-  getPublicSettings: () => api.get('/api/settings/public'),
+  getPublicSettings: () => api.get('/settings/public'),
 };
 
 export const co2EmissionReductionService = {
-  getAllReductions: (params) => api.get('/api/co2-emission-reduction', { params }),
-  getActiveReductions: () => api.get('/api/co2-emission-reduction/active', {
+  getAllReductions: (params) => api.get('/co2-emission-reduction', { params }),
+  getActiveReductions: () => api.get('/co2-emission-reduction/active', {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -303,16 +303,16 @@ export const co2EmissionReductionService = {
     // Add timestamp to prevent caching
     params: { _t: new Date().getTime() }
   }),
-  getReductionById: (id) => api.get(`/api/co2-emission-reduction/${id}`),
-  createReduction: (data) => api.post('/api/co2-emission-reduction', data),
-  updateReduction: (id, data) => api.put(`/api/co2-emission-reduction/${id}`, data),
-  deleteReduction: (id) => api.delete(`/api/co2-emission-reduction/${id}`),
-  reorderReductions: (items) => api.put('/api/co2-emission-reduction/reorder', { items }),
+  getReductionById: (id) => api.get(`/co2-emission-reduction/${id}`),
+  createReduction: (data) => api.post('/co2-emission-reduction', data),
+  updateReduction: (id, data) => api.put(`/co2-emission-reduction/${id}`, data),
+  deleteReduction: (id) => api.delete(`/co2-emission-reduction/${id}`),
+  reorderReductions: (items) => api.put('/co2-emission-reduction/reorder', { items }),
 };
 
 export const intelligentSolutionService = {
-  getAllSolutions: (params) => api.get('/api/intelligent-solution', { params }),
-  getActiveSolutions: () => api.get('/api/intelligent-solution/active', {
+  getAllSolutions: (params) => api.get('/intelligent-solution', { params }),
+  getActiveSolutions: () => api.get('/intelligent-solution/active', {
     headers: {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache',
@@ -321,11 +321,11 @@ export const intelligentSolutionService = {
     // Add timestamp to prevent caching
     params: { _t: new Date().getTime() }
   }),
-  getSolutionById: (id) => api.get(`/api/intelligent-solution/${id}`),
-  createSolution: (data) => api.post('/api/intelligent-solution', data),
-  updateSolution: (id, data) => api.put(`/api/intelligent-solution/${id}`, data),
-  deleteSolution: (id) => api.delete(`/api/intelligent-solution/${id}`),
-  reorderSolutions: (items) => api.put('/api/intelligent-solution/reorder', { items }),
+  getSolutionById: (id) => api.get(`/intelligent-solution/${id}`),
+  createSolution: (data) => api.post('/intelligent-solution', data),
+  updateSolution: (id, data) => api.put(`/intelligent-solution/${id}`, data),
+  deleteSolution: (id) => api.delete(`/intelligent-solution/${id}`),
+  reorderSolutions: (items) => api.put('/intelligent-solution/reorder', { items }),
 };
 
 // Create a separate axios instance for chatbot API
@@ -337,10 +337,10 @@ const chatbotApi = axios.create({
 });
 
 export const chatService = {
-  sendMessage: (message, conversationId) => chatbotApi.post('/api/chat/message', { message, conversationId }),
-  getConversationHistory: (conversationId) => chatbotApi.get(`/api/chat/history/${conversationId}`),
-  clearConversation: (conversationId) => chatbotApi.delete(`/api/chat/history/${conversationId}`),
-  calculateROI: (monthlyBill, state) => chatbotApi.post('/api/chat/roi', { monthlyBill, state }),
+  sendMessage: (message, conversationId) => chatbotApi.post('/chat/message', { message, conversationId }),
+  getConversationHistory: (conversationId) => chatbotApi.get(`/chat/history/${conversationId}`),
+  clearConversation: (conversationId) => chatbotApi.delete(`/chat/history/${conversationId}`),
+  calculateROI: (monthlyBill, state) => chatbotApi.post('/chat/roi', { monthlyBill, state }),
 };
 
 export default api;
