@@ -3,6 +3,9 @@ import { FiPlus, FiEdit2, FiTrash2, FiEye, FiRefreshCw, FiSearch, FiFilter, FiUp
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
 const ProjectsAdmin = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -100,7 +103,7 @@ const ProjectsAdmin = () => {
         ...(filterStatus && { status: filterStatus })
       });
 
-      const response = await axios.get(`/api/projects?${params}`);
+      const response = await axios.get(`${API_BASE_URL}/projects?${params}`);
       if (response.data.success) {
         setProjects(response.data.data);
         setTotalPages(response.data.pagination.pages);
@@ -115,7 +118,7 @@ const ProjectsAdmin = () => {
 
   const fetchStats = async () => {
     try {
-      const response = await axios.get('/api/projects/stats');
+      const response = await axios.get(`${API_BASE_URL}/projects/stats`);
       if (response.data.success) {
         setStats(response.data.data);
       }

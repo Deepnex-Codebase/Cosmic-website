@@ -1,5 +1,6 @@
 import api from './api';
 
+// Define API path using api service
 const API_BASE_URL = '/services';
 
 // Get all services with pagination and filtering

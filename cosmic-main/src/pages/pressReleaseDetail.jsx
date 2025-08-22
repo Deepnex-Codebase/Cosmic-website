@@ -3,6 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { Calendar, ArrowLeft, User2, Tag, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
 import axios from 'axios';
 
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
 // Import the fallback press releases data
 import { samplePressReleases } from './pr';
 
@@ -17,7 +20,7 @@ const PressReleaseDetail = () => {
       try {
         setLoading(true);
         // Try to fetch from API first
-        const response = await axios.get(`/api/press-releases/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/press-releases/${id}`);
         if (response.data) {
           const prData = response.data.data || response.data;
           setPressRelease(prData);
@@ -25,7 +28,7 @@ const PressReleaseDetail = () => {
           // Fetch related press releases
           try {
             // Get all press releases
-            const allPRResponse = await axios.get('/api/press-releases');
+            const allPRResponse = await axios.get(`${API_BASE_URL}/press-releases`);
             const allPRs = allPRResponse.data.data || allPRResponse.data;
             
             // Filter related press releases (excluding current one)

@@ -1,9 +1,10 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.cosmicpowertech.com';
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
 // Get team celebration data
 export const getTeamCelebration = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/cms/team-celebration`);
+    const response = await fetch(`${API_BASE_URL}/cms/team-celebration`);
     if (!response.ok) {
       throw new Error('Failed to fetch team celebration data');
     }
@@ -17,7 +18,7 @@ export const getTeamCelebration = async () => {
 // Update team celebration data
 export const updateTeamCelebration = async (data) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/cms/team-celebration`, {
+    const response = await fetch(`${API_BASE_URL}/cms/team-celebration`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ export const uploadTeamCelebrationImage = async (file) => {
     const formData = new FormData();
     formData.append('image', file);
     
-    const response = await fetch(`${API_BASE_URL}/api/cms/team-celebration/upload`, {
+    const response = await fetch(`${API_BASE_URL}/cms/team-celebration/upload`, {
       method: 'POST',
       body: formData,
     });

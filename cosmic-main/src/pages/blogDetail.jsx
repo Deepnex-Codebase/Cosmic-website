@@ -4,6 +4,9 @@ import { Calendar, ArrowLeft, User2, Tag, Share2, Facebook, Twitter, Linkedin } 
 import { useAppContext } from '../context/AppContext';
 import axios from 'axios';
 
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
 // Import the fallback blog posts data
 import { fallbackBlogPosts } from './blog';
 
@@ -19,8 +22,8 @@ const BlogDetail = () => {
     const fetchBlogPost = async () => {
       try {
         setLoading(true);
-        // Try to fetch from API first using the relative URL with Vite proxy
-        const response = await axios.get(`/api/blogs/${id}`);
+        // Try to fetch from API first
+        const response = await axios.get(`${API_BASE_URL}/blogs/${id}`);
         if (response.data) {
           const blogData = response.data.data || response.data;
           setPost(blogData);
@@ -28,7 +31,7 @@ const BlogDetail = () => {
           // Fetch related posts (posts with similar category or tags)
           try {
             // Get all blog posts
-            const allPostsResponse = await axios.get('/api/blogs');
+            const allPostsResponse = await axios.get(`${API_BASE_URL}/blogs`);
             const allPosts = allPostsResponse.data.data || allPostsResponse.data;
             
             // Filter related posts (excluding current post)

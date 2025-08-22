@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-// API base URL - using relative URL for proxy to work correctly
-const API_BASE_URL = '/api';
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
 // Create context
 const AppContext = createContext();
@@ -263,7 +263,7 @@ export const AppProvider = ({ children }) => {
     setLoading(prev => ({ ...prev, faqs: true }));
     try {
       // Use the config service endpoint to fetch FAQs from solar_company_profile.json
-      const response = await axios.get(`${API_BASE_URL}/api/config/section/faq`);
+      const response = await axios.get(`${API_BASE_URL}/config/section/faq`);
       // Check if response.data.data exists, otherwise use response.data directly
       const faqData = response.data.data || response.data || [];
       setFaqs(faqData);

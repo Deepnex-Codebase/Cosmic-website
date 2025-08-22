@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { getDeliveryProcesses } from '../services/processService';
 
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
 
 /* ------------------------- fallback data ------------------------- */
 const fallbackProjectImages = [
@@ -143,7 +146,7 @@ const ProjectsPage = () => {
       setLoading(true);
       
       // Try to fetch from API first
-      const response = await axios.get('/api/projects?limit=50');
+      const response = await axios.get(`${API_BASE_URL}/projects?limit=50`);
       
       if (response.data && response.data.success && response.data.data) {
           const apiProjects = response.data.data;

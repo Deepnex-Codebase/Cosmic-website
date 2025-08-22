@@ -45,7 +45,7 @@ const PressReleaseCMS = () => {
   const statuses = ['draft', 'published', 'archived'];
 
   // API Base URL from environment variables
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
   // Fetch press releases
   const fetchPressReleases = async () => {

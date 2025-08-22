@@ -48,8 +48,8 @@ export default function PressReleasePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // API Base URL
-  const API_BASE_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:8000/api';
+  // Define API_BASE_URL using environment variable
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
   // Fetch press releases from API
   useEffect(() => {

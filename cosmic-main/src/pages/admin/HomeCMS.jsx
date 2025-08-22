@@ -9,7 +9,8 @@ import HeroSectionCMS from '../../components/admin/HeroSectionCMS';
 import GreenFutureCMS from '../../components/admin/GreenFutureCMS';
 import SolarJourneyCMS from '../../components/admin/SolarJourneyCMS';
 import FaqCMS from '../../components/admin/FaqCMS';
-import { API_BASE_URL } from '../../config/constants';
+// Define API_BASE_URL using environment variable
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
 const HomeCMS = () => {
   // Icon mapping for safe component rendering
@@ -87,7 +88,7 @@ const HomeCMS = () => {
   const fetchHeroes = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('/api/heroes');
+      const response = await axios.get(`${API_BASE_URL}/heroes`);
       if (response.data.success) {
         setHeroes(response.data.data);
       }
@@ -102,7 +103,7 @@ const HomeCMS = () => {
   const fetchPanIndiaPresence = async () => {
     setPanIndiaLoading(true);
     try {
-      const response = await axios.get('/api/pan-india-presence');
+      const response = await axios.get(`${API_BASE_URL}/pan-india-presence`);
       if (response.data.success && response.data.data.length > 0) {
         const data = response.data.data[0];
         setPanIndiaData(data);

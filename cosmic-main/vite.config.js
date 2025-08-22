@@ -9,13 +9,13 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'https://api.cosmicpowertech.com',
+        target: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api')
       },
       '/uploads': {
-        target: 'https://api.cosmicpowertech.com',
+        target: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
         changeOrigin: true,
         secure: false
       }

@@ -138,7 +138,7 @@ const TestimonialVideo = () => {
   // Fetch hero section data from API
   const fetchHeroSectionData = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/cms/hero-section`);
+      const response = await axios.get(`${API_BASE_URL}/cms/hero-section`);
       if (response.data) {
         setHeroSectionData(response.data);
       }

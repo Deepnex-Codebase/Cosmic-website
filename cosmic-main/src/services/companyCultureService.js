@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.API_BASE_URL || 'https://api.cosmicpowertech.com';
+// Define API_URL using environment variable
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
 const api = axios.create({
-  baseURL: `${API_URL}/api/cms/company-culture`,
+  baseURL: `${API_URL}/cms/company-culture`,
   headers: {
     'Content-Type': 'application/json',
   },
