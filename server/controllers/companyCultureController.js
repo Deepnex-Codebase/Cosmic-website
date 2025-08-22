@@ -2,6 +2,7 @@ const CompanyCulture = require('../models/CompanyCulture');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { getFullUrl } = require('../utils/urlHelper');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -213,11 +214,13 @@ const uploadImage = async (req, res) => {
     }
     
     const imageUrl = `/uploads/company-culture/${req.file.filename}`;
+    const fullUrl = getFullUrl(imageUrl);
     
     res.json({
       success: true,
       message: 'Image uploaded successfully',
-      imageUrl: imageUrl
+      imageUrl: imageUrl,
+      fullUrl: fullUrl
     });
   } catch (error) {
     console.error('Error uploading image:', error);

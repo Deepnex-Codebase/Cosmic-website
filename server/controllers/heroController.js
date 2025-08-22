@@ -2,6 +2,7 @@ const Hero = require('../models/Hero');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { getFullUrl } = require('../utils/urlHelper');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -46,7 +47,7 @@ exports.getActiveHeroes = async (req, res) => {
     const processedHeroes = heroes.map(hero => {
       const heroObj = hero.toObject();
       if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
-        heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.img}`;
+        heroObj.fullUrl = getFullUrl(heroObj.img);
       }
       return heroObj;
     });
