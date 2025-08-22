@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E67E22;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F39C12;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="solar-pattern" width="20" height="20" patternUnits="userSpaceOnUse">
+      <rect width="18" height="18" x="1" y="1" fill="#2C3E50" rx="1" />
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="100" cy="100" r="98" fill="url(#bg)" />
+  
+  <!-- Solar Panel -->
+  <g transform="translate(60,60) rotate(-15)">
+    <rect width="100" height="80" fill="url(#solar-pattern)" rx="4" />
+    <!-- Frame -->
+    <rect width="100" height="80" fill="none" stroke="#7F8C8D" stroke-width="4" rx="4" />
+    <!-- Mount -->
+    <path d="M20 80 L10 100 L90 100 L80 80" fill="#95A5A6" />
+  </g>
+  
+  <!-- Tools -->
+  <g transform="translate(120,120) rotate(45)">
+    <!-- Wrench -->
+    <path d="M0 0 C0 0 10 -5 20 -5 L25 0 L20 5 C10 5 0 0 0 0 Z" fill="#7F8C8D" />
+    <circle cx="25" cy="0" r="8" fill="#7F8C8D" />
+  </g>
+  
+  <!-- Screwdriver -->
+  <g transform="translate(70,130) rotate(-30)">
+    <rect x="0" y="0" width="40" height="8" fill="#E74C3C" rx="2" />
+    <path d="M40 4 L50 0 L50 8 Z" fill="#C0392B" />
+  </g>
+</svg>

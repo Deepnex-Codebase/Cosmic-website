@@ -1,0 +1,37 @@
+{
+  "calculator": "Solar Savings Logic Engine v1.0",
+  "purpose": "Estimate rooftop‑solar size, cost, savings and ROI for any Indian home in a single function call.",
+  "configuration": {
+    "tariff": {
+      "Gujarat": 8.7,
+      "Maharashtra": 7.00,
+      "Rajasthan": 6.20,
+      "Delhi": 4.50,
+      "Default": 6.50
+    },
+    "yield": {
+      "Rajasthan": 1750,
+      "Gujarat": 1650,
+      "Maharashtra": 1550,
+      "Default": 1500
+    },
+    "costPerKW": {
+      "≤3": 45000,
+      "4‑10": 51000,
+      ">10": 55000
+    },
+    "subsidy": {
+      "≤3": 14588,
+      "4‑10": 78000,
+      ">10": 0
+    },
+    "roofAreaPerKW": 95,
+    "panelDegradationRate": 0.005,
+    "tariffEscalationRate": 0.05,
+    "co2FactorKgPerKWh": 0.9,
+    "loan": {
+      "interestRate": 0.11,
+      "maxTenureYears": 7
+    }
+  }
+}

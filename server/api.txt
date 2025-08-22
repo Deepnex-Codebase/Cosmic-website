@@ -1,0 +1,377 @@
+# Solar Mitr API Endpoints
+
+Base URL: http://localhost:5000
+
+## Chat Endpoints
+
+### Process Chat Message
+- **URL**: `/api/chat/message`
+- **Method**: `POST`
+- **Description**: Process a chat message and return a response
+- **Request Body**:
+  ```json
+  {
+    "message": "Hello, I'm interested in solar panels for my home",
+    "conversationId": "conv_123456789" // Optional for new conversations
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "message": "Hi there! I'm Solar Mitr, your solar energy assistant from Cosmic Solar. It's great to hear you're interested in solar panels for your home. Solar energy is a fantastic way to reduce your electricity bills and contribute to a greener planet. Could you tell me if you're a homeowner, business owner, or society manager? This will help me provide you with the most relevant information.",
+      "conversationId": "conv_123456789"
+    }
+  }
+  ```
+
+### Calculate ROI
+- **URL**: `/api/chat/roi`
+- **Method**: `POST`
+- **Description**: Calculate ROI based on user inputs
+- **Request Body**:
+  ```json
+  {
+    "monthlyBill": 5000,
+    "state": "Maharashtra"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "systemSize": 4,
+      "estimatedGeneration": 16,
+      "monthlySavings": 3840,
+      "annualSavings": 46080,
+      "systemCost": 180000,
+      "subsidyAmount": 18000,
+      "netCost": 162000,
+      "paybackPeriod": "3.5",
+      "roi": "28.4"
+    }
+  }
+  ```
+
+### Get Conversation History
+- **URL**: `/api/chat/history/:conversationId`
+- **Method**: `GET`
+- **Description**: Get conversation history for a specific conversation ID
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "role": "system",
+        "content": "You are Solar Mitr, an AI assistant for Cosmic Solar..."
+      },
+      {
+        "role": "user",
+        "content": "Hello, I'm interested in solar panels for my home"
+      },
+      {
+        "role": "assistant",
+        "content": "Hi there! I'm Solar Mitr, your solar energy assistant..."
+      }
+    ]
+  }
+  ```
+
+### Clear Conversation History
+- **URL**: `/api/chat/history/:conversationId`
+- **Method**: `DELETE`
+- **Description**: Clear conversation history for a specific conversation ID
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "cleared": true
+    }
+  }
+  ```
+
+## Lead Endpoints
+
+### Create Lead
+- **URL**: `/api/lead`
+- **Method**: `POST`
+- **Description**: Create a new lead
+- **Request Body**:
+  ```json
+  {
+    "name": "Rajesh Kumar",
+    "phone": "9876543210",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "intent": "site_survey",
+    "userType": "homeowner",
+    "electricityBill": 5000,
+    "rooftopAvailable": true,
+    "estimatedSystemSize": 4,
+    "estimatedSavings": 3840,
+    "estimatedSubsidy": 18000,
+    "conversationId": "conv_123456789"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "_id": "60f1a5b3e6b3f32b4c9a1234",
+      "name": "Rajesh Kumar",
+      "phone": "9876543210",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "intent": "site_survey",
+      "userType": "homeowner",
+      "electricityBill": 5000,
+      "rooftopAvailable": true,
+      "estimatedSystemSize": 4,
+      "estimatedSavings": 3840,
+      "estimatedSubsidy": 18000,
+      "conversationId": "conv_123456789",
+      "createdAt": "2023-12-01T12:00:00.000Z"
+    }
+  }
+  ```
+
+### Submit Lead (Alias for Create Lead)
+- **URL**: `/api/lead/submit`
+- **Method**: `POST`
+- **Description**: Submit a lead (alias for create lead - as mentioned in PRD)
+- **Request Body**: Same as Create Lead
+- **Response**: Same as Create Lead
+
+### Get All Leads
+- **URL**: `/api/lead`
+- **Method**: `GET`
+- **Description**: Get all leads
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "count": 1,
+    "data": [
+      {
+        "_id": "60f1a5b3e6b3f32b4c9a1234",
+        "name": "Rajesh Kumar",
+        "phone": "9876543210",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "intent": "site_survey",
+        "userType": "homeowner",
+        "electricityBill": 5000,
+        "rooftopAvailable": true,
+        "estimatedSystemSize": 4,
+        "estimatedSavings": 3840,
+        "estimatedSubsidy": 18000,
+        "conversationId": "conv_123456789",
+        "createdAt": "2023-12-01T12:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+### Get Lead Statistics
+- **URL**: `/api/lead/stats`
+- **Method**: `GET`
+- **Description**: Get lead statistics
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "totalLeads": 10,
+      "intentStats": [
+        { "_id": "site_survey", "count": 5 },
+        { "_id": "subsidy_application", "count": 3 },
+        { "_id": "expert_call", "count": 2 }
+      ],
+      "userTypeStats": [
+        { "_id": "homeowner", "count": 7 },
+        { "_id": "business_owner", "count": 2 },
+        { "_id": "society_manager", "count": 1 }
+      ],
+      "cityStats": [
+        { "_id": "Mumbai", "count": 4 },
+        { "_id": "Pune", "count": 3 },
+        { "_id": "Delhi", "count": 2 },
+        { "_id": "Bangalore", "count": 1 }
+      ]
+    }
+  }
+  ```
+
+### Get Lead by ID
+- **URL**: `/api/lead/:id`
+- **Method**: `GET`
+- **Description**: Get a lead by ID
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "_id": "60f1a5b3e6b3f32b4c9a1234",
+      "name": "Rajesh Kumar",
+      "phone": "9876543210",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "intent": "site_survey",
+      "userType": "homeowner",
+      "electricityBill": 5000,
+      "rooftopAvailable": true,
+      "estimatedSystemSize": 4,
+      "estimatedSavings": 3840,
+      "estimatedSubsidy": 18000,
+      "conversationId": "conv_123456789",
+      "createdAt": "2023-12-01T12:00:00.000Z"
+    }
+  }
+  ```
+
+### Update Lead by ID
+- **URL**: `/api/lead/:id`
+- **Method**: `PUT`
+- **Description**: Update a lead by ID
+- **Request Body**:
+  ```json
+  {
+    "phone": "9876543211",
+    "intent": "expert_call"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "_id": "60f1a5b3e6b3f32b4c9a1234",
+      "name": "Rajesh Kumar",
+      "phone": "9876543211",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "intent": "expert_call",
+      "userType": "homeowner",
+      "electricityBill": 5000,
+      "rooftopAvailable": true,
+      "estimatedSystemSize": 4,
+      "estimatedSavings": 3840,
+      "estimatedSubsidy": 18000,
+      "conversationId": "conv_123456789",
+      "createdAt": "2023-12-01T12:00:00.000Z"
+    }
+  }
+  ```
+
+### Delete Lead by ID
+- **URL**: `/api/lead/:id`
+- **Method**: `DELETE`
+- **Description**: Delete a lead by ID
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {}
+  }
+  ```
+
+## Config Endpoints
+
+### Get Company Profile Data
+- **URL**: `/api/config/company`
+- **Method**: `GET`
+- **Description**: Get company profile data
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "company": { ... },
+      "offerings": { ... },
+      "whyChooseUs": [ ... ],
+      "subsidyInfo": { ... },
+      "roiCalculator": { ... },
+      "faq": [ ... ],
+      "cta": { ... },
+      "testimonials": [ ... ]
+    }
+  }
+  ```
+
+### Get Specific Section of Company Profile
+- **URL**: `/api/config/section/:section`
+- **Method**: `GET`
+- **Description**: Get specific section of company profile data
+- **Example**: `/api/config/section/faq`
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "question": "How much can I save with solar?",
+        "answer": "Most customers save between 70-90% on their electricity bills. The exact savings depend on your current consumption, system size, and local solar conditions."
+      },
+      ...
+    ]
+  }
+  ```
+
+### Get Offerings for a Specific Customer Type
+- **URL**: `/api/config/offerings/:customerType`
+- **Method**: `GET`
+- **Description**: Get offerings for a specific customer type
+- **Example**: `/api/config/offerings/residential`
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "title": "Residential Solar Solutions",
+      "description": "Custom solar solutions for homeowners that reduce electricity bills by up to 90% and increase property value.",
+      "minSystemSize": 1,
+      "maxSystemSize": 10,
+      "features": [ ... ],
+      "benefits": [ ... ],
+      "pricing": { ... }
+    }
+  }
+  ```
+
+### Get Subsidy Information for a Specific Customer Type
+- **URL**: `/api/config/subsidy/:customerType`
+- **Method**: `GET`
+- **Description**: Get subsidy information for a specific customer type
+- **Example**: `/api/config/subsidy/residential`
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "eligibility": "All residential customers with connected load up to 10kW",
+      "subsidy": [ ... ],
+      "documents": [ ... ],
+      "process": "Our team handles the entire subsidy application process on your behalf, from documentation to disbursement."
+    }
+  }
+  ```
+
+### Get ROI Calculator Data
+- **URL**: `/api/config/roi-calculator`
+- **Method**: `GET`
+- **Description**: Get ROI calculator data
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "assumptions": { ... },
+      "systemSizing": { ... }
+    }
+  }
+  ```
