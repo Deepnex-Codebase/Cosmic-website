@@ -2,7 +2,6 @@ const Hero = require('../models/Hero');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
-const { getFullUrl } = require('../utils/urlHelper');
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -23,9 +22,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
-  },
   fileFilter: function (req, file, cb) {
     // Check file type
     if (file.mimetype.startsWith('image/')) {
@@ -50,7 +46,7 @@ exports.getActiveHeroes = async (req, res) => {
     const processedHeroes = heroes.map(hero => {
       const heroObj = hero.toObject();
       if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
-        heroObj.fullUrl = getFullUrl(heroObj.img);
+        heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.img}`;
       }
       return heroObj;
     });

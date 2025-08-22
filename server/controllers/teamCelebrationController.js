@@ -1,7 +1,6 @@
 const TeamCelebration = require('../models/TeamCelebration');
 const path = require('path');
 const fs = require('fs');
-const { getFullUrl } = require('../utils/urlHelper');
 
 // Get team celebration data
 const getTeamCelebration = async (req, res) => {
@@ -110,8 +109,7 @@ const uploadTeamCelebrationImage = async (req, res) => {
     }
 
     const imageUrl = `/uploads/team-celebration/${req.file.filename}`;
-    const fullUrl = getFullUrl(imageUrl);
-    res.json({ imageUrl, fullUrl });
+    res.json({ imageUrl });
   } catch (error) {
     console.error('Error uploading team celebration image:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

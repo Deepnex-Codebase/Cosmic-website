@@ -43,19 +43,10 @@ const navbarConfigurationRoutes = require('./routes/navbarConfigurationRoutes');
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: '*', // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(morgan('dev'));
-
-// Custom middleware for transforming image URLs
-const transformImageUrls = require('./middleware/imageUrlMiddleware');
-app.use(transformImageUrls);
 
 // Serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));

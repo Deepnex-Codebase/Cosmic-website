@@ -68,7 +68,7 @@ const fileFilter = (req, file, cb) => {
 const directorUpload = multer({
   storage: directorStorage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
   },
   fileFilter: fileFilter
 });
@@ -76,7 +76,7 @@ const directorUpload = multer({
 const teamUpload = multer({
   storage: teamStorage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
   },
   fileFilter: fileFilter
 });
@@ -97,7 +97,7 @@ const aboutStorage = multer.diskStorage({
 const aboutUpload = multer({
   storage: aboutStorage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
   },
   fileFilter: fileFilter
 });
@@ -118,7 +118,7 @@ const productStorage = multer.diskStorage({
 const productUpload = multer({
   storage: productStorage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
   },
   fileFilter: fileFilter
 });
@@ -147,7 +147,7 @@ const footerStorage = multer.diskStorage({
 const footerUpload = multer({
   storage: footerStorage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
   },
   fileFilter: fileFilter
 });
