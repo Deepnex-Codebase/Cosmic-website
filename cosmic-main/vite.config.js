@@ -9,15 +9,26 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, '/api')
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
       },
       '/uploads': {
-        target: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
         changeOrigin: true,
-        secure: false
+        secure: false,
+        rewrite: (path) => path.replace(/^\/uploads/, '/uploads'),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
       }
     }
   }

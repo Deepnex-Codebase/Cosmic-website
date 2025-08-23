@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaEye } from 'react-icons/fa';
-// Define API_BASE_URL using environment variable
+
+// Use environment variable directly
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
 const TimelineCMS = () => {
@@ -100,6 +101,49 @@ const TimelineCMS = () => {
     setShowAddForm(true);
   };
 
+  // Handle image compression before upload
+  const compressImage = async (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          
+          canvas.toBlob((blob) => {
+            resolve(new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            }));
+          }, 'image/jpeg', 0.7); // Compress with 70% quality
+        };
+      };
+    });
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,7 +158,9 @@ const TimelineCMS = () => {
       submitData.append('isActive', formData.isActive);
       
       if (imageFile) {
-        submitData.append('backgroundImage', imageFile);
+        // Compress image before uploading
+        const compressedImage = await compressImage(imageFile);
+        submitData.append('backgroundImage', compressedImage);
       } else if (formData.backgroundImage && !imageFile) {
         submitData.append('backgroundImage', formData.backgroundImage);
       }
@@ -122,11 +168,15 @@ const TimelineCMS = () => {
       let response;
       if (editingItem) {
         response = await axios.put(`${API_BASE_URL}/cms/timeline/${editingItem}`, submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
+          maxContentLength: 10 * 1024 * 1024, // 10MB max content length
+          maxBodyLength: 10 * 1024 * 1024 // 10MB max body length
         });
       } else {
         response = await axios.post(`${API_BASE_URL}/cms/timeline`, submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
+          maxContentLength: 10 * 1024 * 1024, // 10MB max content length
+          maxBodyLength: 10 * 1024 * 1024 // 10MB max body length
         });
       }
 

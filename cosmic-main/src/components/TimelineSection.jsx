@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
-// Define API_BASE_URL using environment variable
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+// Import environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+console.log('API_BASE_URL:', API_BASE_URL);
 
 // Default fallback data
 const defaultSlides = [
@@ -47,14 +48,37 @@ const TimelineSection = () => {
       console.log('Fetching timeline data...');
       const response = await axios.get(`${API_BASE_URL}/cms/timeline`);
       console.log('Timeline API response:', response.data);
+      // Log the backgroundImage paths to debug
+      if (response.data.success && response.data.data.length > 0) {
+        response.data.data.forEach(item => {
+          console.log('Original backgroundImage path:', item.backgroundImage);
+        });
+      }
       if (response.data.success && response.data.data.length > 0) {
         // Transform API data to match component structure
-        const timelineData = response.data.data.map(item => ({
-          year: item.year,
-          title: item.title,
-          description: item.description,
-          bg: item.backgroundImage ? `${API_BASE_URL}${item.backgroundImage}` : 'https://unsplash.it/1920/500?image=11'
-        }));
+        const timelineData = response.data.data.map(item => {
+          let bgImage = 'https://unsplash.it/1920/500?image=11';
+          
+          if (item.backgroundImage) {
+            if (item.backgroundImage.startsWith('http')) {
+              bgImage = item.backgroundImage;
+            } else {
+              // Remove any leading slashes and construct the URL
+              // Also remove duplicate 'uploads/' if present
+              const cleanPath = item.backgroundImage.replace(/^\/+/, '').replace(/^uploads\//, '');
+              bgImage = `/uploads/${cleanPath}`;
+            }
+          }
+          
+          console.log('Constructed background image URL:', bgImage);
+          
+          return {
+            year: item.year,
+            title: item.title,
+            description: item.description,
+            bg: bgImage
+          };
+        });
         console.log('Transformed timeline data:', timelineData);
         setSlides(timelineData);
       } else {

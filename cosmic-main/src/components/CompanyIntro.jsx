@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
 export default function CompanyIntro() {
   const [companyIntroData, setCompanyIntroData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,10 +16,12 @@ export default function CompanyIntro() {
   useEffect(() => {
     const fetchCompanyIntroData = async () => {
       try {
-        const response = await fetch('/api/company-intro/active');
+        const response = await fetch(`${API_BASE_URL}/company-intro/active`);
         const result = await response.json();
+        console.log('Company Intro API Response:', result);
         if (result.success && result.data) {
           setCompanyIntroData(result.data);
+          console.log('Company Intro Data Set:', result.data);
         }
       } catch (error) {
         console.error('Error fetching company intro data:', error);
@@ -47,7 +51,12 @@ export default function CompanyIntro() {
         loop
         playsInline
       >
-        <source src={companyIntroData?.backgroundVideo || "/videos/about.mp4"} type="video/mp4" />
+        <source src={companyIntroData?.backgroundVideo ? (companyIntroData.backgroundVideo.includes('/uploads/') ? companyIntroData.backgroundVideo : `/uploads/${companyIntroData.backgroundVideo}`) : "/videos/about.mp4"} type="video/mp4" />
+        {/* Adding console log for debugging */}
+        {companyIntroData?.backgroundVideo && console.log('Final video path:', companyIntroData.backgroundVideo.includes('/uploads/') ? companyIntroData.backgroundVideo : `/uploads/${companyIntroData.backgroundVideo}`)}
+        
+        
+        
         Your browser does not support the video tag.
       </video>
 

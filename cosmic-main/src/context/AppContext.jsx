@@ -64,7 +64,7 @@ export const AppProvider = ({ children }) => {
       
       // Fetch hero slides
       console.log('Fetching hero slides...');
-      const heroRes = await axios.get('/api/heroes/active');
+      const heroRes = await axios.get(`${API_BASE_URL}/heroes/active`);
       console.log('Hero slides API response:', heroRes.data);
       console.log('Hero slides API response data:', JSON.stringify(heroRes.data.data, null, 2));
       
@@ -91,7 +91,7 @@ export const AppProvider = ({ children }) => {
       
       // Fetch blog posts
       try {
-        const blogRes = await axios.get('/api/blogs?status=published');
+        const blogRes = await axios.get(`${API_BASE_URL}/blogs?status=published`);
         if (blogRes.data && blogRes.data.data) {
           setBlogPosts(blogRes.data.data);
         }

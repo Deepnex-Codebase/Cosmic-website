@@ -24,10 +24,13 @@ const Footer = () => {
     fetchFooterConfiguration()
   }, [])
 
+  // Define API_BASE_URL using environment variable
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
   const fetchFooterConfiguration = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/footer-config')
+      const response = await fetch(`${API_BASE_URL}/footer-config`)
       if (!response.ok) {
         throw new Error('Failed to fetch footer configuration')
       }

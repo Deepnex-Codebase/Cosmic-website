@@ -171,7 +171,7 @@ const HomeCMS = () => {
         formDataToSend.append('mapImage', panIndiaFormData.mapImage);
       }
 
-      const response = await axios.post('/api/pan-india-presence', formDataToSend, {
+      const response = await axios.post(`${API_BASE_URL}/pan-india-presence`, formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -266,11 +266,11 @@ const HomeCMS = () => {
 
       let response;
       if (editingHero) {
-        response = await axios.put(`/api/heroes/${editingHero._id}`, submitData, {
+        response = await axios.put(`${API_BASE_URL}/heroes/${editingHero._id}`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
-        response = await axios.post('/api/heroes', submitData, {
+        response = await axios.post(`${API_BASE_URL}/heroes`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
@@ -319,7 +319,7 @@ const HomeCMS = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this hero slide?')) {
       try {
-        const response = await axios.delete(`/api/heroes/${id}`);
+        const response = await axios.delete(`${API_BASE_URL}/heroes/${id}`);
         if (response.data.success) {
           toast.success('Hero slide deleted successfully!');
           fetchHeroes();
@@ -333,7 +333,7 @@ const HomeCMS = () => {
 
   const toggleStatus = async (id) => {
     try {
-      const response = await axios.patch(`/api/heroes/${id}/toggle-status`);
+      const response = await axios.patch(`${API_BASE_URL}/heroes/${id}/toggle-status`);
       if (response.data.success) {
         toast.success('Hero slide status updated!');
         fetchHeroes();
@@ -366,7 +366,7 @@ const HomeCMS = () => {
     }));
 
     try {
-      const response = await axios.patch('/api/heroes/update-order', { heroes: updateData });
+      const response = await axios.patch(`${API_BASE_URL}/heroes/update-order`, { heroes: updateData });
       if (response.data.success) {
         toast.success('Hero slide order updated!');
         fetchHeroes();

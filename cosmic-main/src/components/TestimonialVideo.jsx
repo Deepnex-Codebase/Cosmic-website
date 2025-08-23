@@ -138,7 +138,9 @@ const TestimonialVideo = () => {
   // Fetch hero section data from API
   const fetchHeroSectionData = async () => {
     try {
+      console.log('Fetching hero section data from:', `${API_BASE_URL}/cms/hero-section`);
       const response = await axios.get(`${API_BASE_URL}/cms/hero-section`);
+      console.log('Hero section API response:', response.data);
       if (response.data) {
         setHeroSectionData(response.data);
       }
@@ -161,13 +163,17 @@ const TestimonialVideo = () => {
   // Fetch company stats from API
   const fetchCompanyStats = async () => {
     try {
+      console.log('Fetching company stats from:', `${API_BASE_URL}/cms/company-stats`);
       const response = await axios.get(`${API_BASE_URL}/cms/company-stats`);
+      console.log('Company stats API response:', response.data);
       if (response.data && response.data.length > 0) {
         // Sort by order field
         const sortedStats = response.data.sort((a, b) => (a.order || 0) - (b.order || 0));
         setCompanyStats(sortedStats);
+        console.log('Setting company stats:', sortedStats);
         setAnimatedValues(new Array(sortedStats.length).fill(0));
       } else {
+        console.log('No company stats found, using defaults');
         setCompanyStats(defaultCompanyStats);
         setAnimatedValues(new Array(defaultCompanyStats.length).fill(0));
       }
