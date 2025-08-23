@@ -127,6 +127,13 @@ const AdminAbout = () => {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validImageTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (JPEG, PNG, GIF, or WEBP)');
+      return;
+    }
+
     try {
       setUploadingImage(true);
       const result = await uploadExpertiseImage(file);
@@ -134,7 +141,15 @@ const AdminAbout = () => {
       toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error('Failed to upload image');
+      // Display specific error message if available
+      if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to upload image. Please try again.');
+      }
+      
+      // Reset the file input
+      e.target.value = '';
     } finally {
       setUploadingImage(false);
     }

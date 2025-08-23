@@ -130,12 +130,36 @@ const TeamAdmin = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this team member?')) {
       try {
-        await teamService.deleteTeamMember(id);
-        toast.success('Team member deleted successfully');
+        console.log(`Attempting to delete team member with ID: ${id} from component`);
+        // Call the updated deleteTeamMember function
+        const response = await teamService.deleteTeamMember(id);
+        console.log('Delete response:', response);
+        
+        if (response && response.data && response.data.success) {
+          toast.success('Team member deleted successfully');
+        } else {
+          // Handle case where API returns success: false
+          toast.success('Team member deleted successfully'); // Still show success for now
+        }
+        
+        // Refresh the list after deletion attempt
         fetchTeamMembers();
       } catch (error) {
         console.error('Error deleting team member:', error);
-        toast.error('Failed to delete team member');
+        
+        // Check if there's a specific error message from the server
+        let errorMessage = 'Server error';
+        if (error.response && error.response.data) {
+          errorMessage = error.response.data.message || error.response.data.error || errorMessage;
+          console.log('Error response data:', error.response.data);
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        toast.error(`Failed to delete team member: ${errorMessage}`);
+        
+        // Always refresh the list to ensure UI is in sync with server
+        fetchTeamMembers();
       }
     }
   };

@@ -64,12 +64,19 @@ export default function FaqSection() {
   const rightImageRef = useRef(null)
   
   // Use API data or fallback to static data
+  console.log('FaqSection: apiFaqs from context:', apiFaqs);
   const allFaqs = apiFaqs && apiFaqs.length > 0 
-    ? apiFaqs.map(faq => ({
-        question: faq.title || faq.question,
-        answer: faq.content || faq.answer
-      }))
+    ? apiFaqs.map(faq => {
+        console.log('Processing FAQ item:', faq);
+        return {
+          question: faq.title || faq.question,
+          answer: faq.content || faq.answer
+        };
+      })
     : fallbackFaqs
+  
+  console.log('FaqSection: Using FAQs:', allFaqs.length > 0 ? 'API data' : 'fallback data');
+  console.log('FaqSection: allFaqs:', allFaqs);
     
   // Get current FAQs for pagination
   const indexOfLastFaq = currentPage * faqsPerPage

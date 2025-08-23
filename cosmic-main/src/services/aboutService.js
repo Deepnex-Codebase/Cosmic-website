@@ -2,10 +2,18 @@ import axios from 'axios';
 // Define API_BASE_URL using environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
+// Create axios instance for about API
+const aboutApi = axios.create({
+  baseURL: `${API_BASE_URL}/cms/about`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 // Get about page data
 export const getAboutPage = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/cms/about`);
+    const response = await aboutApi.get('/');
     return response.data;
   } catch (error) {
     console.error('Error fetching about page:', error);
@@ -35,7 +43,7 @@ export const getAboutPage = async () => {
 // Update about page data
 export const updateAboutPage = async (aboutData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/cms/about`, aboutData);
+    const response = await aboutApi.put('/', aboutData);
     return response.data;
   } catch (error) {
     console.error('Error updating about page:', error);
@@ -46,22 +54,36 @@ export const updateAboutPage = async (aboutData) => {
 // Upload expertise image
 export const uploadExpertiseImage = async (imageFile) => {
   try {
+    // Check file size before uploading (limit to 2MB)
+    if (imageFile.size > 2 * 1024 * 1024) {
+      throw new Error('Image size exceeds 2MB limit. Please compress the image or choose a smaller one.');
+    }
+    
     const formData = new FormData();
     formData.append('image', imageFile);
     
-    const response = await axios.post(
-      `${API_BASE_URL}/cms/about/expertise/upload`, 
+    // Use the aboutApi instance with the correct endpoint
+    const response = await aboutApi.post(
+      '/expertise/upload', 
       formData,
       {
         headers: {
           'Content-Type': 'multipart/form-data'
-        }
+        },
+        // Add timeout to prevent long-running requests
+        timeout: 30000
       }
     );
     
     return response.data;
   } catch (error) {
     console.error('Error uploading expertise image:', error);
+    // Provide more specific error messages
+    if (error.response && error.response.status === 413) {
+      throw new Error('Image size is too large for the server. Please use an image smaller than 2MB.');
+    } else if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
     throw error;
   }
 };
@@ -69,8 +91,8 @@ export const uploadExpertiseImage = async (imageFile) => {
 // Add expertise item
 export const addExpertiseItem = async (itemData) => {
   try {
-    const response = await axios.post(
-      `${API_BASE_URL}/cms/about/expertise/item`,
+    const response = await aboutApi.post(
+      '/expertise/item',
       itemData
     );
     
@@ -84,8 +106,8 @@ export const addExpertiseItem = async (itemData) => {
 // Remove expertise item
 export const removeExpertiseItem = async (itemId) => {
   try {
-    const response = await axios.delete(
-      `${API_BASE_URL}/cms/about/expertise/item/${itemId}`
+    const response = await aboutApi.delete(
+      `/expertise/item/${itemId}`
     );
     
     return response.data;

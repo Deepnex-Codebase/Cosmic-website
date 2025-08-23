@@ -9,14 +9,74 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  // Add default timeout to prevent hanging requests
+  timeout: 30000,
 });
 
 // Create a multipart form data instance for file uploads
 const apiFormData = axios.create({
   baseURL: API_BASE_URL,
+  // Add default timeout to prevent hanging requests
+  timeout: 30000,
+  // Set max content length and max body length for file uploads
+  maxContentLength: 10 * 1024 * 1024, // 10MB
+  maxBodyLength: 10 * 1024 * 1024, // 10MB
 });
 
 import { getAuthToken } from '../utils/cookies';
+
+// Add response interceptor to handle common errors
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      // Handle specific error codes
+      switch (error.response.status) {
+        case 413:
+          console.error('Request entity too large:', error.response.data);
+          error.message = 'The file size is too large. Please use a smaller file (max 2MB).';
+          break;
+        case 500:
+          console.error('Server error:', error.response.data);
+          break;
+        case 401:
+          console.error('Unauthorized access:', error.response.data);
+          // You could redirect to login page here if needed
+          break;
+      }
+    } else if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout:', error);
+      error.message = 'The request timed out. Please try again.';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Apply the same interceptor to apiFormData
+apiFormData.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response) {
+      // Handle specific error codes
+      switch (error.response.status) {
+        case 413:
+          console.error('Request entity too large:', error.response.data);
+          error.message = 'The file size is too large. Please use a smaller file (max 2MB).';
+          break;
+        case 500:
+          console.error('Server error:', error.response.data);
+          break;
+        case 401:
+          console.error('Unauthorized access:', error.response.data);
+          break;
+      }
+    } else if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout:', error);
+      error.message = 'The request timed out. Please try again.';
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Add request interceptor to include auth token when available
 api.interceptors.request.use(
@@ -29,6 +89,36 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// Add response interceptor to handle errors consistently
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle server errors (500) or other errors
+    if (error.response && error.response.status === 500) {
+      console.error('Server error:', error.response.data);
+      // You can add custom handling for 500 errors here
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Apply the same interceptors to the form data instance
+apiFormData.interceptors.request.use(
+  api.interceptors.request.handlers[0].fulfilled,
+  api.interceptors.request.handlers[0].rejected
+);
+
+apiFormData.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Handle server errors (500) or other errors
+    if (error.response && error.response.status === 500) {
+      console.error('Server error in form data request:', error.response.data);
+    }
+    return Promise.reject(error);
+  }
 );
 
 // API services for different endpoints
@@ -144,7 +234,62 @@ export const teamService = {
     }
     return api.put(`/team/${id}`, teamMemberData);
   },
-  deleteTeamMember: (id) => api.delete(`/team/${id}`),
+  deleteTeamMember: (id) => {
+    // Add specific error handling for team member deletion
+    console.log(`Attempting to delete team member with ID: ${id}`);
+    
+    // Get auth token and log it (masked for security)
+    const token = getAuthToken() || localStorage.getItem('token');
+    console.log('Auth token available:', token ? 'Yes (token exists)' : 'No (token missing)');
+    
+    // Try using the Vite proxy instead of direct URL
+    // This will use the proxy configured in vite.config.js
+    const url = `/api/team/${id}`;
+    console.log('Making DELETE request to:', url, '(using Vite proxy)');
+    
+    return api.delete(url)
+    .then(response => {
+      console.log('Delete successful, response:', response.data);
+      return response;
+    })
+    .catch(error => {
+      console.error(`Error in deleteTeamMember for ID ${id}:`, error);
+      // Add additional logging for server errors
+      if (error.response) {
+        console.error('Error status:', error.response.status);
+        console.error('Error headers:', error.response.headers);
+        console.error('Server response data:', error.response.data);
+        
+        // Try direct URL as fallback if proxy fails
+        if (error.response.status === 500) {
+          console.log('Trying direct URL as fallback...');
+          const directUrl = `https://api.cosmicpowertech.com/api/team/${id}`;
+          
+          return axios({
+            method: 'DELETE',
+            url: directUrl,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          })
+          .then(response => {
+            console.log('Fallback delete successful, response:', response.data);
+            return response;
+          })
+          .catch(fallbackError => {
+            console.error('Fallback also failed:', fallbackError);
+            throw fallbackError;
+          });
+        }
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+      } else {
+        console.error('Error message:', error.message);
+      }
+      throw error; // Re-throw the error for the component to handle
+    });
+  },
   updateTeamMemberOrder: (id, direction) => api.put(`/team/order/${id}/${direction}`),
 };
 

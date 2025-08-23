@@ -263,10 +263,22 @@ export const AppProvider = ({ children }) => {
     setLoading(prev => ({ ...prev, faqs: true }));
     try {
       // Use the config service endpoint to fetch FAQs from solar_company_profile.json
+      console.log('Fetching FAQs from API...');
       const response = await axios.get(`${API_BASE_URL}/config/section/faq`);
+      console.log('FAQ API response:', response.data);
+      
       // Check if response.data.data exists, otherwise use response.data directly
       const faqData = response.data.data || response.data || [];
+      console.log('FAQ data being set to state:', faqData);
       setFaqs(faqData);
+      
+      // Verify after setting
+      setTimeout(() => {
+        console.log('Current faqs state after setting:', faqs);
+        console.log('Number of FAQs available:', faqs ? faqs.length : 0);
+        console.log('Are FAQs an array?', Array.isArray(faqs));
+      }, 100);
+      
       setErrors(prev => ({ ...prev, faqs: null }));
     } catch (error) {
       console.error('Error fetching FAQs:', error);
@@ -346,6 +358,18 @@ export const AppProvider = ({ children }) => {
     // Fetch CO2 emission reductions and intelligent solutions
     fetchCO2Reductions();
     fetchIntelligentSolutions();
+    // Explicitly fetch FAQs separately
+    fetchFaqs();
+    
+    // Additional verification for FAQs after a delay
+    setTimeout(() => {
+      console.log('Verifying FAQs state after initialization:', faqs);
+      console.log('Number of FAQs available after initialization:', faqs ? faqs.length : 0);
+      if (faqs && faqs.length === 0) {
+        console.log('No FAQs found, fetching again...');
+        fetchFaqs();
+      }
+    }, 2000);
   }, []);
 
   const value = {
