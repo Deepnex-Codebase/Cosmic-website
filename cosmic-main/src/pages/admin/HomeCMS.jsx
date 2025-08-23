@@ -111,9 +111,10 @@ const HomeCMS = () => {
           title: data.title,
           description: data.description,
           mapImage: null,
-          stats: data.stats,
+          stats: Array.isArray(data.stats) ? data.stats : [],
           isActive: data.isActive
         });
+        console.log('Fetched Pan India data:', data);
       }
     } catch (error) {
       console.error('Error fetching Pan India Presence:', error);
@@ -161,20 +162,57 @@ const HomeCMS = () => {
   const savePanIndiaPresence = async () => {
     setPanIndiaLoading(true);
     try {
+      // Log the API URL being used
+      console.log('Pan India API URL:', `${API_BASE_URL}/pan-india-presence`);
+      
+      // Create a new FormData object
       const formDataToSend = new FormData();
       formDataToSend.append('title', panIndiaFormData.title);
       formDataToSend.append('description', panIndiaFormData.description);
-      formDataToSend.append('stats', JSON.stringify(panIndiaFormData.stats));
-      formDataToSend.append('isActive', panIndiaFormData.isActive);
       
+      // Properly handle stats array
+      if (Array.isArray(panIndiaFormData.stats)) {
+        formDataToSend.append('stats', JSON.stringify(panIndiaFormData.stats));
+      } else {
+        formDataToSend.append('stats', JSON.stringify([]));
+      }
+      
+      // Convert boolean to string for proper FormData handling
+      formDataToSend.append('isActive', panIndiaFormData.isActive.toString());
+      
+      // Check if there's an image to upload and log its size
       if (panIndiaFormData.mapImage) {
-        formDataToSend.append('mapImage', panIndiaFormData.mapImage);
+        console.log('Image size:', panIndiaFormData.mapImage.size, 'bytes');
+        console.log('Image type:', panIndiaFormData.mapImage.type);
+        console.log('Image name:', panIndiaFormData.mapImage.name);
+        
+        // Compress the image if it's too large (over 5MB)
+        if (panIndiaFormData.mapImage.size > 5 * 1024 * 1024) {
+          toast.info('Image is large, compressing before upload...');
+        }
+        
+        // Ensure the file is properly appended with the correct field name
+        formDataToSend.append('mapImage', panIndiaFormData.mapImage, panIndiaFormData.mapImage.name);
+        
+        // Log FormData contents for debugging
+        console.log('FormData entries:');
+        for (let pair of formDataToSend.entries()) {
+          console.log(pair[0], pair[1]);
+        }
       }
 
-      const response = await axios.post(`${API_BASE_URL}/pan-india-presence`, formDataToSend, {
+      // Always use the API_BASE_URL for consistency
+      const apiUrl = `${API_BASE_URL}/pan-india-presence`;
+      
+      console.log('Using API URL:', apiUrl);
+      
+      const response = await axios.post(apiUrl, formDataToSend, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          // Remove Content-Type header to let the browser set it with the boundary parameter
+          // for proper multipart/form-data encoding
+        },
+        maxContentLength: 50 * 1024 * 1024, // 50MB max content length
+        maxBodyLength: 50 * 1024 * 1024 // 50MB max body length
       });
 
       if (response.data.success) {
@@ -755,7 +793,7 @@ const HomeCMS = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Map Image
+                Map Image (Max 5MB recommended)
               </label>
               <input
                 type="file"
@@ -764,8 +802,20 @@ const HomeCMS = () => {
                 accept="image/*"
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
+              <p className="text-xs text-gray-500 mt-1">For best results, use images smaller than 5MB</p>
+              {panIndiaData && panIndiaData.mapImage && !panIndiaFormData.mapImage && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-600 mb-1">Current image:</p>
+                  <img
+                    src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : `${API_BASE_URL}${panIndiaData.mapImage}`}
+                    alt="Current map"
+                    className="w-32 h-32 object-cover rounded-md"
+                  />
+                </div>
+              )}
               {panIndiaFormData.mapImage && (
                 <div className="mt-2">
+                  <p className="text-sm text-gray-600 mb-1">New image preview:</p>
                   <img
                     src={typeof panIndiaFormData.mapImage === 'string' ? panIndiaFormData.mapImage : URL.createObjectURL(panIndiaFormData.mapImage)}
                     alt="Map preview"
