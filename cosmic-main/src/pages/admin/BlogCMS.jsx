@@ -105,7 +105,13 @@ const BlogCMS = () => {
       };
       
       setFormData(newFormData);
-      setImagePreview(editingBlog.featuredImage || '');
+      
+      // Ensure the image preview URL has the correct format
+      let imageUrl = editingBlog.featuredImage || '';
+      if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('data:')) {
+        imageUrl = `https://api.cosmicpowertech.com${imageUrl}`;
+      }
+      setImagePreview(imageUrl);
     }
   }, [editingBlog]);
 
@@ -114,7 +120,12 @@ const BlogCMS = () => {
   // Handle image upload
   const handleImageUpload = async (file) => {
     try {
-      const response = await blogService.uploadImage(file);
+      // Create FormData and add folder parameter for proper image path
+      const formDataToSend = new FormData();
+      formDataToSend.append('image', file);
+      formDataToSend.append('folder', 'navbar');
+      
+      const response = await blogService.uploadImage(formDataToSend);
       console.log('Upload response:', response);
       
       if (response.success) {
@@ -141,6 +152,11 @@ const BlogCMS = () => {
         if (!imageUrl) {
           setLoading(false);
           return;
+        }
+        
+        // Ensure the image URL has the correct format
+        if (!imageUrl.startsWith('http')) {
+          imageUrl = `https://api.cosmicpowertech.com${imageUrl}`;
         }
       }
       
@@ -395,7 +411,13 @@ const BlogCMS = () => {
                       <div className="flex items-center">
                         <img
                           className="h-12 w-12 rounded-lg object-cover mr-4"
-                          src={blog.featuredImage || '/placeholder-image.jpg'}
+                          src={
+                            blog.featuredImage
+                              ? (blog.featuredImage.startsWith('http')
+                                ? blog.featuredImage
+                                : `https://api.cosmicpowertech.com${blog.featuredImage}`)
+                              : '/placeholder-image.jpg'
+                          }
                           alt={blog.title}
                           onError={(e) => {
                             e.target.src = '/placeholder-image.jpg';
@@ -563,6 +585,9 @@ const BlogCMS = () => {
                           src={imagePreview}
                           alt="Preview"
                           className="h-32 w-auto rounded-lg object-cover"
+                          onError={(e) => {
+                            e.target.src = '/placeholder-image.jpg';
+                          }}
                         />
                       </div>
                     )}

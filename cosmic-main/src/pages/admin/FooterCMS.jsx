@@ -28,6 +28,9 @@ const FooterCMS = () => {
   const [editingSocial, setEditingSocial] = useState(null);
   const [selectedSectionId, setSelectedSectionId] = useState(null);
 
+  // Define API_BASE_URL using environment variable
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
   useEffect(() => {
     fetchFooterConfiguration();
   }, []);
@@ -35,7 +38,7 @@ const FooterCMS = () => {
   const fetchFooterConfiguration = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/footer-config');
+      const response = await fetch(`${API_BASE_URL}/footer-config`);
       if (!response.ok) {
         throw new Error('Failed to fetch footer configuration');
       }
@@ -52,7 +55,7 @@ const FooterCMS = () => {
   const updateGlobalSettings = async (updatedData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +80,7 @@ const FooterCMS = () => {
   const addSection = async (sectionData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/sections`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/sections`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +107,7 @@ const FooterCMS = () => {
   const updateSection = async (sectionId, sectionData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/sections/${sectionId}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/sections/${sectionId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -133,7 +136,7 @@ const FooterCMS = () => {
     
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/sections/${sectionId}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/sections/${sectionId}`, {
         method: 'DELETE',
       });
       
@@ -154,7 +157,7 @@ const FooterCMS = () => {
   const addLink = async (sectionId, linkData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/sections/${sectionId}/links`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/sections/${sectionId}/links`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +185,7 @@ const FooterCMS = () => {
   const updateLink = async (sectionId, linkId, linkData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/sections/${sectionId}/links/${linkId}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/sections/${sectionId}/links/${linkId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -212,7 +215,7 @@ const FooterCMS = () => {
     
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/sections/${sectionId}/links/${linkId}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/sections/${sectionId}/links/${linkId}`, {
         method: 'DELETE',
       });
       
@@ -233,7 +236,7 @@ const FooterCMS = () => {
   const addSocialLink = async (socialData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/social-links`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/social-links`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -260,7 +263,7 @@ const FooterCMS = () => {
   const updateSocialLink = async (socialId, socialData) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/social-links/${socialId}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/social-links/${socialId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -289,7 +292,7 @@ const FooterCMS = () => {
     
     try {
       setSaving(true);
-      const response = await fetch(`/api/footer-config/${footerConfig._id}/social-links/${socialId}`, {
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/social-links/${socialId}`, {
         method: 'DELETE',
       });
       

@@ -97,9 +97,13 @@ const VideoHeroCMS = () => {
       });
       
       if (response.data.success) {
+        // Format the video path to use the API base URL instead of localhost
+        const videoPath = response.data.data.videoPath;
+        const formattedVideoPath = videoPath.replace(/http:\/\/localhost:[0-9]+\/uploads\/videos\//, `${API_BASE_URL.replace(/\/api$/, '')}/uploads/videos/`);
+        
         setFormData(prev => ({
           ...prev,
-          videoSource: response.data.data.videoPath
+          videoSource: formattedVideoPath
         }));
         toast.success('Video uploaded successfully!');
       }
@@ -445,7 +449,12 @@ const VideoHeroCMS = () => {
           <h3 className="text-lg font-semibold mb-4">Preview</h3>
           <div className="relative w-full overflow-hidden rounded-lg">
             <video
-              src={formData.videoSource.startsWith('http') ? formData.videoSource : `${window.location.origin}${formData.videoSource}`}
+              src={formData.videoSource.startsWith('http') ? 
+                formData.videoSource : 
+                formData.videoSource.startsWith('/uploads') ? 
+                  `${API_BASE_URL.replace(/\/api$/, '')}${formData.videoSource}` : 
+                  `${window.location.origin}${formData.videoSource}`
+              }
               className="w-full object-cover"
               style={{ height: formData.heights.desktop }}
               autoPlay={formData.videoSettings.autoPlay}

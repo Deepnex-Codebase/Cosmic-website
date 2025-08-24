@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, Save, X, ArrowUp, ArrowDown, Eye, EyeOff } from 'lucide-react';
+import api from '../../services/api';
 
 const FormCMS = () => {
   const [formConfig, setFormConfig] = useState(null);
@@ -17,8 +18,8 @@ const FormCMS = () => {
   const fetchFormConfiguration = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/form-config');
-      const result = await response.json();
+      const response = await api.get('/form-config');
+      const result = response.data;
       
       if (result.success) {
         setFormConfig(result.data);
@@ -35,15 +36,8 @@ const FormCMS = () => {
   const updateFormConfiguration = async (updatedConfig) => {
     try {
       setSaving(true);
-      const response = await fetch(`/api/form-config/${formConfig._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedConfig)
-      });
-
-      const result = await response.json();
+      const response = await api.put(`/form-config/${formConfig._id}`, updatedConfig);
+      const result = response.data;
       
       if (result.success) {
         setFormConfig(result.data);
@@ -96,37 +90,34 @@ const FormCMS = () => {
 
     try {
       if (isNew) {
-        const response = await fetch(`/api/form-config/${formConfig._id}/form-types`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formType)
-        });
+        const response = await api.post(`/form-config/${formConfig._id}/form-types`, formType);
+        const result = response.data;
         
-        const result = await response.json();
         if (result.success) {
           setFormConfig(result.data);
           setShowAddFormType(false);
           setEditingFormType(null);
+        } else {
+          alert(`Error: ${result.message}`);
         }
       } else {
-        const response = await fetch(`/api/form-config/${formConfig._id}/form-types/${formType._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formType)
-        });
+        const updatedFormTypes = formConfig.formTypes.map(ft => 
+          ft._id === formType._id ? formType : ft
+        );
         
-        const result = await response.json();
-        if (result.success) {
-          setFormConfig(result.data);
+        const updatedConfig = {
+          ...formConfig,
+          formTypes: updatedFormTypes
+        };
+        
+        const success = await updateFormConfiguration(updatedConfig);
+        if (success) {
           setEditingFormType(null);
         }
       }
     } catch (error) {
       console.error('Error saving form type:', error);
+      alert(`Error saving form type: ${error.message}`);
     }
   };
 
@@ -134,16 +125,17 @@ const FormCMS = () => {
     if (!confirm('Are you sure you want to delete this form type?')) return;
     
     try {
-      const response = await fetch(`/api/form-config/${formConfig._id}/form-types/${formTypeId}`, {
-        method: 'DELETE'
-      });
+      const response = await api.delete(`/form-config/${formConfig._id}/form-types/${formTypeId}`);
       
-      const result = await response.json();
+      const result = response.data;
       if (result.success) {
         setFormConfig(result.data);
+      } else {
+        alert(`Error: ${result.message}`);
       }
     } catch (error) {
       console.error('Error deleting form type:', error);
+      alert(`Error deleting form type: ${error.message}`);
     }
   };
 

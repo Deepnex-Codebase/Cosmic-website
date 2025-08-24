@@ -33,7 +33,7 @@ export default function Navbar() {
   }, []);
   
   // Fetch navbar configuration from API
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
   useEffect(() => {
     const fetchNavbarConfig = async () => {
@@ -89,7 +89,7 @@ export default function Navbar() {
       <div className="w-4/5 mx-auto flex h-16 sm:h-20 items-center justify-between">
         <Link to="/" className="flex-shrink-0 select-none hover-pulse">
           <img 
-            src={navbarConfig?.logo?.url || "/logo.png"} 
+            src={navbarConfig?.logo?.url ? (navbarConfig.logo.url.startsWith('http') ? navbarConfig.logo.url : `${API_BASE_URL.replace(/\/api$/, '')}${navbarConfig.logo.url}`) : "/logo.png"} 
             alt={navbarConfig?.logo?.alt || "Logo"} 
             className={navbarConfig?.logo?.height || "h-8 sm:h-10 w-auto"} 
           />

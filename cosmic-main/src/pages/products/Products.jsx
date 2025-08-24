@@ -56,7 +56,14 @@ const Products = () => {
               <Link to={`/products/product-detail/${product._id}`}>
                 <div className="relative h-64 overflow-hidden group">
                   <img 
-                    src={product.image ? (product.image.startsWith('/uploads/') ? product.image : `/uploads/${product.image}`) : '/placeholder-product.jpg'} 
+                    src={product.image ? 
+                      (product.image.startsWith('http') ? 
+                        product.image : 
+                        (product.image.startsWith('/uploads/') ? 
+                          `https://api.cosmicpowertech.com${product.image}` : 
+                          `https://api.cosmicpowertech.com/uploads/${product.image}`)
+                      ) : 
+                      '/placeholder-product.jpg'} 
                     alt={product.title} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
@@ -65,7 +72,12 @@ const Products = () => {
                   />
                   {product.hoverImage && (
                     <img 
-                      src={product.hoverImage.startsWith('/uploads/') ? product.hoverImage : `/uploads/${product.hoverImage}`} 
+                      src={product.hoverImage.startsWith('http') ? 
+                        product.hoverImage : 
+                        (product.hoverImage.startsWith('/uploads/') ? 
+                          `https://api.cosmicpowertech.com${product.hoverImage}` : 
+                          `https://api.cosmicpowertech.com/uploads/${product.hoverImage}`)
+                      } 
                       alt={`${product.title} hover`} 
                       className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       onError={(e) => {

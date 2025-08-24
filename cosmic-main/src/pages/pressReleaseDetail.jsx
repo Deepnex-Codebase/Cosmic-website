@@ -133,7 +133,11 @@ const PressReleaseDetail = () => {
           {/* Featured Image */}
           <div className="rounded-xl overflow-hidden mb-6 sm:mb-8 shadow-md">
             <img 
-              src={pressRelease.featuredImage || pressRelease.image} 
+              src={
+                (pressRelease.featuredImage && !pressRelease.featuredImage.startsWith('http')) 
+                  ? `https://api.cosmicpowertech.com${pressRelease.featuredImage}` 
+                  : (pressRelease.featuredImage || pressRelease.image)
+              } 
               alt={pressRelease.title} 
               className="w-full h-[250px] sm:h-[350px] md:h-[400px] object-cover"
             />
@@ -208,7 +212,11 @@ const PressReleaseDetail = () => {
                     className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <img 
-                      src={relatedPR.featuredImage || relatedPR.image || '/placeholder-pr.jpg'} 
+                      src={
+                        (relatedPR.featuredImage && !relatedPR.featuredImage.startsWith('http')) 
+                          ? `https://api.cosmicpowertech.com${relatedPR.featuredImage}` 
+                          : (relatedPR.featuredImage || relatedPR.image || '/placeholder-pr.jpg')
+                      } 
                       alt={relatedPR.title} 
                       className="w-full h-40 object-cover"
                     />

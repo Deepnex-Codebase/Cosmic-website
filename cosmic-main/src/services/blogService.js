@@ -117,11 +117,9 @@ export const blogService = {
   },
 
   // Upload blog image
-  uploadImage: async (imageFile) => {
+  uploadImage: async (formData) => {
     try {
-      const formData = new FormData();
-      formData.append('image', imageFile);
-      
+      // formData already contains image and folder parameters from the component
       const response = await blogApi.post('/blogs/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

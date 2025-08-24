@@ -4,7 +4,21 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 
 // Define API_BASE_URL using environment variable
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com')
+
+// Base URL for images (without /api)
+const IMAGE_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com').replace(/\/api$/, '');
+
+// Helper function to format image URLs
+const formatImageUrl = (imageUrl) => {
+  if (!imageUrl) return '';
+  if (imageUrl.startsWith('http')) return imageUrl;
+  // Remove /api from path if it exists
+  const baseUrl = IMAGE_BASE_URL.endsWith('/') ? IMAGE_BASE_URL.slice(0, -1) : IMAGE_BASE_URL;
+  // Remove /api from the image path if it exists
+  const cleanImagePath = imageUrl.startsWith('/api/') ? imageUrl.replace('/api/', '/') : imageUrl;
+  return `${baseUrl}${cleanImagePath.startsWith('/') ? '' : '/'}${cleanImagePath}`;
+};
 
 const ProjectsAdmin = () => {
   const [projects, setProjects] = useState([]);
@@ -153,14 +167,16 @@ const ProjectsAdmin = () => {
         submitData.append('images', image);
       });
 
+      // Add folder parameter for image uploads
+      submitData.append('folder', 'navbar');
       let response;
       if (editingProject) {
-        response = await axios.put(`/api/projects/${editingProject._id}`, submitData, {
+        response = await axios.put(`${API_BASE_URL}/projects/${editingProject._id}`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Project updated successfully!');
       } else {
-        response = await axios.post('/api/projects', submitData, {
+        response = await axios.post(`${API_BASE_URL}/projects`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Project created successfully!');
@@ -184,7 +200,7 @@ const ProjectsAdmin = () => {
     if (!window.confirm('Are you sure you want to delete this project?')) return;
 
     try {
-      const response = await axios.delete(`/api/projects/${id}`);
+      const response = await axios.delete(`${API_BASE_URL}/projects/${id}`);
       if (response.data.success) {
         toast.success('Project deleted successfully!');
         fetchProjects();
@@ -449,7 +465,7 @@ const ProjectsAdmin = () => {
             <div key={project._id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
               <div className="relative">
                 <img
-                  src={project.featuredImage || '/placeholder-project.jpg'}
+                  src={formatImageUrl(project.featuredImage) || '/placeholder-project.jpg'}
                   alt={project.title}
                   className="w-full h-48 object-cover rounded-t-lg"
                 />
@@ -703,7 +719,7 @@ const ProjectsAdmin = () => {
                   />
                   {featuredImagePreview && (
                     <img
-                      src={featuredImagePreview}
+                      src={featuredImagePreview.startsWith('blob:') ? featuredImagePreview : formatImageUrl(featuredImagePreview)}
                       alt="Featured preview"
                       className="mt-2 h-32 w-32 object-cover rounded-lg"
                     />
@@ -726,7 +742,7 @@ const ProjectsAdmin = () => {
                       {additionalImagePreviews.map((preview, index) => (
                         <img
                           key={index}
-                          src={preview}
+                          src={typeof preview === 'string' && !preview.startsWith('blob:') ? formatImageUrl(preview) : preview}
                           alt={`Preview ${index + 1}`}
                           className="h-20 w-20 object-cover rounded-lg"
                         />

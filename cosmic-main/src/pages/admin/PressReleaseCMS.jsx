@@ -109,7 +109,16 @@ const PressReleaseCMS = () => {
       };
       
       setFormData(newFormData);
-      setImagePreview(editingPR.featuredImage || '');
+      
+      // Set image preview with proper URL formatting
+      if (editingPR.featuredImage) {
+        const imageUrl = editingPR.featuredImage.startsWith('http') 
+          ? editingPR.featuredImage 
+          : `https://api.cosmicpowertech.com${editingPR.featuredImage}`;
+        setImagePreview(imageUrl);
+      } else {
+        setImagePreview('');
+      }
     }
   }, [editingPR]);
 
@@ -158,6 +167,8 @@ const PressReleaseCMS = () => {
       
       // Append image file if selected
       if (imageFile) {
+        // Set folder path for image upload to match the desired URL structure
+        formDataToSend.append('folder', 'navbar'); // This will make the image path include 'navbar' folder
         formDataToSend.append('featuredImage', imageFile);
       }
       
@@ -363,7 +374,7 @@ const PressReleaseCMS = () => {
                       <div className="flex items-center">
                         <img
                           className="h-12 w-12 rounded-lg object-cover mr-4"
-                          src={pr.featuredImage || '/placeholder-image.jpg'}
+                          src={pr.featuredImage ? (pr.featuredImage.startsWith('http') ? pr.featuredImage : `https://api.cosmicpowertech.com${pr.featuredImage}`) : '/placeholder-image.jpg'}
                           alt={pr.title}
                           onError={(e) => {
                             e.target.src = '/placeholder-image.jpg';
@@ -539,7 +550,7 @@ const PressReleaseCMS = () => {
                     {imagePreview && (
                       <div className="mt-2">
                         <img
-                          src={imagePreview}
+                          src={imagePreview.startsWith('data:') ? imagePreview : (imagePreview.startsWith('http') ? imagePreview : `https://api.cosmicpowertech.com${imagePreview}`)}
                           alt="Preview"
                           className="h-32 w-auto rounded-lg object-cover"
                         />

@@ -316,9 +316,14 @@ const ProjectsPage = () => {
                     {project.category || (idx % 2 === 0 ? 'Residential' : 'Commercial')}
                   </div>
                   <img
-                    src={project.featuredImage || project.image}
+                    src={project.featuredImage ? 
+                      (project.featuredImage.startsWith('http') ? project.featuredImage : `https://api.cosmicpowertech.com${project.featuredImage.startsWith('/') ? '' : '/'}${project.featuredImage.replace(/^\/api\//, '/')}`) : 
+                      (project.image ? (project.image.startsWith('http') ? project.image : `https://api.cosmicpowertech.com${project.image.startsWith('/') ? '' : '/'}${project.image.replace(/^\/api\//, '/')}`) : '')}
                     alt={project.title || `Project ${idx + 1}`}
                     className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                    }}
                   />
                 </div>
                 <div className="p-5">

@@ -1,5 +1,4 @@
 // src/components/CompanyIntro.jsx
-import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
@@ -7,11 +6,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpow
 export default function CompanyIntro() {
   const [companyIntroData, setCompanyIntroData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const fadeUpVariant = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } },
-  };
 
   useEffect(() => {
     const fetchCompanyIntroData = async () => {
@@ -51,10 +45,27 @@ export default function CompanyIntro() {
         loop
         playsInline
       >
-        <source src={companyIntroData?.backgroundVideo ? (companyIntroData.backgroundVideo.includes('/uploads/') ? companyIntroData.backgroundVideo : `/uploads/${companyIntroData.backgroundVideo}`) : "/videos/about.mp4"} type="video/mp4" />
+        <source 
+          src={
+            companyIntroData?.backgroundVideo 
+              ? (companyIntroData.backgroundVideo.startsWith('http') 
+                ? companyIntroData.backgroundVideo 
+                : companyIntroData.backgroundVideo.startsWith('/uploads/') 
+                  ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
+                  : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/${companyIntroData.backgroundVideo.replace(/^\//, '')}`
+                )
+              : "/videos/about.mp4"
+          } 
+          type="video/mp4" 
+        />
         {/* Adding console log for debugging */}
-        {companyIntroData?.backgroundVideo && console.log('Final video path:', companyIntroData.backgroundVideo.includes('/uploads/') ? companyIntroData.backgroundVideo : `/uploads/${companyIntroData.backgroundVideo}`)}
-        
+        {companyIntroData?.backgroundVideo && console.log('Final video path:', 
+          companyIntroData.backgroundVideo.startsWith('http') 
+            ? companyIntroData.backgroundVideo 
+            : companyIntroData.backgroundVideo.startsWith('/uploads/') 
+              ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
+              : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/${companyIntroData.backgroundVideo.replace(/^\//, '')}`
+        )}
         
         
         Your browser does not support the video tag.
@@ -64,24 +75,12 @@ export default function CompanyIntro() {
       <div className="absolute inset-0 bg-black/70 z-10" />
 
       {/* Content */}
-      <motion.div
-        variants={fadeUpVariant}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        className="relative z-20 flex flex-col justify-center h-full px-6 max-w-4xl text-left"
-      >
-        <motion.p
-          variants={fadeUpVariant}
-          className="text-[#cae28e] text-base md:text-lg font-semibold border-l-4 border-[#cae28e] pl-3 mb-4 font-space-grotesk"
-        >
+      <div className="relative z-20 flex flex-col justify-center h-full px-6 max-w-4xl text-left">
+        <p className="text-[#cae28e] text-base md:text-lg font-semibold border-l-4 border-[#cae28e] pl-3 mb-4 font-space-grotesk">
           {companyIntroData?.subtitle || "The Cosmic Powertech"}
-        </motion.p>
+        </p>
 
-        <motion.h1
-          variants={fadeUpVariant}
-          className="text-white text-3xl md:text-5xl font-bold leading-snug md:leading-snug mb-4 font-space-grotesk"
-        >
+        <h1 className="text-white text-3xl md:text-5xl font-bold leading-snug md:leading-snug mb-4 font-space-grotesk">
           {companyIntroData?.title ? (
             <div 
               dangerouslySetInnerHTML={{ __html: companyIntroData.title }}
@@ -93,15 +92,12 @@ export default function CompanyIntro() {
               <span className="text-[#cae28e]">High-performance</span> solar panels
             </>
           )}
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          variants={fadeUpVariant}
-          className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl"
-        >
+        <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-2xl">
           {companyIntroData?.description || "We are committed to delivering cutting-edge solar solutions that transform how businesses and homes harness energy. Our expertise in high-performance solar technology sets new industry standards for efficiency and reliability."}
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
     </section>
   );
 }

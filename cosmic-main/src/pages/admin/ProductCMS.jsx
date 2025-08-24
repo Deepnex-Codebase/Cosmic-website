@@ -240,16 +240,22 @@ const ProductCMS = () => {
         console.log(`Frontend - Adding specification: ${key} = ${value}`);
       });
       
-      // Add images
+      // Add images with folder parameter for proper image path
       if (images.image) {
         formDataToSend.append('image', images.image);
+        formDataToSend.append('folder', 'navbar'); // Add folder parameter for main image
       }
       if (images.hoverImage) {
         formDataToSend.append('hoverImage', images.hoverImage);
+        formDataToSend.append('folder', 'navbar'); // Add folder parameter for hover image
       }
       images.additionalImages.forEach((img) => {
         formDataToSend.append(`images`, img);
       });
+      // Add folder parameter for additional images
+      if (images.additionalImages.length > 0) {
+        formDataToSend.append('folder', 'navbar');
+      }
 
       console.log('Submitting form data:', formDataToSend);
       
@@ -720,9 +726,17 @@ const ProductCMS = () => {
                         <div className="flex items-center">
                           {product.image && (
                             <img
-                              src={`${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}${product.image}`}
+                              src={product.image.startsWith('http') ? 
+                                product.image : 
+                                (product.image.startsWith('/uploads/') ? 
+                                  `https://api.cosmicpowertech.com${product.image}` : 
+                                  `https://api.cosmicpowertech.com/uploads/${product.image}`)
+                              }
                               alt={product.title}
                               className="h-12 w-12 rounded-lg object-cover mr-4"
+                              onError={(e) => {
+                                e.target.src = '/placeholder-product.jpg';
+                              }}
                             />
                           )}
                           <div>

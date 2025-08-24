@@ -151,9 +151,18 @@ const BlogDetail = () => {
           {/* Featured Image */}
           <div className="rounded-xl overflow-hidden mb-6 sm:mb-8 shadow-md">
             <img 
-              src={post.featuredImage || post.image} 
+              src={
+                (post.featuredImage || post.image)
+                  ? ((post.featuredImage || post.image).startsWith('http')
+                    ? (post.featuredImage || post.image)
+                    : `https://api.cosmicpowertech.com${post.featuredImage || post.image}`)
+                  : '/placeholder-image.jpg'
+              } 
               alt={post.title} 
               className="w-full h-[250px] sm:h-[350px] md:h-[400px] object-cover"
+              onError={(e) => {
+                e.target.src = '/placeholder-image.jpg';
+              }}
             />
           </div>
           
@@ -226,9 +235,18 @@ const BlogDetail = () => {
                     className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                   >
                     <img 
-                      src={relatedPost.featuredImage || relatedPost.image || '/placeholder-blog.jpg'} 
+                      src={
+                        (relatedPost.featuredImage || relatedPost.image)
+                          ? ((relatedPost.featuredImage || relatedPost.image).startsWith('http')
+                            ? (relatedPost.featuredImage || relatedPost.image)
+                            : `https://api.cosmicpowertech.com${relatedPost.featuredImage || relatedPost.image}`)
+                          : '/placeholder-image.jpg'
+                      } 
                       alt={relatedPost.title} 
                       className="w-full h-40 object-cover"
+                      onError={(e) => {
+                        e.target.src = '/placeholder-image.jpg';
+                      }}
                     />
                     <div className="p-4">
                       <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">{relatedPost.title}</h4>

@@ -366,10 +366,17 @@ const ProductDetail = () => {
     );
   }
 
-  // Prepare product images
+  // Prepare product images with correct base URL
+  const formatImageUrl = (img) => {
+    if (!img) return null;
+    if (img.startsWith('http')) return img;
+    if (img.startsWith('/uploads/')) return `https://api.cosmicpowertech.com${img}`;
+    return `https://api.cosmicpowertech.com/uploads/${img}`;
+  };
+  
   const productImages = product.images && product.images.length > 0 
-    ? product.images.map(img => img.startsWith('/uploads/') ? img : `/uploads/${img}`)
-    : [product.image, product.hoverImage].filter(Boolean).map(img => img.startsWith('/uploads/') ? img : `/uploads/${img}`);
+    ? product.images.map(img => formatImageUrl(img))
+    : [product.image, product.hoverImage].filter(Boolean).map(img => formatImageUrl(img));
 
   // If no images, use placeholder
   if (productImages.length === 0) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowRight, CheckCircle, AlertCircle, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
+import api from '../services/api';
 
 const Contact = () => {
   const [formConfig, setFormConfig] = useState(null);
@@ -33,8 +34,8 @@ const Contact = () => {
   const fetchFormConfiguration = async () => {
     try {
       setConfigLoading(true);
-      const response = await fetch('/api/form-config');
-      const result = await response.json();
+      const response = await api.get('/form-config');
+      const result = response.data;
       
       if (result.success) {
         setFormConfig(result.data);
@@ -134,18 +135,12 @@ const Contact = () => {
       }
 
       // Submit form
-      const response = await fetch('/api/form-config/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          formType: selectedType,
-          formData: formData
-        })
+      const response = await api.post('/form-config/submit', {
+        formType: selectedType,
+        formData: formData
       });
 
-      const result = await response.json();
+      const result = response.data;
       
       if (result.success) {
         setSubmitStatus('success');

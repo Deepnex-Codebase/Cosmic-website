@@ -41,7 +41,7 @@ const NavbarCMS = () => {
     fetchNavbarConfig();
   }, []);
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
   const fetchNavbarConfig = async () => {
     try {
@@ -94,6 +94,8 @@ const NavbarCMS = () => {
     const formData = new FormData();
     formData.append('logo', logoFile);
     formData.append('alt', navbarConfig?.logo?.alt || 'Logo');
+    formData.append('useFullUrl', 'true'); // Add flag to use full URL path
+    formData.append('removeApiPath', 'true'); // Add flag to remove /api from URL path
 
     setSaving(true);
     try {
@@ -339,7 +341,7 @@ const NavbarCMS = () => {
                     </label>
                     <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
                       <img
-                        src={navbarConfig?.logo?.url || '/logo.png'}
+                        src={navbarConfig?.logo?.url ? (navbarConfig.logo.url.startsWith('http') ? navbarConfig.logo.url : `${API_BASE_URL.replace(/\/api$/, '')}${navbarConfig.logo.url}`) : '/logo.png'}
                         alt={navbarConfig?.logo?.alt || 'Logo'}
                         className="h-16 w-auto"
                       />

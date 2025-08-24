@@ -84,7 +84,11 @@ function PressReleaseCard({ release }) {
       {/* Image */}
       <div className="w-full sm:w-56 h-48 sm:h-40 flex-shrink-0 overflow-hidden rounded-lg">
         <img
-          src={release.featuredImage || release.image || "https://zolar.wpengine.com/wp-content/uploads/2025/01/blog-05.jpg"}
+          src={
+            (release.featuredImage && !release.featuredImage.startsWith('http')) 
+              ? `https://api.cosmicpowertech.com${release.featuredImage}` 
+              : (release.featuredImage || release.image || "https://zolar.wpengine.com/wp-content/uploads/2025/01/blog-05.jpg")
+          }
           alt={release.title}
           className="w-full h-full object-cover"
           onError={(e) => {

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, ChevronLeft, ChevronRight, Tag } from "lucide-react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
-import axios from "axios";
 
 /* ------------------------------------------------------------------ */
 /* Blog Posts Data - Now fetched from API                               */
@@ -74,9 +73,18 @@ function BlogCard({ post }) {
       {/* Image */}
       <div className="w-full sm:w-56 h-48 sm:h-40 flex-shrink-0 overflow-hidden rounded-lg">
         <img
-          src={post.featuredImage || post.image} // Support both API and fallback format
+          src={
+            (post.featuredImage || post.image)
+              ? ((post.featuredImage || post.image).startsWith('http')
+                ? (post.featuredImage || post.image)
+                : `https://api.cosmicpowertech.com${post.featuredImage || post.image}`)
+              : '/placeholder-image.jpg'
+          }
           alt={post.title}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = '/placeholder-image.jpg';
+          }}
         />
       </div>
 
@@ -111,9 +119,8 @@ const PAGE_SIZE = 6;        // 6 posts / page = 3 rows × 2 columns
 
 export default function BlogGrid() {
   const [page, setPage] = useState(1);
-  const { blogPosts, loading, fetchBlogPosts } = useAppContext();
+  const { blogPosts, fetchBlogPosts } = useAppContext();
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   
   // Get category from URL query parameter
   const categoryParam = searchParams.get('category');

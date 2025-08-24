@@ -3,6 +3,17 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, FileText, Heart, Share2, Facebook, Twitter, Linkedin, Star, Info, Check, Shield, Truck, RefreshCw, Calendar, MapPin, User, Clock, Zap } from 'lucide-react';
 import { getProjectById, getProjectsByCategory } from '../services/projectService';
 
+// Helper function to format image URLs
+const formatImageUrl = (imageUrl) => {
+  if (!imageUrl) return '';
+  if (imageUrl.startsWith('http')) return imageUrl;
+  // Use base URL without /api path
+  const baseUrl = 'https://api.cosmicpowertech.com';
+  // Remove /api from the image path if it exists
+  const cleanImagePath = imageUrl.startsWith('/api/') ? imageUrl.replace('/api/', '/') : imageUrl;
+  return `${baseUrl}${cleanImagePath.startsWith('/') ? '' : '/'}${cleanImagePath}`;
+};
+
 const ProjectDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -252,9 +263,12 @@ const ProjectDetail = () => {
             <div className="aspect-w-16 aspect-h-9 mb-4 overflow-hidden rounded-lg">
               <img 
                 src={project.images && project.images.length > 0 ? 
-                  project.images[selectedImage] : project.coverImage} 
+                  formatImageUrl(project.images[selectedImage]) : formatImageUrl(project.coverImage)}
                 alt={project.title} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = 'https://via.placeholder.com/800x450?text=Image+Not+Found';
+                }}
               />
             </div>
             
@@ -267,7 +281,14 @@ const ProjectDetail = () => {
                     className={`cursor-pointer rounded-md overflow-hidden border-2 ${selectedImage === index ? 'border-yellow-green-500' : 'border-transparent'}`}
                     onClick={() => handleImageSelect(index)}
                   >
-                    <img src={image} alt={`${project.title} ${index + 1}`} className="w-full h-16 object-cover" />
+                    <img 
+                      src={formatImageUrl(image)} 
+                      alt={`${project.title} ${index + 1}`} 
+                      className="w-full h-16 object-cover" 
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/100x100?text=Image+Not+Found';
+                      }}
+                    />
                   </div>
                 ))}
               </div>
@@ -394,9 +415,12 @@ const ProjectDetail = () => {
                 <div key={relatedProject._id} className="group">
                   <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden bg-gray-100">
                     <img 
-                      src={relatedProject.coverImage} 
+                      src={formatImageUrl(relatedProject.coverImage || relatedProject.featuredImage)} 
                       alt={relatedProject.title} 
                       className="w-full h-full object-center object-cover group-hover:opacity-75"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                      }}
                     />
                   </div>
                   <h3 className="mt-4 text-lg font-medium text-gray-900">

@@ -20,6 +20,25 @@ import {
   deleteService 
 } from '../../services/serviceService';
 
+// Define image base URL
+const IMAGE_BASE_URL = 'https://api.cosmicpowertech.com';
+
+// Helper function to format image URLs
+const formatImageUrl = (imagePath) => {
+  if (!imagePath) return null;
+  
+  // If it's already a complete URL or a blob URL, return as is
+  if (imagePath.startsWith('http') || imagePath.startsWith('blob:')) {
+    return imagePath;
+  }
+  
+  // Clean the path by removing /api/ if present
+  const cleanImagePath = imagePath.replace(/^\/api\//, '/');
+  
+  // Combine with base URL
+  return `${IMAGE_BASE_URL}${cleanImagePath}`;
+};
+
 const AdminServices = () => {
   // State management
   const [services, setServices] = useState([]);
@@ -342,9 +361,13 @@ const AdminServices = () => {
             <div className="h-48 bg-gray-200 relative">
               {service.image ? (
                 <img
-                  src={service.image}
+                  src={formatImageUrl(service.image)}
                   alt={service.title}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/placeholder-image.png';
+                  }}
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
