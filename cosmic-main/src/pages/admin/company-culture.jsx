@@ -196,6 +196,13 @@ const AdminCompanyCulture = () => {
     const file = event.target.files[0];
     if (!file) return;
 
+    // Validate file size before uploading
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > 5) {
+      toast.error('File size exceeds 5MB limit. Please choose a smaller file.');
+      return;
+    }
+
     try {
       setUploadingImage(true);
       const result = await uploadCompanyCultureImage(file);
@@ -218,7 +225,13 @@ const AdminCompanyCulture = () => {
       toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error('Failed to upload image');
+      if (error.message && error.message.includes('File size exceeds')) {
+        toast.error(error.message);
+      } else if (error.code === 'ERR_NETWORK') {
+        toast.error('Network error. Please check your connection and try again.');
+      } else {
+        toast.error('Failed to upload image: ' + (error.message || 'Unknown error'));
+      }
     } finally {
       setUploadingImage(false);
     }
@@ -228,7 +241,23 @@ const AdminCompanyCulture = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
+      
+      // Create a clean copy of the data to avoid reference issues
       const dataToSave = JSON.parse(JSON.stringify(companyCultureData));
+      
+      // Validate data structure before sending
+      console.log('Data being saved:', dataToSave);
+      
+      // Ensure all required sections exist
+      if (!dataToSave.hero) dataToSave.hero = {};
+      if (!dataToSave.brandVision) dataToSave.brandVision = {};
+      if (!dataToSave.principlesThatGuideUs) dataToSave.principlesThatGuideUs = {};
+      if (!dataToSave.workEnvironment) dataToSave.workEnvironment = {};
+      if (!dataToSave.sustainabilityManagement) dataToSave.sustainabilityManagement = {};
+      if (!dataToSave.sustainabilityCommitment) dataToSave.sustainabilityCommitment = {};
+      if (!dataToSave.joinTeam) dataToSave.joinTeam = {};
+      
+      // Send data to API
       const result = await updateCompanyCulture(dataToSave);
       
       if (result && result.success) {
@@ -309,7 +338,7 @@ const AdminCompanyCulture = () => {
               {uploadingImage ? 'Uploading...' : 'Upload Image'}
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                 className="hidden"
                 onChange={(e) => handleImageUpload(e, 'hero', 'backgroundImage')}
                 disabled={uploadingImage}
@@ -618,7 +647,7 @@ const AdminCompanyCulture = () => {
                       {uploadingImage ? 'Uploading...' : 'Upload'}
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
                         className="hidden"
                         onChange={(e) => {
                           const file = e.target.files[0];
