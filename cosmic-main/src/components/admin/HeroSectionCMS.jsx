@@ -23,6 +23,9 @@ const HeroSectionCMS = () => {
     ctaText: 'Learn More About Us',
     ctaLink: '/about'
   });
+  
+  const [backgroundVideoFile, setBackgroundVideoFile] = useState(null);
+  const [companyVideoFile, setCompanyVideoFile] = useState(null);
 
   const [statFormData, setStatFormData] = useState({
     value: 0,
@@ -115,10 +118,37 @@ const HeroSectionCMS = () => {
   const saveHeroSection = async () => {
     try {
       setLoading(true);
-      const response = await axios.put(`${API_BASE_URL}/cms/hero-section`, formData);
+      
+      // Create FormData object for file uploads
+      const formDataToSend = new FormData();
+      
+      // Add text fields to FormData
+      Object.keys(formData).forEach(key => {
+        formDataToSend.append(key, formData[key]);
+      });
+      
+      // Add video files if selected
+      if (companyVideoFile) {
+        formDataToSend.append('companyVideo', companyVideoFile);
+      }
+      
+      if (backgroundVideoFile) {
+        formDataToSend.append('backgroundVideo', backgroundVideoFile);
+      }
+      
+      const response = await axios.put(`${API_BASE_URL}/cms/hero-section`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
       if (response.data) {
         setHeroSectionData(response.data.heroSection);
         toast.success('Hero section updated successfully!');
+        
+        // Reset file states
+        setCompanyVideoFile(null);
+        setBackgroundVideoFile(null);
       }
     } catch (error) {
       console.error('Error saving hero section:', error);
@@ -308,30 +338,72 @@ const HeroSectionCMS = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Background Video URL
+              Background Video
             </label>
-            <input
-              type="text"
-              name="backgroundVideo"
-              value={formData.backgroundVideo}
-              onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="/videos/solar-installation.mp4"
-            />
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                name="backgroundVideo"
+                value={formData.backgroundVideo}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="/videos/solar-installation.mp4"
+              />
+              <div className="flex items-center space-x-2">
+                <input
+                  type="file"
+                  accept="video/*"
+                  id="backgroundVideoUpload"
+                  onChange={(e) => setBackgroundVideoFile(e.target.files[0])}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="backgroundVideoUpload"
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center"
+                >
+                  <FaUpload className="mr-2" />
+                  {backgroundVideoFile ? 'Change Video' : 'Upload Video'}
+                </label>
+                {backgroundVideoFile && (
+                  <span className="text-sm text-green-600">{backgroundVideoFile.name}</span>
+                )}
+              </div>
+            </div>
           </div>
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Company Video URL
+              Company Video (Happy Clients)
             </label>
-            <input
-              type="text"
-              name="companyVideo"
-              value={formData.companyVideo}
-              onChange={handleInputChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="/enn.mp4"
-            />
+            <div className="flex flex-col space-y-2">
+              <input
+                type="text"
+                name="companyVideo"
+                value={formData.companyVideo}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="/enn.mp4"
+              />
+              <div className="flex items-center space-x-2">
+                <input
+                  type="file"
+                  accept="video/*"
+                  id="companyVideoUpload"
+                  onChange={(e) => setCompanyVideoFile(e.target.files[0])}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="companyVideoUpload"
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center"
+                >
+                  <FaUpload className="mr-2" />
+                  {companyVideoFile ? 'Change Video' : 'Upload Video'}
+                </label>
+                {companyVideoFile && (
+                  <span className="text-sm text-green-600">{companyVideoFile.name}</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 

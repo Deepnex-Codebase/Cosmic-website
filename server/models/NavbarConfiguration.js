@@ -54,6 +54,43 @@ const navigationItemSchema = new mongoose.Schema({
 
 // Main Navbar Configuration Schema
 const navbarConfigurationSchema = new mongoose.Schema({
+  // Top Bar Configuration
+  topBar: {
+    isVisible: {
+      type: Boolean,
+      default: true
+    },
+    contactInfo: {
+      phone: {
+        text: {
+          type: String,
+          default: '+91 9999999999'
+        },
+        isVisible: {
+          type: Boolean,
+          default: true
+        }
+      },
+      email: {
+        text: {
+          type: String,
+          default: 'info@cosmicpowertech.com'
+        },
+        isVisible: {
+          type: Boolean,
+          default: true
+        }
+      }
+    },
+    backgroundColor: {
+      type: String,
+      default: 'bg-accent-500'
+    },
+    textColor: {
+      type: String,
+      default: 'text-white'
+    }
+  },
   // Logo Configuration
   logo: {
     url: {

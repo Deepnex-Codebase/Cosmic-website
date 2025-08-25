@@ -1,4 +1,6 @@
 const HeroSection = require('../models/HeroSection');
+const fs = require('fs');
+const path = require('path');
 
 // Get hero section data
 const getHeroSection = async (req, res) => {
@@ -47,6 +49,31 @@ const updateHeroSection = async (req, res) => {
     if (sectionSubtitle !== undefined) heroSection.sectionSubtitle = sectionSubtitle;
     if (ctaText !== undefined) heroSection.ctaText = ctaText;
     if (ctaLink !== undefined) heroSection.ctaLink = ctaLink;
+
+    // Handle file uploads if present
+    if (req.files) {
+      // Handle company video upload
+      if (req.files.companyVideo && req.files.companyVideo[0]) {
+        // Delete old file if it exists and is not a default video
+        if (heroSection.companyVideo && !heroSection.companyVideo.startsWith('/') && fs.existsSync(path.join(__dirname, '../', heroSection.companyVideo))) {
+          fs.unlinkSync(path.join(__dirname, '../', heroSection.companyVideo));
+        }
+        
+        // Update with new file path
+        heroSection.companyVideo = `/uploads/videos/${req.files.companyVideo[0].filename}`;
+      }
+      
+      // Handle background video upload
+      if (req.files.backgroundVideo && req.files.backgroundVideo[0]) {
+        // Delete old file if it exists and is not a default video
+        if (heroSection.backgroundVideo && !heroSection.backgroundVideo.startsWith('/') && fs.existsSync(path.join(__dirname, '../', heroSection.backgroundVideo))) {
+          fs.unlinkSync(path.join(__dirname, '../', heroSection.backgroundVideo));
+        }
+        
+        // Update with new file path
+        heroSection.backgroundVideo = `/uploads/videos/${req.files.backgroundVideo[0].filename}`;
+      }
+    }
 
     await heroSection.save();
     

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { FaPlus, FaTrash, FaEdit, FaSave } from 'react-icons/fa';
-import { getAboutPage, updateAboutPage, uploadExpertiseImage, addExpertiseItem, removeExpertiseItem } from '../../services/aboutService';
+import { FaPlus, FaTrash, FaEdit, FaSave, FaUpload } from 'react-icons/fa';
+import { getAboutPage, updateAboutPage, uploadExpertiseImage, uploadHeroVideo, addExpertiseItem, removeExpertiseItem } from '../../services/aboutService';
 
 const AdminAbout = () => {
   const [loading, setLoading] = useState(true);
@@ -27,6 +27,8 @@ const AdminAbout = () => {
   const [activeTab, setActiveTab] = useState('hero');
   const [newExpertiseItem, setNewExpertiseItem] = useState({ title: '', image: '' });
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const videoInputRef = useRef(null);
 
   // Fetch about page data
   useEffect(() => {
@@ -152,6 +154,47 @@ const AdminAbout = () => {
       e.target.value = '';
     } finally {
       setUploadingImage(false);
+    }
+  };
+  
+  // Handle hero video upload
+  const handleHeroVideoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    const validVideoTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov'];
+    if (!validVideoTypes.includes(file.type)) {
+      toast.error('Please select a valid video file (MP4, WebM, Ogg, AVI, MOV)');
+      return;
+    }
+    
+    try {
+      setUploadingVideo(true);
+      const result = await uploadHeroVideo(file);
+      
+      // Update the state with the new video URL
+      setAboutData(prevData => ({
+        ...prevData,
+        hero: {
+          ...prevData.hero,
+          videoUrl: result.videoUrl
+        }
+      }));
+      
+      toast.success('Video uploaded successfully');
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      toast.error(error.message || 'Failed to upload video');
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+  
+  // Trigger video file input click
+  const triggerVideoUpload = () => {
+    if (videoInputRef.current) {
+      videoInputRef.current.click();
     }
   };
 
@@ -335,13 +378,45 @@ const AdminAbout = () => {
           </div>
           
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Video URL</label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              value={aboutData.hero.videoUrl || ''}
-              onChange={(e) => handleInputChange('hero', 'videoUrl', e.target.value)}
-            />
+            <label className="block text-gray-700 mb-2">Video</label>
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                className="w-full p-2 border rounded"
+                value={aboutData.hero.videoUrl || ''}
+                onChange={(e) => handleInputChange('hero', 'videoUrl', e.target.value)}
+                placeholder="Video URL will appear here after upload"
+                readOnly
+              />
+              <button
+                type="button"
+                onClick={triggerVideoUpload}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+                disabled={uploadingVideo}
+              >
+                {uploadingVideo ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Uploading...
+                  </span>
+                ) : (
+                  <>
+                    <FaUpload className="mr-2" /> Upload Video
+                  </>
+                )}
+              </button>
+              <input
+                type="file"
+                ref={videoInputRef}
+                onChange={handleHeroVideoUpload}
+                accept="video/mp4,video/webm,video/ogg,video/avi,video/mov"
+                className="hidden"
+              />
+            </div>
+            <p className="text-sm text-gray-500 mt-1">Upload a video file (MP4, WebM, Ogg, AVI, MOV) - Max size: 50MB</p>
           </div>
           
           {aboutData.hero.videoUrl && (

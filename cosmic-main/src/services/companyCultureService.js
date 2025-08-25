@@ -72,7 +72,7 @@ export const uploadCompanyCultureImage = async (file) => {
     }
     
     // Use fetch API instead of axios for more reliable multipart/form-data handling
-    const response = await fetch(`${API_URL}/cms/company-culture/uploads`, {
+    const response = await fetch(`${API_URL}/cms/company-culture/upload`, {
       method: 'POST',
       body: formData,
     });

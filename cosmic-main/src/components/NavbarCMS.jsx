@@ -35,6 +35,22 @@ const NavbarCMS = () => {
     url: '',
     isActive: true
   });
+  
+  const [topBarFormData, setTopBarFormData] = useState({
+    isVisible: true,
+    contactInfo: {
+      phone: {
+        text: '',
+        isVisible: true
+      },
+      email: {
+        text: '',
+        isVisible: true
+      }
+    },
+    backgroundColor: '',
+    textColor: ''
+  });
 
   // Fetch navbar configuration
   useEffect(() => {
@@ -55,6 +71,23 @@ const NavbarCMS = () => {
           backgroundColor: data.ctaButton?.backgroundColor || '',
           textColor: data.ctaButton?.textColor || '',
           isVisible: data.ctaButton?.isVisible !== false
+        });
+        
+        // Set top bar form data
+        setTopBarFormData({
+          isVisible: data.topBar?.isVisible !== false,
+          contactInfo: {
+            phone: {
+              text: data.topBar?.contactInfo?.phone?.text || '+91 9999999999',
+              isVisible: data.topBar?.contactInfo?.phone?.isVisible !== false
+            },
+            email: {
+              text: data.topBar?.contactInfo?.email?.text || 'info@cosmicpowertech.com',
+              isVisible: data.topBar?.contactInfo?.email?.isVisible !== false
+            }
+          },
+          backgroundColor: data.topBar?.backgroundColor || 'bg-accent-500',
+          textColor: data.topBar?.textColor || 'text-white'
         });
       }
     } catch (error) {
@@ -309,6 +342,7 @@ const NavbarCMS = () => {
           <nav className="flex space-x-8 px-6">
             {[
               { id: 'general', label: 'General Settings' },
+              { id: 'topbar', label: 'Top Bar' },
               { id: 'navigation', label: 'Navigation Items' },
               { id: 'cta', label: 'CTA Button' },
               { id: 'social', label: 'Social Links' }
@@ -487,6 +521,184 @@ const NavbarCMS = () => {
             </div>
           )}
 
+          {/* Top Bar Tab */}
+          {activeTab === 'topbar' && (
+            <div className="space-y-6">
+              <h3 className="text-lg font-medium text-gray-900">Top Bar Configuration</h3>
+              
+              <div className="flex items-center mb-4">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={topBarFormData.isVisible}
+                    onChange={(e) => {
+                      setTopBarFormData({ ...topBarFormData, isVisible: e.target.checked });
+                      handleSave({ topBar: { ...navbarConfig.topBar, isVisible: e.target.checked } });
+                    }}
+                    className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm font-medium text-gray-700">Show Top Bar</span>
+                </label>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Phone Configuration */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-medium text-gray-900 mb-3">Phone Contact</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                      <input
+                        type="text"
+                        value={topBarFormData.contactInfo.phone.text}
+                        onChange={(e) => {
+                          const updatedData = { 
+                            ...topBarFormData,
+                            contactInfo: {
+                              ...topBarFormData.contactInfo,
+                              phone: {
+                                ...topBarFormData.contactInfo.phone,
+                                text: e.target.value
+                              }
+                            }
+                          };
+                          setTopBarFormData(updatedData);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="+91 9999999999"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={topBarFormData.contactInfo.phone.isVisible}
+                          onChange={(e) => {
+                            const updatedData = { 
+                              ...topBarFormData,
+                              contactInfo: {
+                                ...topBarFormData.contactInfo,
+                                phone: {
+                                  ...topBarFormData.contactInfo.phone,
+                                  isVisible: e.target.checked
+                                }
+                              }
+                            };
+                            setTopBarFormData(updatedData);
+                          }}
+                          className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Show Phone Number</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Email Configuration */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-medium text-gray-900 mb-3">Email Contact</h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                      <input
+                        type="email"
+                        value={topBarFormData.contactInfo.email.text}
+                        onChange={(e) => {
+                          const updatedData = { 
+                            ...topBarFormData,
+                            contactInfo: {
+                              ...topBarFormData.contactInfo,
+                              email: {
+                                ...topBarFormData.contactInfo.email,
+                                text: e.target.value
+                              }
+                            }
+                          };
+                          setTopBarFormData(updatedData);
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="info@cosmicpowertech.com"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={topBarFormData.contactInfo.email.isVisible}
+                          onChange={(e) => {
+                            const updatedData = { 
+                              ...topBarFormData,
+                              contactInfo: {
+                                ...topBarFormData.contactInfo,
+                                email: {
+                                  ...topBarFormData.contactInfo.email,
+                                  isVisible: e.target.checked
+                                }
+                              }
+                            };
+                            setTopBarFormData(updatedData);
+                          }}
+                          className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm font-medium text-gray-700">Show Email Address</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Background Color
+                  </label>
+                  <input
+                    type="text"
+                    value={topBarFormData.backgroundColor}
+                    onChange={(e) => setTopBarFormData({ ...topBarFormData, backgroundColor: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="bg-accent-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Text Color
+                  </label>
+                  <input
+                    type="text"
+                    value={topBarFormData.textColor}
+                    onChange={(e) => setTopBarFormData({ ...topBarFormData, textColor: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="text-white"
+                  />
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <button
+                  onClick={() => {
+                    handleSave({ 
+                      topBar: {
+                        isVisible: topBarFormData.isVisible,
+                        contactInfo: topBarFormData.contactInfo,
+                        backgroundColor: topBarFormData.backgroundColor,
+                        textColor: topBarFormData.textColor
+                      }
+                    });
+                  }}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={saving}
+                >
+                  {saving ? 'Saving...' : 'Save Top Bar Settings'}
+                </button>
+              </div>
+            </div>
+          )}
+          
           {/* CTA Button Tab */}
           {activeTab === 'cta' && (
             <div className="space-y-6">

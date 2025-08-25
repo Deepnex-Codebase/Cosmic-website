@@ -115,8 +115,8 @@ const GreenFutureCMS = () => {
     }
   };
 
-  // These functions are defined for handling image file uploads and previews but not currently used in JSX
-  const _handleCardImageChange = (e) => {
+  // Handle card image file upload
+  const handleCardImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setCardImageFile(file);
@@ -132,8 +132,8 @@ const GreenFutureCMS = () => {
     }
   };
 
-  // Function to handle logo file selection and preview but not currently used in JSX
-  const _handleCardLogoChange = (e) => {
+  // Handle card logo file upload
+  const handleCardLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setCardLogoFile(file);
@@ -471,30 +471,48 @@ const GreenFutureCMS = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
+                  Image
                 </label>
-                <input
-                  type="text"
-                  name="image"
-                  value={cardFormData.image}
-                  onChange={handleCardInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="/images/news-image.jpg"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCardImageChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                {cardFormData.image && (
+                  <div className="mt-2">
+                    <img 
+                      src={cardFormData.image} 
+                      alt="Card image preview" 
+                      className="w-32 h-20 object-cover rounded-lg border"
+                    />
+                  </div>
+                )}
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Logo URL
+                  Logo
                 </label>
-                <input
-                  type="text"
-                  name="logo"
-                  value={cardFormData.logo}
-                  onChange={handleCardInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="/images/logo.png"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCardLogoChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                {cardFormData.logo && (
+                  <div className="mt-2">
+                    <img 
+                      src={cardFormData.logo} 
+                      alt="Card logo preview" 
+                      className="w-32 h-20 object-cover rounded-lg border"
+                    />
+                  </div>
+                )}
               </div>
               
               <div>

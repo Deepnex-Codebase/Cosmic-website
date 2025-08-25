@@ -88,6 +88,43 @@ export const uploadExpertiseImage = async (imageFile) => {
   }
 };
 
+// Upload hero video
+export const uploadHeroVideo = async (videoFile) => {
+  try {
+    // Check file size before uploading (limit to 50MB)
+    if (videoFile.size > 50 * 1024 * 1024) {
+      throw new Error('Video size exceeds 50MB limit. Please compress the video or choose a smaller one.');
+    }
+    
+    const formData = new FormData();
+    formData.append('video', videoFile);
+    
+    // Use the aboutApi instance with the correct endpoint
+    const response = await aboutApi.post(
+      '/video/upload', 
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        // Add timeout to prevent long-running requests
+        timeout: 60000
+      }
+    );
+    
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading hero video:', error);
+    // Provide more specific error messages
+    if (error.response && error.response.status === 413) {
+      throw new Error('Video size is too large for the server. Please use a video smaller than 50MB.');
+    } else if (error.code === 'ERR_NETWORK') {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+    throw error;
+  }
+};
+
 // Add expertise item
 export const addExpertiseItem = async (itemData) => {
   try {

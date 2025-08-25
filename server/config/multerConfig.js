@@ -8,6 +8,7 @@ const teamUploadDir = path.join(__dirname, '../uploads/team');
 const aboutUploadDir = path.join(__dirname, '../uploads/about');
 const productUploadDir = path.join(__dirname, '../uploads/products');
 const footerUploadDir = path.join(__dirname, '../uploads/footer');
+const videosUploadDir = path.join(__dirname, '../uploads/videos');
 
 if (!fs.existsSync(directorUploadDir)) {
   fs.mkdirSync(directorUploadDir, { recursive: true });
@@ -27,6 +28,10 @@ if (!fs.existsSync(productUploadDir)) {
 
 if (!fs.existsSync(footerUploadDir)) {
   fs.mkdirSync(footerUploadDir, { recursive: true });
+}
+
+if (!fs.existsSync(videosUploadDir)) {
+  fs.mkdirSync(videosUploadDir, { recursive: true });
 }
 
 // Configure storage for directors
@@ -98,8 +103,37 @@ const aboutUpload = multer({
   storage: aboutStorage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB max file size
+  }
+});
+
+// Configure storage for videos
+const videoStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, videosUploadDir);
   },
-  fileFilter: fileFilter
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+  }
+});
+
+// File filter to accept only videos
+const videoFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('video/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only video files are allowed!'), false);
+  }
+};
+
+// Create multer upload instance for videos
+const videoUpload = multer({
+  storage: videoStorage,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB max file size
+  },
+  fileFilter: videoFileFilter
 });
 
 // Configure storage for products
@@ -158,5 +192,6 @@ module.exports = {
   aboutUpload,
   productUpload,
   productUploadFields,
-  footerUpload
+  footerUpload,
+  videoUpload
 };

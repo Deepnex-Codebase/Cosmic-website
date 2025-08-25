@@ -5,7 +5,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 
 // Configure multer storage for expertise images
-const storage = multer.diskStorage({
+const expertiseStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, '../uploads/about');
     // Create directory if it doesn't exist
@@ -20,9 +20,26 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+// Configure multer storage for video uploads
+const videoStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../uploads/about');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'video-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+// Image upload configuration
+const imageUpload = multer({ 
+  storage: expertiseStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: function (req, file, cb) {
     const filetypes = /jpeg|jpg|png|gif|webp/;
     const mimetype = filetypes.test(file.mimetype);
@@ -32,6 +49,22 @@ const upload = multer({
       return cb(null, true);
     }
     cb(new Error('Only image files are allowed!'));
+  }
+});
+
+// Video upload configuration
+const videoUpload = multer({ 
+  storage: videoStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  fileFilter: function (req, file, cb) {
+    const filetypes = /mp4|avi|mov|wmv|flv|webm|mkv/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only video files are allowed!'));
   }
 });
 
@@ -114,7 +147,7 @@ exports.updateAboutPage = async (req, res) => {
 // Upload expertise image
 exports.uploadExpertiseImage = async (req, res) => {
   try {
-    const uploadMiddleware = upload.single('image');
+    const uploadMiddleware = imageUpload.single('image');
     
     uploadMiddleware(req, res, async function (err) {
       if (err) {
@@ -136,6 +169,50 @@ exports.uploadExpertiseImage = async (req, res) => {
   } catch (error) {
     console.error('Error uploading expertise image:', error);
     res.status(500).json({ message: 'Failed to upload image', error: error.message });
+  }
+};
+
+// Upload hero video
+exports.uploadHeroVideo = async (req, res) => {
+  try {
+    const uploadMiddleware = videoUpload.single('video');
+    
+    uploadMiddleware(req, res, async function (err) {
+      if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ message: 'No video file uploaded' });
+      }
+      
+      // Create the video URL
+      const videoUrl = `/uploads/about/${req.file.filename}`;
+      
+      // Update the hero section in the database with the new video URL
+      let aboutData = await About.findOne();
+      
+      if (!aboutData) {
+        aboutData = new About({});
+      }
+      
+      if (!aboutData.hero) {
+        aboutData.hero = {};
+      }
+      
+      aboutData.hero.videoUrl = videoUrl;
+      aboutData.updatedAt = Date.now();
+      
+      await aboutData.save();
+      
+      res.status(200).json({ 
+        message: 'Video uploaded successfully', 
+        videoUrl: videoUrl 
+      });
+    });
+  } catch (error) {
+    console.error('Error uploading hero video:', error);
+    res.status(500).json({ message: 'Failed to upload video', error: error.message });
   }
 };
 

@@ -319,10 +319,63 @@ export default function Navbar() {
     </>
   );
 
+  /* ——————————— top bar ——————————— */
+  const TopBar = () => {
+    // If topBar is not visible, don't render it
+    if (navbarConfig?.topBar?.isVisible === false) return null;
+    
+    // Get topBar configuration or use defaults
+    const topBarConfig = navbarConfig?.topBar || {
+      backgroundColor: 'bg-accent-500',
+      textColor: 'text-white',
+      contactInfo: {
+        phone: { text: '+91 9999999999', isVisible: true },
+        email: { text: 'info@cosmicpowertech.com', isVisible: true }
+      }
+    };
+    
+    return (
+      <div className={`${topBarConfig.backgroundColor} ${topBarConfig.textColor} py-2`}>
+        <div className="w-4/5 mx-auto flex justify-between items-center">
+          <div className="text-sm font-medium">
+            {topBarConfig.contactInfo.phone.isVisible && (
+              <span>Call Us: <a href={`tel:${topBarConfig.contactInfo.phone.text}`} className="hover:underline">{topBarConfig.contactInfo.phone.text}</a></span>
+            )}
+            {topBarConfig.contactInfo.phone.isVisible && topBarConfig.contactInfo.email.isVisible && (
+              <span className="mx-4">|</span>
+            )}
+            {topBarConfig.contactInfo.email.isVisible && (
+              <span>Email: <a href={`mailto:${topBarConfig.contactInfo.email.text}`} className="hover:underline">{topBarConfig.contactInfo.email.text}</a></span>
+            )}
+          </div>
+          <div className="flex items-center space-x-4">
+            {(navbarConfig?.mobileMenu?.socialLinks?.filter(link => link.isActive) || [
+              { platform: "facebook", url: "https://facebook.com" },
+              { platform: "twitter", url: "https://twitter.com" },
+              { platform: "linkedin", url: "https://linkedin.com" },
+              { platform: "instagram", url: "https://instagram.com" }
+            ]).map((social) => (
+              <a 
+                key={social.platform} 
+                href={social.url} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-white hover:text-gray-200 transition-colors duration-300 group hover-pulse"
+                aria-label={`Visit our ${social.platform} page`}
+              >
+                <i className={`lab la-${social.platform} text-lg transition-transform duration-300 group-hover:scale-125`} />
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   /* ——————————— render ——————————— */
   return (
     <header className="relative z-50">
-
+      <TopBar />
       <MainBar />
       {/* Spacer div to prevent content jump when navbar becomes fixed */}
       {isSticky && <div className="h-16 sm:h-20"></div>}
