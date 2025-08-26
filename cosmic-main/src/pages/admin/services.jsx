@@ -255,6 +255,19 @@ const AdminServices = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file size (40MB limit)
+      if (file.size > 40 * 1024 * 1024) {
+        toast.error('Image size exceeds 40MB limit. Please upload a smaller file.');
+        return;
+      }
+      
+      // Check file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Only image files (JPEG, PNG, JPG, GIF, WEBP) are allowed.');
+        return;
+      }
+      
       setFormData(prev => ({ ...prev, image: file }));
     }
   };
@@ -661,6 +674,17 @@ const AdminServices = () => {
                     onChange={handleImageUpload}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                   />
+                  
+                  {/* File Upload Information */}
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <h4 className="text-xs font-medium text-blue-800 mb-1">Image Upload Guidelines:</h4>
+                    <ul className="text-xs text-blue-700 list-disc pl-4">
+                      <li>Maximum file size: 40MB</li>
+                      <li>Supported formats: JPEG, PNG, JPG, GIF, WEBP</li>
+                      <li>Recommended resolution: At least 800x600 pixels</li>
+                      <li>For best quality, use images with transparent background (PNG)</li>
+                    </ul>
+                  </div>
                 </div>
 
                 {/* SEO Settings */}

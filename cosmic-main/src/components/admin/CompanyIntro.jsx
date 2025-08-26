@@ -50,6 +50,18 @@ const CompanyIntro = () => {
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file size (150MB limit)
+      if (file.size > 150 * 1024 * 1024) {
+        toast.error('Video size exceeds 150MB limit. Please upload a smaller file.');
+        return;
+      }
+      
+      // Check file type
+      if (!file.type.startsWith('video/')) {
+        toast.error('Only video files are allowed.');
+        return;
+      }
+      
       setCompanyIntroData(prev => ({ ...prev, backgroundVideo: file }));
       const videoUrl = URL.createObjectURL(file);
       setVideoPreview(videoUrl);
@@ -102,6 +114,17 @@ const CompanyIntro = () => {
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Company Intro Management</h2>
+        
+        {/* File Upload Information */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <h4 className="text-sm font-medium text-blue-800 mb-1">Video Upload Guidelines:</h4>
+          <ul className="text-xs text-blue-700 list-disc pl-4">
+            <li>Maximum file size: 150MB</li>
+            <li>Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM</li>
+            <li>Recommended resolution: 1920x1080 (16:9 ratio)</li>
+            <li>For best performance, use compressed MP4 files</li>
+          </ul>
+        </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Subtitle */}

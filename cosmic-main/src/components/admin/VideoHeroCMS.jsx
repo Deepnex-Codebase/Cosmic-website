@@ -84,6 +84,19 @@ const VideoHeroCMS = () => {
   const handleVideoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
+    // Check file size (150MB limit)
+    if (file.size > 150 * 1024 * 1024) {
+      toast.error('Video size exceeds 150MB limit. Please upload a smaller file.');
+      return;
+    }
+    
+    // Check file type
+    const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Only video files (MP4, AVI, MOV, WMV, FLV, WEBM) are allowed.');
+      return;
+    }
 
     const formDataUpload = new FormData();
     formDataUpload.append('video', file);
@@ -147,6 +160,16 @@ const VideoHeroCMS = () => {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow p-6">
+        {/* File Upload Information */}
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+          <h4 className="text-sm font-medium text-blue-800 mb-1">File Upload Guidelines:</h4>
+          <ul className="text-xs text-blue-700 list-disc pl-4">
+            <li>Maximum file size: 150MB</li>
+            <li>Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM</li>
+            <li>Recommended resolution: 1920x1080 (16:9 ratio)</li>
+            <li>For best performance, use compressed MP4 files</li>
+          </ul>
+        </div>
         <div className="flex items-center gap-3 mb-6">
           <FaVideo className="text-2xl text-primary-600" />
           <h2 className="text-2xl font-bold text-gray-800">Video Hero Section</h2>
