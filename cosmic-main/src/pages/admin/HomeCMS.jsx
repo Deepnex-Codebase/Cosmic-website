@@ -93,7 +93,6 @@ const HomeCMS = () => {
         setHeroes(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching heroes:', error);
       toast.error('Failed to fetch hero slides');
     } finally {
       setLoading(false);
@@ -114,10 +113,8 @@ const HomeCMS = () => {
           stats: Array.isArray(data.stats) ? data.stats : [],
           isActive: data.isActive
         });
-        console.log('Fetched Pan India data:', data);
       }
     } catch (error) {
-      console.error('Error fetching Pan India Presence:', error);
       toast.error('Failed to fetch Pan India Presence data');
     } finally {
       setPanIndiaLoading(false);
@@ -162,8 +159,6 @@ const HomeCMS = () => {
   const savePanIndiaPresence = async () => {
     setPanIndiaLoading(true);
     try {
-      // Log the API URL being used
-      console.log('Pan India API URL:', `${API_BASE_URL}/pan-india-presence`);
       
       // Create a new FormData object
       const formDataToSend = new FormData();
@@ -180,11 +175,8 @@ const HomeCMS = () => {
       // Convert boolean to string for proper FormData handling
       formDataToSend.append('isActive', panIndiaFormData.isActive.toString());
       
-      // Check if there's an image to upload and log its size
+      // Check if there's an image to upload
       if (panIndiaFormData.mapImage) {
-        console.log('Image size:', panIndiaFormData.mapImage.size, 'bytes');
-        console.log('Image type:', panIndiaFormData.mapImage.type);
-        console.log('Image name:', panIndiaFormData.mapImage.name);
         
         // Compress the image if it's too large (over 5MB)
         if (panIndiaFormData.mapImage.size > 5 * 1024 * 1024) {
@@ -194,11 +186,7 @@ const HomeCMS = () => {
         // Ensure the file is properly appended with the correct field name
         formDataToSend.append('mapImage', panIndiaFormData.mapImage, panIndiaFormData.mapImage.name);
         
-        // Log FormData contents for debugging
-        console.log('FormData entries:');
-        for (let pair of formDataToSend.entries()) {
-          console.log(pair[0], pair[1]);
-        }
+
       }
 
       // Always use the API_BASE_URL for consistency
@@ -220,7 +208,6 @@ const HomeCMS = () => {
         fetchPanIndiaPresence();
       }
     } catch (error) {
-      console.error('Error saving Pan India Presence:', error);
       // Check for specific error responses
       if (error.response) {
         if (error.response.status === 413) {
@@ -319,7 +306,6 @@ const HomeCMS = () => {
         resetForm();
       }
     } catch (error) {
-      console.error('Error saving hero:', error);
       // Check for specific error responses
       if (error.response) {
         if (error.response.status === 413) {
@@ -363,7 +349,6 @@ const HomeCMS = () => {
           fetchHeroes();
         }
       } catch (error) {
-        console.error('Error deleting hero:', error);
         toast.error('Failed to delete hero slide');
       }
     }
@@ -377,7 +362,6 @@ const HomeCMS = () => {
         fetchHeroes();
       }
     } catch (error) {
-      console.error('Error toggling status:', error);
       toast.error('Failed to update status');
     }
   };
@@ -410,7 +394,6 @@ const HomeCMS = () => {
         fetchHeroes();
       }
     } catch (error) {
-      console.error('Error updating order:', error);
       toast.error('Failed to update order');
     }
   };

@@ -3,7 +3,6 @@ import axios from "axios";
 
 // Import environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-console.log('API_BASE_URL:', API_BASE_URL);
 
 // Default fallback data
 const defaultSlides = [
@@ -45,14 +44,10 @@ const TimelineSection = () => {
   const fetchTimelineData = async () => {
     try {
       setLoading(true);
-      console.log('Fetching timeline data...');
       const response = await axios.get(`${API_BASE_URL}/cms/timeline`);
-      console.log('Timeline API response:', response.data);
-      // Log the backgroundImage paths to debug
+      // Process the backgroundImage paths
       if (response.data.success && response.data.data.length > 0) {
-        response.data.data.forEach(item => {
-          console.log('Original backgroundImage path:', item.backgroundImage);
-        });
+        // No logging needed
       }
       if (response.data.success && response.data.data.length > 0) {
         // Transform API data to match component structure
@@ -79,11 +74,9 @@ const TimelineSection = () => {
               } else {
                 bgImage = `${baseUrl}/uploads/${cleanPath}`;
               }
-              console.log('Final background image URL:', bgImage);
             }
           }
           
-          console.log('Constructed background image URL:', bgImage);
           
           return {
             year: item.year,
@@ -92,13 +85,11 @@ const TimelineSection = () => {
             bg: bgImage
           };
         });
-        console.log('Transformed timeline data:', timelineData);
         setSlides(timelineData);
       } else {
-        console.log('No timeline data found, using default slides');
+        // No timeline data found, using default slides
       }
     } catch (error) {
-      console.error('Error fetching timeline data:', error);
       // Keep default slides if API fails
     } finally {
       setLoading(false);

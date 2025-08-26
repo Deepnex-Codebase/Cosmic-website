@@ -104,11 +104,9 @@ const RequestQuoteModal = ({ isOpen, onClose, productName }) => {
           throw new Error(data.message || 'Failed to send OTP');
         }
         
-        console.log(`OTP sent to ${formData.email}: ${randomOtp}`);
+        // OTP sent successfully
       } catch (apiError) {
-        console.error('API Error:', apiError);
         // For development/demo purposes, we'll proceed with the locally generated OTP
-        console.log(`[DEV MODE] Using locally generated OTP: ${randomOtp}`);
       }
       
       // Set OTP expiry time (5 minutes from now)
@@ -373,11 +371,9 @@ const RequestQuoteModal = ({ isOpen, onClose, productName }) => {
                             throw new Error(data.message || 'Failed to send OTP');
                           }
                           
-                          console.log(`New OTP sent to ${formData.email}: ${newOtp}`);
+                          // New OTP sent successfully
                         } catch (apiError) {
-                          console.error('API Error on resend:', apiError);
                           // For development/demo purposes, we'll proceed with the locally generated OTP
-                          console.log(`[DEV MODE] Using locally generated OTP on resend: ${newOtp}`);
                         }
                         
                         // Reset OTP expiry time (5 minutes from now)

@@ -37,7 +37,6 @@ const Footer = () => {
       const data = await response.json()
       setFooterConfig(data)
     } catch (err) {
-      console.error('Error fetching footer configuration:', err)
       setError(err.message)
     } finally {
       setLoading(false)

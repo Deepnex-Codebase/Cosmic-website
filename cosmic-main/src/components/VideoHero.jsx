@@ -4,7 +4,6 @@ import axios from 'axios';
 // Import environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
-const DEV_SERVER_URL = 'https://api.cosmicpowertech.com';
 
 const VideoHero = () => {
   const videoRef = useRef(null);
@@ -14,7 +13,7 @@ const VideoHero = () => {
   const [showButton, setShowButton] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [videoHeroData, setVideoHeroData] = useState({
-    videoSource: '/videos/zolar.mp4',
+    videoSource: '',
     heights: {
       mobile: '300px',
       tablet: '400px',
@@ -50,14 +49,27 @@ const VideoHero = () => {
   // Fetch video hero data from API
   const fetchVideoHeroData = async () => {
     try {
-      console.log('Fetching video hero data from:', `${API_BASE_URL}/cms/video-hero`);
       const response = await axios.get(`${API_BASE_URL}/cms/video-hero`);
       if (response.data.success && response.data.data) {
-        console.log('Video hero data received:', response.data.data);
+        
+        // Make sure we have a valid videoSource
+        if (!response.data.data.videoSource) {
+          response.data.data.videoSource = '/videos/zolar.mp4';
+        }
+        
         setVideoHeroData(response.data.data);
+      } else {
+        setVideoHeroData(prev => ({
+          ...prev,
+          videoSource: '/videos/zolar.mp4'
+        }));
       }
     } catch (error) {
-      console.error('Error fetching video hero data:', error);
+      // Fallback to default video on error
+      setVideoHeroData(prev => ({
+        ...prev,
+        videoSource: '/videos/zolar.mp4'
+      }));
     }
   };
 
@@ -136,6 +148,26 @@ const VideoHero = () => {
     animate();
   }, [isMobile]);
 
+  // Process video source URL
+  const getVideoSrc = () => {
+    if (!videoHeroData.videoSource) return '';
+    
+    let videoSrc = '';
+    if (videoHeroData.videoSource.startsWith('/uploads')) {
+      videoSrc = `${SERVER_URL}${videoHeroData.videoSource}`;
+    } else if (videoHeroData.videoSource.startsWith('/videos')) {
+      videoSrc = `${window.location.origin}${videoHeroData.videoSource}`;
+    } else if (videoHeroData.videoSource.startsWith('http')) {
+      videoSrc = videoHeroData.videoSource;
+    } else {
+      videoSrc = `${window.location.origin}${videoHeroData.videoSource}`;
+    }
+    
+    return videoSrc;
+  };
+  
+  const videoSrc = getVideoSrc();
+  
   return (
     <div
       ref={sectionRef}
@@ -156,14 +188,12 @@ const VideoHero = () => {
         muted={videoHeroData.videoSettings.muted}
         playsInline={videoHeroData.videoSettings.playsInline}
       >
-        <source 
-          src={videoHeroData.videoSource.startsWith('/uploads') 
-            ? `${API_BASE_URL.replace(/\/api$/, '')}${videoHeroData.videoSource}` 
-            : videoHeroData.videoSource.startsWith('http') 
-              ? videoHeroData.videoSource 
-              : `${window.location.origin}${videoHeroData.videoSource}`} 
-          type="video/mp4" 
-        />
+        {videoSrc && (
+          <source 
+            src={videoSrc}
+            type="video/mp4" 
+          />
+        )}
         Your browser does not support the video tag.
       </video>
 

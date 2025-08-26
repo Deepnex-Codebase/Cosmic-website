@@ -65,7 +65,6 @@ const BlogCMS = () => {
         setTotalPages(response.totalPages || 1);
       }
     } catch (error) {
-      console.error('Error fetching blogs:', error);
       alert('Error fetching blogs: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
@@ -80,7 +79,6 @@ const BlogCMS = () => {
         setStats(response.data);
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
     }
   };
 
@@ -126,13 +124,11 @@ const BlogCMS = () => {
       formDataToSend.append('folder', 'navbar');
       
       const response = await blogService.uploadImage(formDataToSend);
-      console.log('Upload response:', response);
       
       if (response.success) {
         return response.data.imageUrl;
       }
     } catch (error) {
-      console.error('Error uploading image:', error);
       alert('Error uploading image: ' + (error.response?.data?.message || error.message));
     }
     return null;
@@ -196,7 +192,6 @@ const BlogCMS = () => {
         fetchStats();
       }
     } catch (error) {
-      console.error('Error saving blog:', error);
       alert('Error saving blog: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
@@ -215,7 +210,6 @@ const BlogCMS = () => {
         fetchStats();
       }
     } catch (error) {
-      console.error('Error deleting blog:', error);
       alert('Error deleting blog: ' + (error.response?.data?.message || error.message));
     }
   };
@@ -249,7 +243,6 @@ const BlogCMS = () => {
         setEditingBlog(blog);
       }
     } catch (error) {
-      console.error('Error fetching full blog data:', error);
       setEditingBlog(blog);
     }
     

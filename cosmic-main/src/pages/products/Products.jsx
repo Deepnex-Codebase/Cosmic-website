@@ -22,8 +22,6 @@ const Products = () => {
         limit: 50
       });
       
-      console.log('Products API Response:', response);
-      
       // Axios returns full response object, we need response.data
       if (response.data && response.data.success && response.data.data) {
         setProducts(response.data.data || []);
@@ -31,7 +29,6 @@ const Products = () => {
         setError('Failed to fetch products');
       }
     } catch (err) {
-      console.error('Error fetching products:', err);
       setError('Failed to load products. Please try again later.');
     } finally {
       setLoading(false);

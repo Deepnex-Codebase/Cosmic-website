@@ -44,7 +44,7 @@ export default function Navbar() {
             setNavbarConfig(data);
           }
         } catch (error) {
-          console.error('Error fetching navbar config:', error);
+          // Error handling
         }
       };
 

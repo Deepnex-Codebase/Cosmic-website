@@ -35,7 +35,7 @@ const CompanyIntro = () => {
         setExistingData(result.data);
       }
     } catch (error) {
-      console.error('Error fetching company intro data:', error);
+      // Error handling
     }
   };
 
@@ -108,7 +108,6 @@ const CompanyIntro = () => {
         toast.error(result.message || 'Failed to update Company Intro');
       }
     } catch (error) {
-      console.error('Error updating company intro:', error);
       toast.error('Failed to update Company Intro');
     } finally {
       setLoading(false);

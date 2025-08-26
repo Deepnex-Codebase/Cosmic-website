@@ -12,13 +12,11 @@ export default function CompanyIntro() {
       try {
         const response = await fetch(`${API_BASE_URL}/company-intro/active`);
         const result = await response.json();
-        console.log('Company Intro API Response:', result);
         if (result.success && result.data) {
           setCompanyIntroData(result.data);
-          console.log('Company Intro Data Set:', result.data);
         }
       } catch (error) {
-        console.error('Error fetching company intro data:', error);
+        // Error handling
       } finally {
         setLoading(false);
       }
@@ -58,15 +56,6 @@ export default function CompanyIntro() {
           } 
           type="video/mp4" 
         />
-        {/* Adding console log for debugging */}
-        {companyIntroData?.backgroundVideo && console.log('Final video path:', 
-          companyIntroData.backgroundVideo.startsWith('http') 
-            ? companyIntroData.backgroundVideo 
-            : companyIntroData.backgroundVideo.startsWith('/uploads/') 
-              ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
-              : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/${companyIntroData.backgroundVideo.replace(/^\//, '')}`
-        )}
-        
         
         Your browser does not support the video tag.
       </video>

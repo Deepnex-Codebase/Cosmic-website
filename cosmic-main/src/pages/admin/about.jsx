@@ -43,7 +43,6 @@ const AdminAbout = () => {
           toast.warning('Using default about page data as server data could not be loaded');
         }
       } catch (error) {
-        console.error('Error fetching about page data:', error);
         toast.error('Failed to load about page data');
       } finally {
         setLoading(false);
@@ -98,7 +97,6 @@ const AdminAbout = () => {
       }
       
       newData[section][field][index][subfield] = value;
-      console.log('Updated expertise item:', newData[section][field][index]);
       return newData;
     });
   };
@@ -142,7 +140,6 @@ const AdminAbout = () => {
       setNewExpertiseItem(prev => ({ ...prev, image: result.imageUrl }));
       toast.success('Image uploaded successfully');
     } catch (error) {
-      console.error('Error uploading image:', error);
       // Display specific error message if available
       if (error.message) {
         toast.error(error.message);
@@ -184,7 +181,6 @@ const AdminAbout = () => {
       
       toast.success('Video uploaded successfully');
     } catch (error) {
-      console.error('Error uploading video:', error);
       toast.error(error.message || 'Failed to upload video');
     } finally {
       setUploadingVideo(false);
@@ -236,12 +232,10 @@ const AdminAbout = () => {
         
         // Save the updated data to ensure it's reflected on the website
         const saveResult = await updateAboutPage(updatedData);
-        console.log('Save result after adding expertise item:', saveResult);
       } else {
         toast.error('Failed to add expertise item: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error adding expertise item:', error);
       toast.error('Failed to add expertise item: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);
@@ -280,12 +274,10 @@ const AdminAbout = () => {
         
         // Save the updated data to ensure it's reflected on the website
         const saveResult = await updateAboutPage(updatedData);
-        console.log('Save result after removing expertise item:', saveResult);
       } else {
         toast.error('Failed to remove expertise item: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error removing expertise item:', error);
       toast.error('Failed to remove expertise item: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);
@@ -320,7 +312,6 @@ const AdminAbout = () => {
         toast.error('Failed to update about page: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error updating about page:', error);
       toast.error('Failed to update about page: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);

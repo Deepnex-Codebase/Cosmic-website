@@ -164,23 +164,17 @@ export default function AchievementsAwardsPage() {
       try {
         setLoading(true);
         setError(null); // Clear any previous errors
-        console.log('🔄 [ACHIEVEMENTS] Fetching achievement data... RefreshKey:', refreshKey);
         const response = await achievementService.getAchievementPage();
-        console.log('📥 [ACHIEVEMENTS] API Response:', response);
         
         if (response.success) {
           setAchievementData(response.data);
-          console.log('✅ [ACHIEVEMENTS] Data successfully set. Hero title:', response.data?.hero?.title);
         } else {
-          console.error('❌ [ACHIEVEMENTS] API returned error:', response.error);
-          setError(response.error || 'Failed to fetch achievement data');
+            setError(response.error || 'Failed to fetch achievement data');
         }
       } catch (err) {
-        console.error('💥 [ACHIEVEMENTS] Exception during fetch:', err);
-        setError(err.message || 'Failed to load achievement data');
+          setError(err.message || 'Failed to load achievement data');
       } finally {
         setLoading(false);
-        console.log('🏁 [ACHIEVEMENTS] Fetch completed');
       }
     };
 
@@ -188,9 +182,7 @@ export default function AchievementsAwardsPage() {
     
     // Listen for storage events to refresh data when CMS updates (cross-tab)
     const handleStorageChange = (e) => {
-      console.log('🔔 [ACHIEVEMENTS] Storage event received:', e.key, e.newValue);
       if (e.key === 'achievement_updated') {
-        console.log('🔄 [ACHIEVEMENTS] Cross-tab update detected, refreshing data...');
         fetchAchievementData();
         localStorage.removeItem('achievement_updated');
       }
@@ -198,8 +190,6 @@ export default function AchievementsAwardsPage() {
     
     // Listen for custom events to refresh data when CMS updates (same-tab)
     const handleCustomEvent = (e) => {
-      console.log('🔔 [ACHIEVEMENTS] Custom event received:', e.detail);
-      console.log('🔄 [ACHIEVEMENTS] Same-tab update detected, refreshing data...');
       fetchAchievementData();
     };
     

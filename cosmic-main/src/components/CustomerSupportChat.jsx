@@ -57,9 +57,7 @@ const CustomerSupportChat = () => {
     
     try {
       // Send message to backend API
-      console.log('Sending message to API:', inputMessage, 'Conversation ID:', conversationId);
       const response = await chatService.sendMessage(inputMessage, conversationId);
-      console.log('API Response:', response);
       
       // Add bot response
       const newBotMessage = {
@@ -76,9 +74,6 @@ const CustomerSupportChat = () => {
         setConversationId(response.data?.data?.conversationId || response.data?.conversationId);
       }
     } catch (error) {
-      console.error('Error sending message:', error);
-      console.error('Error details:', error.response ? error.response.data : 'No response data');
-      
       // Add error message
       const errorMessage = {
         id: messages.length + 2,
@@ -111,7 +106,6 @@ const CustomerSupportChat = () => {
           }
         ]);
       } catch (error) {
-        console.error('Error clearing conversation:', error);
         // Continue with resetting the chat locally even if API call fails
         setMessages([]);
         setConversationId(null);

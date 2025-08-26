@@ -86,7 +86,6 @@ export default function AchievementCMS() {
         toast.error('Failed to fetch page data');
       }
     } catch (error) {
-      console.error('Error fetching page data:', error);
       toast.error('Failed to fetch page data');
     } finally {
       setLoading(false);
@@ -101,45 +100,35 @@ export default function AchievementCMS() {
   const savePageData = async () => {
     try {
       setSaving(true);
-      console.log('💾 [CMS] Starting save operation with data:', pageData);
       const response = await achievementService.updateAchievementPage(pageData);
-      console.log('📤 [CMS] API Save response:', response);
       
       if (response.success) {
         toast.success('Page data saved successfully!');
-        console.log('✅ [CMS] Save successful, refreshing local data...');
         // Refresh the data to ensure UI is updated
         await fetchPageData();
         
         // Trigger refresh for the public achievements page
         const timestamp = Date.now().toString();
-        console.log('📢 [CMS] Triggering refresh events with timestamp:', timestamp);
         
         localStorage.setItem('achievement_updated', timestamp);
-        console.log('💾 [CMS] localStorage set');
         
         window.dispatchEvent(new StorageEvent('storage', {
           key: 'achievement_updated',
           newValue: timestamp
         }));
-        console.log('📡 [CMS] Storage event dispatched');
         
         // Also dispatch a custom event for same-tab updates
         window.dispatchEvent(new CustomEvent('achievementDataUpdated', {
           detail: { timestamp: Date.now() }
         }));
-        console.log('🎯 [CMS] Custom event dispatched');
         
       } else {
-        console.error('❌ [CMS] Save failed:', response.error);
         throw new Error(response.error || 'Failed to save page data');
       }
     } catch (error) {
-      console.error('💥 [CMS] Exception during save:', error);
       toast.error(error.message || 'Failed to save page data');
     } finally {
       setSaving(false);
-      console.log('🏁 [CMS] Save operation completed');
     }
   };
 
@@ -209,8 +198,7 @@ export default function AchievementCMS() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('🚀 Form submission started!');
-    console.log('📝 Current formData:', formData);
+
     
     try {
       // Validate required fields for achievement
@@ -225,9 +213,7 @@ export default function AchievementCMS() {
         }
       }
       
-      console.log('Form data before submission:', formData);
-      console.log('Modal type:', modalType);
-      console.log('Editing item:', editingItem);
+
       
       let result;
       if (modalType === 'achievement') {
@@ -250,7 +236,6 @@ export default function AchievementCMS() {
       setShowModal(false);
       fetchPageData();
     } catch (error) {
-      console.error('Error submitting form:', error);
       toast.error(`Failed to ${editingItem ? 'update' : 'add'} ${modalType}`);
     }
   };
@@ -273,7 +258,6 @@ export default function AchievementCMS() {
       toast.success(`${type} deleted successfully!`);
       fetchPageData();
     } catch (error) {
-      console.error('Error deleting:', error);
       toast.error(`Failed to delete ${type}`);
     }
   };

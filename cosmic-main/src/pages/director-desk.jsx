@@ -81,18 +81,14 @@ const DirectorDesk = () => {
     const fetchDirectors = async () => {
       try {
         setLoading(true);
-        console.log('Fetching directors data...');
         const response = await directorService.getAllDirectors();
         if (response.data && response.data.data) {
-          console.log('Directors data received:', response.data.data);
           setDirectors(response.data.data);
         } else {
-          console.log('No directors data found, using fallback');
           // Fallback to default directors if API fails
           setDirectors(defaultDirectors);
         }
       } catch (error) {
-        console.error('Error fetching directors:', error);
         toast.error('Failed to load directors information');
         // Fallback to default directors if API fails
         setDirectors(defaultDirectors);

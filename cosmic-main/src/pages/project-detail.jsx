@@ -91,7 +91,6 @@ const ProjectDetail = () => {
           // Direct object response format
           projectData = response.data;
         } else {
-          console.error('Unexpected project data format:', response.data);
           throw new Error('Invalid project data format');
         }
         
@@ -113,15 +112,12 @@ const ProjectDetail = () => {
           results: projectData.results || fallbackProject.results,
         };
         
-        console.log('Project data loaded:', enhancedProjectData.title);
         setProject(enhancedProjectData);
           
         // Fetch related projects from the same category
         if (enhancedProjectData.category) {
           try {
             const relatedResponse = await getProjectsByCategory(enhancedProjectData.category);
-            console.log('Related projects response:', relatedResponse.data);
-            
             // Handle different API response formats for related projects
             let relatedProjectsData = [];
             
@@ -136,16 +132,13 @@ const ProjectDetail = () => {
               const filteredProjects = relatedProjectsData
                 .filter(p => p._id !== enhancedProjectData._id)
                 .slice(0, 3);
-              console.log('Setting related projects:', filteredProjects.length);
               setRelatedProjects(filteredProjects);
             }
           } catch (relatedError) {
-            console.error('Error fetching related projects:', relatedError);
             // Don't set main error for related projects failure
           }
         }
       } catch (error) {
-        console.error('Error fetching project:', error);
         setProject(fallbackProject);
         setError('Failed to load project data. Showing sample project.');
       } finally {

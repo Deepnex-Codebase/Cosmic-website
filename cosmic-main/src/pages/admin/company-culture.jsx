@@ -155,7 +155,6 @@ const AdminCompanyCulture = () => {
 
   // Add array item
   const handleAddArrayItem = (section, field, defaultItem) => {
-    console.log('handleAddArrayItem called:', section, field);
     setCompanyCultureData(prevData => {
       const newData = { ...prevData };
       
@@ -168,7 +167,6 @@ const AdminCompanyCulture = () => {
       }
       
       newData[section][field].push(defaultItem);
-      console.log('New data after adding item:', newData[section][field]);
       return newData;
     });
   };
@@ -245,9 +243,6 @@ const AdminCompanyCulture = () => {
       // Create a clean copy of the data to avoid reference issues
       const dataToSave = JSON.parse(JSON.stringify(companyCultureData));
       
-      // Validate data structure before sending
-      console.log('Data being saved:', dataToSave);
-      
       // Ensure all required sections exist
       if (!dataToSave.hero) dataToSave.hero = {};
       if (!dataToSave.brandVision) dataToSave.brandVision = {};
@@ -274,7 +269,6 @@ const AdminCompanyCulture = () => {
         toast.error('Failed to update company culture page: ' + (result?.error || 'Unknown error'));
       }
     } catch (error) {
-      console.error('Error updating company culture page:', error);
       toast.error('Failed to update company culture page: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);

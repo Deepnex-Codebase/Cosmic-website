@@ -55,7 +55,6 @@ const VideoHeroCMS = () => {
         setFormData(data);
       }
     } catch (error) {
-      console.error('Error fetching video hero data:', error);
       toast.error('Failed to fetch video hero data');
     } finally {
       setLoading(false);
@@ -73,7 +72,6 @@ const VideoHeroCMS = () => {
         toast.success('Video hero settings updated successfully!');
       }
     } catch (error) {
-      console.error('Error updating video hero data:', error);
       toast.error('Failed to update video hero settings');
     } finally {
       setLoading(false);
@@ -112,7 +110,6 @@ const VideoHeroCMS = () => {
       if (response.data.success) {
         // Get the video path from the response
         const videoPath = response.data.data.videoPath;
-        console.log('Original video path:', videoPath);
         
         // Use the videoPath directly without modification
         // This ensures we're using the exact path returned by the server
