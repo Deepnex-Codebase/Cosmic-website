@@ -39,7 +39,7 @@ const videoStorage = multer.diskStorage({
 // Image upload configuration
 const imageUpload = multer({ 
   storage: expertiseStorage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 40 * 1024 * 1024 }, // 40MB limit
   fileFilter: function (req, file, cb) {
     const filetypes = /jpeg|jpg|png|gif|webp/;
     const mimetype = filetypes.test(file.mimetype);
@@ -55,7 +55,7 @@ const imageUpload = multer({
 // Video upload configuration
 const videoUpload = multer({ 
   storage: videoStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  limits: { fileSize: 40 * 1024 * 1024 }, // 40MB limit
   fileFilter: function (req, file, cb) {
     const filetypes = /mp4|avi|mov|wmv|flv|webm|mkv/;
     const mimetype = filetypes.test(file.mimetype);
