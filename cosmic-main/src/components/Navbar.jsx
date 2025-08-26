@@ -208,7 +208,7 @@ export default function Navbar() {
         <div className="pt-6 px-6 flex justify-start bg-primary-800">
           <Link to="/" onClick={() => setOpen(false)} className="flex-shrink-0 select-none hover-pulse">
             <img 
-              src={navbarConfig?.logo?.url || "/logo.png"} 
+              src={navbarConfig?.logo?.url ? (navbarConfig.logo.url.startsWith('http') ? navbarConfig.logo.url : `${API_BASE_URL.replace(/\/api$/, '')}${navbarConfig.logo.url}`) : "/logo.png"} 
               alt={navbarConfig?.logo?.alt || "Logo"} 
               className="h-10 w-auto" 
             />
