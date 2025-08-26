@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { productService } from '../../services/api'
 
+// Import environment variables
+// Remove '/api' from the end for image URLs
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const BASE_URL = API_BASE_URL.endsWith('/api') ? API_BASE_URL.slice(0, -4) : API_BASE_URL;
+
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,10 +64,10 @@ const Products = () => {
                     src={product.image ? 
                       (product.image.startsWith('http') ? 
                         product.image : 
-                        (product.image.startsWith('/uploads/') ? 
-                          `https://api.cosmicpowertech.com${product.image}` : 
-                          `https://api.cosmicpowertech.com/uploads/${product.image}`)
-                      ) : 
+                        (product.image.includes('/uploads/products/') ? 
+                          `${BASE_URL}${product.image}` : 
+                          `${BASE_URL}/uploads/products/${product.image.split('/').pop()}`)) 
+                      : 
                       '/placeholder-product.jpg'} 
                     alt={product.title} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -74,9 +79,9 @@ const Products = () => {
                     <img 
                       src={product.hoverImage.startsWith('http') ? 
                         product.hoverImage : 
-                        (product.hoverImage.startsWith('/uploads/') ? 
-                          `https://api.cosmicpowertech.com${product.hoverImage}` : 
-                          `https://api.cosmicpowertech.com/uploads/${product.hoverImage}`)
+                        (product.hoverImage.includes('/uploads/products/') ? 
+                          `${BASE_URL}${product.hoverImage}` : 
+                          `${BASE_URL}/uploads/products/${product.hoverImage.split('/').pop()}`)
                       } 
                       alt={`${product.title} hover`} 
                       className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"

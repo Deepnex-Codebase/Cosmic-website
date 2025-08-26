@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { productService } from '../../services/api';
 
+// Import environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+// Remove '/api' from the end for image URLs
+const BASE_URL = API_BASE_URL.endsWith('/api') ? API_BASE_URL.slice(0, -4) : API_BASE_URL;
+
 const ProductCMS = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -728,9 +733,9 @@ const ProductCMS = () => {
                             <img
                               src={product.image.startsWith('http') ? 
                                 product.image : 
-                                (product.image.startsWith('/uploads/') ? 
-                                  `https://api.cosmicpowertech.com${product.image}` : 
-                                  `https://api.cosmicpowertech.com/uploads/${product.image}`)
+                                (product.image.includes('/uploads/products/') ? 
+                                  `${BASE_URL}${product.image}` : 
+                                  `${BASE_URL}/uploads/products/${product.image.split('/').pop()}`)
                               }
                               alt={product.title}
                               className="h-12 w-12 rounded-lg object-cover mr-4"

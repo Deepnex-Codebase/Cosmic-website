@@ -91,7 +91,12 @@ const CompanyIntro = () => {
 
       const response = await fetch(url, {
         method: method,
-        body: formData
+        body: formData,
+        headers: {
+          // Don't set Content-Type header when using FormData with files
+          // Browser will automatically set the correct Content-Type with boundary
+        },
+        credentials: 'include' // Include cookies if needed
       });
 
       const result = await response.json();

@@ -66,7 +66,20 @@ const TimelineSection = () => {
               // Remove any leading slashes and construct the URL
               // Also remove duplicate 'uploads/' if present
               const cleanPath = item.backgroundImage.replace(/^\/+/, '').replace(/^uploads\//, '');
-              bgImage = `/uploads/${cleanPath}`;
+              
+              // Extract base URL without '/api' suffix if present
+              let baseUrl = API_BASE_URL;
+              if (baseUrl.endsWith('/api')) {
+                baseUrl = baseUrl.substring(0, baseUrl.length - 4);
+              }
+              
+              // Make sure we don't add double slashes
+              if (baseUrl.endsWith('/')) {
+                bgImage = `${baseUrl}uploads/${cleanPath}`;
+              } else {
+                bgImage = `${baseUrl}/uploads/${cleanPath}`;
+              }
+              console.log('Final background image URL:', bgImage);
             }
           }
           
@@ -211,7 +224,7 @@ const TimelineSection = () => {
             key={`prev-${prevIndex}`}
             className="absolute inset-0 bg-cover bg-center z-0 animate-fadeOutUp"
             style={{ 
-              backgroundImage: `url('${slides[prevIndex]?.bg || 'https://unsplash.it/1920/500?image=11'}')`,
+              backgroundImage: `url(${slides[prevIndex]?.bg || 'https://unsplash.it/1920/500?image=11'})`,
               filter: 'grayscale(40%)' 
             }}
           />
@@ -220,7 +233,7 @@ const TimelineSection = () => {
           key={`current-${currentIndex}`}
           className="absolute inset-0 bg-cover bg-center z-10 animate-fadeInUp"
           style={{ 
-            backgroundImage: `url('${slides[currentIndex]?.bg || 'https://unsplash.it/1920/500?image=11'}')`,
+            backgroundImage: `url(${slides[currentIndex]?.bg || 'https://unsplash.it/1920/500?image=11'})`,
             filter: 'grayscale(40%)' 
           }}
           onAnimationEnd={() => setAnimating(false)}

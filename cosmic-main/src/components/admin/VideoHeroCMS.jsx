@@ -110,13 +110,15 @@ const VideoHeroCMS = () => {
       });
       
       if (response.data.success) {
-        // Format the video path to use the API base URL instead of localhost
+        // Get the video path from the response
         const videoPath = response.data.data.videoPath;
-        const formattedVideoPath = videoPath.replace(/http:\/\/localhost:[0-9]+\/uploads\/videos\//, `${API_BASE_URL.replace(/\/api$/, '')}/uploads/videos/`);
+        console.log('Original video path:', videoPath);
         
+        // Use the videoPath directly without modification
+        // This ensures we're using the exact path returned by the server
         setFormData(prev => ({
           ...prev,
-          videoSource: formattedVideoPath
+          videoSource: videoPath
         }));
         toast.success('Video uploaded successfully!');
       }

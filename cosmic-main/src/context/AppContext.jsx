@@ -60,32 +60,12 @@ export const AppProvider = ({ children }) => {
   const fetchHomepageData = async () => {
     setLoading(true);
     try {
-      console.log('Fetching homepage data...');
-      
       // Fetch hero slides
-      console.log('Fetching hero slides...');
       const heroRes = await axios.get(`${API_BASE_URL}/heroes/active`);
-      console.log('Hero slides API response:', heroRes.data);
-      console.log('Hero slides API response data:', JSON.stringify(heroRes.data.data, null, 2));
       
       if (heroRes.data.success && heroRes.data.data.length > 0) {
-        console.log(`Setting ${heroRes.data.data.length} hero slides`);
-        console.log('Hero slides data being set:', heroRes.data.data);
         setHeroSlides(heroRes.data.data);
-        
-        // Verify after setting
-        setTimeout(() => {
-          console.log('Current heroSlides state after setting:', heroSlides);
-        }, 100);
-        
-        // Additional verification after a longer delay
-        setTimeout(() => {
-          console.log('Verifying heroSlides state after 1 second:', heroSlides);
-          console.log('Number of hero slides available:', heroSlides ? heroSlides.length : 0);
-          console.log('Are hero slides an array?', Array.isArray(heroSlides));
-        }, 1000);
       } else {
-        console.warn('No hero slides found or API returned error');
         setHeroSlides([]);
       }
       
@@ -96,7 +76,6 @@ export const AppProvider = ({ children }) => {
           setBlogPosts(blogRes.data.data);
         }
       } catch (error) {
-        console.error('Error fetching blog posts:', error);
         setBlogPosts([]);
       }
       
@@ -115,7 +94,6 @@ export const AppProvider = ({ children }) => {
       
       setErrors(prev => ({ ...prev, blog: null, projects: null, hero: null, solutions: null, products: null, testimonials: null, team: null, faqs: null }));
     } catch (error) {
-      console.error('Error fetching homepage data:', error);
       setErrors(prev => ({ 
         ...prev, 
         blog: error.message,
@@ -145,7 +123,7 @@ export const AppProvider = ({ children }) => {
       
       setErrors(prev => ({ ...prev, team: null, testimonials: null }));
     } catch (error) {
-      console.error('Error fetching about page data:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, team: error.message, testimonials: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, team: false, testimonials: false }));
@@ -163,7 +141,7 @@ export const AppProvider = ({ children }) => {
       setBlogPosts(posts);
       setErrors(prev => ({ ...prev, blog: null }));
     } catch (error) {
-      console.error('Error fetching blog posts:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, blog: error.message }));
       // Set empty array as fallback
       setBlogPosts([]);
@@ -184,13 +162,12 @@ export const AppProvider = ({ children }) => {
         // If response.data is directly an array (possible API format difference in production)
         setProjects(response.data);
       } else {
-        console.error('Projects data is not in expected format:', response.data);
         // Set projects to empty array if data is not in expected format
         setProjects([]);
       }
       setErrors(prev => ({ ...prev, projects: null }));
     } catch (error) {
-      console.error('Error fetching projects:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, projects: error.message }));
       // Set projects to empty array on error
       setProjects([]);
@@ -207,7 +184,7 @@ export const AppProvider = ({ children }) => {
       setProducts(response.data.data);
       setErrors(prev => ({ ...prev, products: null }));
     } catch (error) {
-      console.error('Error fetching products:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, products: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, products: false }));
@@ -221,7 +198,7 @@ export const AppProvider = ({ children }) => {
       setContactMessages(response.data.data || []);
       setErrors(prev => ({ ...prev, contacts: null }));
     } catch (error) {
-      console.error('Error fetching contact messages:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, contacts: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, contacts: false }));
@@ -236,7 +213,7 @@ export const AppProvider = ({ children }) => {
       setTestimonials(response.data.data || []);
       setErrors(prev => ({ ...prev, testimonials: null }));
     } catch (error) {
-      console.error('Error fetching testimonials:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, testimonials: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, testimonials: false }));
@@ -251,7 +228,7 @@ export const AppProvider = ({ children }) => {
       setTeamMembers(response.data.data || []);
       setErrors(prev => ({ ...prev, team: null }));
     } catch (error) {
-      console.error('Error fetching team members:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, team: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, team: false }));
@@ -263,25 +240,15 @@ export const AppProvider = ({ children }) => {
     setLoading(prev => ({ ...prev, faqs: true }));
     try {
       // Use the config service endpoint to fetch FAQs from solar_company_profile.json
-      console.log('Fetching FAQs from API...');
       const response = await axios.get(`${API_BASE_URL}/config/section/faq`);
-      console.log('FAQ API response:', response.data);
       
       // Check if response.data.data exists, otherwise use response.data directly
       const faqData = response.data.data || response.data || [];
-      console.log('FAQ data being set to state:', faqData);
       setFaqs(faqData);
-      
-      // Verify after setting
-      setTimeout(() => {
-        console.log('Current faqs state after setting:', faqs);
-        console.log('Number of FAQs available:', faqs ? faqs.length : 0);
-        console.log('Are FAQs an array?', Array.isArray(faqs));
-      }, 100);
       
       setErrors(prev => ({ ...prev, faqs: null }));
     } catch (error) {
-      console.error('Error fetching FAQs:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, faqs: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, faqs: false }));
@@ -296,7 +263,7 @@ export const AppProvider = ({ children }) => {
       setErrors(prev => ({ ...prev, contactForm: null }));
       return { success: true, data: response.data };
     } catch (error) {
-      console.error('Error submitting contact form:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, contactForm: error.message }));
       return { success: false, error: error.message };
     } finally {
@@ -312,7 +279,7 @@ export const AppProvider = ({ children }) => {
       setSettings(response.data.data || {});
       setErrors(prev => ({ ...prev, settings: null }));
     } catch (error) {
-      console.error('Error fetching settings:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, settings: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, settings: false }));
@@ -327,7 +294,7 @@ export const AppProvider = ({ children }) => {
       setCo2Reductions(response.data.data || []);
       setErrors(prev => ({ ...prev, co2Reductions: null }));
     } catch (error) {
-      console.error('Error fetching CO2 emission reductions:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, co2Reductions: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, co2Reductions: false }));
@@ -342,7 +309,7 @@ export const AppProvider = ({ children }) => {
       setIntelligentSolutions(response.data.data || []);
       setErrors(prev => ({ ...prev, intelligentSolutions: null }));
     } catch (error) {
-      console.error('Error fetching intelligent solutions:', error);
+      // Error handling without console.error
       setErrors(prev => ({ ...prev, intelligentSolutions: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, intelligentSolutions: false }));
@@ -363,10 +330,7 @@ export const AppProvider = ({ children }) => {
     
     // Additional verification for FAQs after a delay
     setTimeout(() => {
-      console.log('Verifying FAQs state after initialization:', faqs);
-      console.log('Number of FAQs available after initialization:', faqs ? faqs.length : 0);
       if (faqs && faqs.length === 0) {
-        console.log('No FAQs found, fetching again...');
         fetchFaqs();
       }
     }, 2000);

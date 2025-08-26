@@ -33,19 +33,19 @@ api.interceptors.response.use(
       // Handle specific error codes
       switch (error.response.status) {
         case 413:
-          console.error('Request entity too large:', error.response.data);
+          // Request entity too large
           error.message = 'The file size is too large. Please use a smaller file (max 2MB).';
           break;
         case 500:
-          console.error('Server error:', error.response.data);
+          // Server error
           break;
         case 401:
-          console.error('Unauthorized access:', error.response.data);
+          // Unauthorized access
           // You could redirect to login page here if needed
           break;
       }
     } else if (error.code === 'ECONNABORTED') {
-      console.error('Request timeout:', error);
+      // Request timeout
       error.message = 'The request timed out. Please try again.';
     }
     return Promise.reject(error);
@@ -60,18 +60,18 @@ apiFormData.interceptors.response.use(
       // Handle specific error codes
       switch (error.response.status) {
         case 413:
-          console.error('Request entity too large:', error.response.data);
+          // Request entity too large
           error.message = 'The file size is too large. Please use a smaller file (max 2MB).';
           break;
         case 500:
-          console.error('Server error:', error.response.data);
+          // Server error
           break;
         case 401:
-          console.error('Unauthorized access:', error.response.data);
+          // Unauthorized access
           break;
       }
     } else if (error.code === 'ECONNABORTED') {
-      console.error('Request timeout:', error);
+      // Request timeout
       error.message = 'The request timed out. Please try again.';
     }
     return Promise.reject(error);
@@ -97,7 +97,7 @@ api.interceptors.response.use(
   (error) => {
     // Handle server errors (500) or other errors
     if (error.response && error.response.status === 500) {
-      console.error('Server error:', error.response.data);
+      // Server error handling
       // You can add custom handling for 500 errors here
     }
     return Promise.reject(error);
@@ -115,7 +115,7 @@ apiFormData.interceptors.response.use(
   (error) => {
     // Handle server errors (500) or other errors
     if (error.response && error.response.status === 500) {
-      console.error('Server error in form data request:', error.response.data);
+      // Server error in form data request
     }
     return Promise.reject(error);
   }
@@ -236,33 +236,23 @@ export const teamService = {
   },
   deleteTeamMember: (id) => {
     // Add specific error handling for team member deletion
-    console.log(`Attempting to delete team member with ID: ${id}`);
     
-    // Get auth token and log it (masked for security)
+    // Get auth token
     const token = getAuthToken() || localStorage.getItem('token');
-    console.log('Auth token available:', token ? 'Yes (token exists)' : 'No (token missing)');
     
     // Try using the Vite proxy instead of direct URL
     // This will use the proxy configured in vite.config.js
     const url = `/api/team/${id}`;
-    console.log('Making DELETE request to:', url, '(using Vite proxy)');
     
     return api.delete(url)
     .then(response => {
-      console.log('Delete successful, response:', response.data);
       return response;
     })
     .catch(error => {
-      console.error(`Error in deleteTeamMember for ID ${id}:`, error);
-      // Add additional logging for server errors
+      // Add additional error handling for server errors
       if (error.response) {
-        console.error('Error status:', error.response.status);
-        console.error('Error headers:', error.response.headers);
-        console.error('Server response data:', error.response.data);
-        
         // Try direct URL as fallback if proxy fails
         if (error.response.status === 500) {
-          console.log('Trying direct URL as fallback...');
           const directUrl = `https://api.cosmicpowertech.com/api/team/${id}`;
           
           return axios({
@@ -274,18 +264,12 @@ export const teamService = {
             }
           })
           .then(response => {
-            console.log('Fallback delete successful, response:', response.data);
             return response;
           })
           .catch(fallbackError => {
-            console.error('Fallback also failed:', fallbackError);
             throw fallbackError;
           });
         }
-      } else if (error.request) {
-        console.error('No response received:', error.request);
-      } else {
-        console.error('Error message:', error.message);
       }
       throw error; // Re-throw the error for the component to handle
     });

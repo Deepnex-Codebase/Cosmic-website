@@ -10,7 +10,7 @@ export const getTeamCelebration = async () => {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching team celebration data:', error);
+    // Error handling without console.error
     throw error;
   }
 };
@@ -30,7 +30,7 @@ export const updateTeamCelebration = async (data) => {
     }
     return await response.json();
   } catch (error) {
-    console.error('Error updating team celebration data:', error);
+    // Error handling without console.error
     throw error;
   }
 };
@@ -53,7 +53,7 @@ export const uploadTeamCelebrationImage = async (file) => {
     const result = await response.json();
     return `${API_BASE_URL}${result.imageUrl}`;
   } catch (error) {
-    console.error('Error uploading team celebration image:', error);
+    // Error handling without console.error
     throw error;
   }
 };

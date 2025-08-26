@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 150 * 1024 * 1024 }, // 150MB limit for videos
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB limit for videos
   fileFilter: function (req, file, cb) {
     const filetypes = /mp4|avi|mov|wmv|flv|webm/;
     const mimetype = filetypes.test(file.mimetype);
@@ -107,7 +107,9 @@ exports.uploadVideo = async (req, res) => {
       });
     }
     
+    // Create a proper path that will work with the frontend
     const videoPath = `/uploads/videos/${req.file.filename}`;
+    console.log('Video uploaded, path:', videoPath);
     
     // Update the video source in the database
     let videoHeroData = await VideoHero.findOne({ isActive: true });

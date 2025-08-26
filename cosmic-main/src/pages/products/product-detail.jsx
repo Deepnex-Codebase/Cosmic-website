@@ -366,12 +366,19 @@ const ProductDetail = () => {
     );
   }
 
+  // Import environment variables
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+  // Remove '/api' from the end for image URLs
+  const BASE_URL = API_BASE_URL.endsWith('/api') ? API_BASE_URL.slice(0, -4) : API_BASE_URL;
+
   // Prepare product images with correct base URL
   const formatImageUrl = (img) => {
     if (!img) return null;
     if (img.startsWith('http')) return img;
-    if (img.startsWith('/uploads/')) return `https://api.cosmicpowertech.com${img}`;
-    return `https://api.cosmicpowertech.com/uploads/${img}`;
+    if (img.includes('/uploads/products/')) {
+      return `${BASE_URL}${img}`;
+    }
+    return `${BASE_URL}/uploads/products/${img.split('/').pop()}`;
   };
   
   const productImages = product.images && product.images.length > 0 

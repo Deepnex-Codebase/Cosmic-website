@@ -158,8 +158,10 @@ const VideoHero = () => {
       >
         <source 
           src={videoHeroData.videoSource.startsWith('/uploads') 
-            ? (import.meta.env.DEV ? `${DEV_SERVER_URL}${videoHeroData.videoSource}` : `${SERVER_URL}${videoHeroData.videoSource}`) 
-            : videoHeroData.videoSource} 
+            ? `${API_BASE_URL.replace(/\/api$/, '')}${videoHeroData.videoSource}` 
+            : videoHeroData.videoSource.startsWith('http') 
+              ? videoHeroData.videoSource 
+              : `${window.location.origin}${videoHeroData.videoSource}`} 
           type="video/mp4" 
         />
         Your browser does not support the video tag.

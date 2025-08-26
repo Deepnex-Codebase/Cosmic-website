@@ -2,6 +2,9 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '../context/AppContext';
+
+// Import environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as BiIcons from 'react-icons/bi';
@@ -98,11 +101,8 @@ export default function Hero() {
   
   // Process slides to construct image URLs
   const slides = useMemo(() => {
-    // Debug log for hero slides
-    console.log('Hero slides from context:', heroSlides);
-    
+    // If no hero slides available, use fallback slides
     if (!heroSlides || heroSlides.length === 0) {
-      console.log('Using fallback slides');
       return FALLBACK_SLIDES;
     }
     
@@ -112,7 +112,8 @@ export default function Hero() {
       if (imgUrl && imgUrl.startsWith('/uploads/')) {
         // If it's a relative path from backend, ensure it's properly handled
         // The backend now provides fullUrl for media, but we handle both cases
-        imgUrl = slide.fullUrl || `${window.location.origin}${imgUrl}`;
+        const cleanPath = imgUrl.replace(/^\/+/, '').replace(/^uploads\//, '');
+        imgUrl = slide.fullUrl || `${API_BASE_URL}/uploads/${cleanPath}`;
       }
       
       return {
@@ -127,56 +128,32 @@ export default function Hero() {
       };
     });
     
-    console.log('Processed slides:', processedSlides);
-    console.log('Slides count:', processedSlides.length);
-    console.log('Using fallback?', false);
-    
     return processedSlides;
   }, [heroSlides]);
     
-  // Debug log to check slides data
-  console.log('Hero component - slides data:', {
-    heroSlidesFromContext: heroSlides,
-    processedSlides: slides,
-    slidesCount: slides.length,
-    usingFallback: !heroSlides || heroSlides.length === 0
-  });
-  
   // Set active slide to first one when slides change
   useEffect(() => {
     if (slides && slides.length > 0) {
-      console.log('Slides changed, setting active to first slide');
       setActive(0);
     }
   }, [slides]);
   
   // Auto slide functionality
   useEffect(() => {
-    console.log('Setting up auto slide interval with slides:', slides.length);
-    console.log('Current slides data:', slides);
-    
     // Only set up interval if we have more than one slide
     if (slides && slides.length > 1) {
-      console.log('Starting auto-slide interval');
       const interval = setInterval(() => {
-        console.log('Auto slide triggered, current active:', active);
         setActive((current) => {
           // Simplified calculation for next slide index
           const nextIndex = (typeof current === 'number' ? current : slides.findIndex(s => s.key === current)) + 1;
           const nextActive = nextIndex % slides.length;
-          console.log('Setting next active slide to:', nextActive);
           return nextActive;
         });
       }, 5000); // Change slide every 5 seconds
       
       return () => {
-        console.log('Clearing auto slide interval');
         clearInterval(interval);
       };
-    } else {
-      console.log('Not setting up auto-slide interval - fewer than 2 slides');
-      console.log('IMPORTANT: Check if you have at least 2 active hero slides in the database');
-      console.log('If using fallback slides, check FALLBACK_SLIDES array:', FALLBACK_SLIDES.length);
     }
   }, [slides]); // Removed active as dependency to prevent interval recreation on every slide change
   
@@ -184,11 +161,6 @@ export default function Hero() {
   const slide = typeof active === 'number' 
     ? slides[active] 
     : slides.find((s) => s.key === active) ?? slides[0]
-
-  // Log current slide for debugging
-  useEffect(() => {
-    console.log('Current active slide:', slide);
-  }, [slide]);
 
   return (
     <section className="relative bg-black h-[650px] sm:h-[750px] lg:h-screen overflow-hidden">

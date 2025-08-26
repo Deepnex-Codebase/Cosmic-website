@@ -86,10 +86,7 @@ export default function SolarJourney() {
       try {
         // Use the updated API service that bypasses cache
         const response = await journeyService.getActiveMilestones();
-        console.log('Journey API response:', response);
-        console.log('Journey API response status:', response.status);
-        console.log('Journey API response headers:', response.headers);
-        console.log('Journey API full response data:', JSON.stringify(response.data, null, 2));
+        // API response processing
         
         // Handle API response
         if (response && response.data) {
@@ -100,22 +97,22 @@ export default function SolarJourney() {
           if (response.data.data && Array.isArray(response.data.data)) {
             // Standard API response with data property
             milestones = response.data.data;
-            console.log('Found milestones in response.data.data:', milestones);
+            // Milestones found in response.data.data
           } else if (Array.isArray(response.data)) {
             // Direct array response
             milestones = response.data;
-            console.log('Found milestones directly in response.data:', milestones);
+            // Milestones found directly in response.data
           } else if (response.data.success && Array.isArray(response.data.data)) {
             // Success format with data property
             milestones = response.data.data;
-            console.log('Found milestones in response.data.data (success format):', milestones);
+            // Milestones found in response.data.data (success format)
           } else {
             // Try to find any array in the response
-            console.log('Searching for milestones in response...');
+            // Searching for milestones in response
             const findArrays = (obj) => {
               for (const key in obj) {
                 if (Array.isArray(obj[key]) && obj[key].length > 0 && obj[key][0].title) {
-                  console.log(`Found potential milestones array in response.data.${key}:`, obj[key]);
+                  // Found potential milestones array in response.data
                   return obj[key];
                 } else if (typeof obj[key] === 'object' && obj[key] !== null) {
                   const result = findArrays(obj[key]);
@@ -132,21 +129,21 @@ export default function SolarJourney() {
           }
           
           if (milestones.length > 0) {
-            console.log('Processing milestones for display:', milestones);
+            // Processing milestones for display
             // Format the data to match our component's needs
             const formattedData = milestones.map((item, index) => {
-              console.log(`Processing milestone ${index}:`, item);
+              // Processing milestone
               
               // Determine which icon to use - first try exact match
               let IconComponent = FALLBACK_STEPS[index % FALLBACK_STEPS.length].icon;
               
               // Try to find the icon in our map
               if (item.icon) {
-                console.log(`Finding icon for: ${item.icon}`);
+                // Finding icon
                 // Check for exact match first
                 if (ICON_MAP[item.icon]) {
                   IconComponent = ICON_MAP[item.icon];
-                  console.log(`Found exact icon match: ${item.icon}`);
+                  // Found exact icon match
                 } 
                 // If no exact match, try to find a partial match
                 else {
@@ -155,9 +152,9 @@ export default function SolarJourney() {
                   );
                   if (iconKey) {
                     IconComponent = ICON_MAP[iconKey];
-                    console.log(`Found partial icon match: ${item.icon} -> ${iconKey}`);
+                    // Found partial icon match
                   } else {
-                    console.log(`No icon match found for: ${item.icon}, using fallback`);
+                    // No icon match found, using fallback
                   }
                 }
               }
@@ -171,24 +168,25 @@ export default function SolarJourney() {
                 year: item.year
               };
               
-              console.log(`Formatted milestone ${index}:`, formattedItem);
+              // Formatted milestone
               return formattedItem;
             });
             
-            console.log('Setting formatted milestones:', formattedData);
+            // Setting formatted milestones
             setSteps(formattedData);
           } else {
             // Use fallback data if API returns empty array
-            console.log('No journey milestones found, using fallback data');
+            // No journey milestones found, using fallback data
             setSteps(FALLBACK_STEPS);
           }
         } else {
           // Use fallback data if response structure is unexpected
-          console.log('Unexpected API response structure, using fallback data');
+          // Unexpected API response structure, using fallback data
           setSteps(FALLBACK_STEPS);
         }
       } catch (err) {
-        console.error('Error fetching journey data:', err);
+        // Error handling
+        setError('Failed to load journey data');
         setError('Failed to load journey data');
         // Use fallback data on error
         setSteps(FALLBACK_STEPS);

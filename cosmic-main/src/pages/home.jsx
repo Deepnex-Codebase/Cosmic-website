@@ -173,7 +173,7 @@ const Home = () => {
         }
       }
     } catch (error) {
-      console.error('Error fetching Pan India data:', error);
+      // Error handling without console.error
     } finally {
       setPanIndiaLoading(false);
     }
@@ -197,7 +197,7 @@ const Home = () => {
         setNewsCards(newsCardsResponse.data);
       }
     } catch (error) {
-      console.error('Error fetching Green Future data:', error);
+      // Error handling without console.error
     } finally {
       setGreenFutureLoading(false);
     }
@@ -205,14 +205,13 @@ const Home = () => {
   
   // Fetch homepage data when component mounts
   useEffect(() => {
-    console.log('Home component mounted, fetching data...');
     fetchHomepageData();
     fetchPanIndiaData();
     fetchGreenFutureData();
   }, []);
 
   useEffect(() => {
-    console.log('Pan India Data updated:', panIndiaData);
+    // Effect runs when panIndiaData updates
   }, [panIndiaData]);
   
   // Fallback solutions data if API fails

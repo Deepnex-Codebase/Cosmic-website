@@ -68,7 +68,7 @@ const HeroSectionCMS = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching hero section data:', error);
+      // Error handling without console.error
       toast.error('Failed to fetch hero section data');
     } finally {
       setLoading(false);
@@ -84,7 +84,7 @@ const HeroSectionCMS = () => {
         setCompanyStats(response.data);
       }
     } catch (error) {
-      console.error('Error fetching company stats:', error);
+      // Error handling without console.error
       toast.error('Failed to fetch company stats');
     } finally {
       setStatsLoading(false);
@@ -151,7 +151,7 @@ const HeroSectionCMS = () => {
         setBackgroundVideoFile(null);
       }
     } catch (error) {
-      console.error('Error saving hero section:', error);
+      // Error handling without console.error
       toast.error('Failed to save hero section');
     } finally {
       setLoading(false);
@@ -177,7 +177,7 @@ const HeroSectionCMS = () => {
         resetStatForm();
       }
     } catch (error) {
-      console.error('Error saving company stat:', error);
+      // Error handling without console.error
       toast.error('Failed to save company stat');
     } finally {
       setStatsLoading(false);
@@ -194,7 +194,7 @@ const HeroSectionCMS = () => {
       toast.success('Company stat deleted successfully!');
       await fetchCompanyStats();
     } catch (error) {
-      console.error('Error deleting company stat:', error);
+      // Error handling without console.error
       toast.error('Failed to delete company stat');
     } finally {
       setStatsLoading(false);
@@ -245,7 +245,7 @@ const HeroSectionCMS = () => {
       await fetchHeroSectionData();
       await fetchCompanyStats();
     } catch (error) {
-      console.error('Error resetting to default:', error);
+      // Error handling without console.error
       toast.error('Failed to reset to default');
     } finally {
       setLoading(false);
