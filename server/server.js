@@ -44,7 +44,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: '*', // Allow all origins
+  origin: 'https://cosmicpowertech.com', // Allow all origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
