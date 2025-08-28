@@ -44,9 +44,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'https://cosmicpowertech.com', // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: 'https://cosmicpowertech.com' // Allow all origins
 }));
 app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ limit: '200mb', extended: true }));
