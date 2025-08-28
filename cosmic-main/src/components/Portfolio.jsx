@@ -1,102 +1,161 @@
 /* src/components/Portfolio.jsx */
-import { ArrowUpRightIcon } from "@heroicons/react/24/solid";
+import React, { useState, useEffect } from "react";
+import { FiArrowRight, FiFilter, FiSearch } from "react-icons/fi";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getFeaturedProjects } from "../services/projectService";
 
-export default function Portfolio() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await getFeaturedProjects();
-        setProjects(data.projects || data);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchProjects();
-  }, []);
-  
-  // Fallback items if API fails
-  const fallbackItems = [
-    {
-      title: "EPC",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-1-01.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "Retailer",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-2-01.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "Solar Installer",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-2-02.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "Floating",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-1-02.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "CNI",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-1-01.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "Rooftop",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-2-01.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "Residential Rooftop",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-1-02.jpg",
-      span: "lg:col-span-3",
-    },
-    {
-      title: "End User",
-      img: "https://zolar.wpengine.com/wp-content/uploads/2024/07/portfolio-detail-2-02.jpg",
-      span: "lg:col-span-3",
-    },
-  ];
-  
-  // Define uniform span classes for grid layout
-  const spanClasses = [
-    "lg:col-span-3",
-    "lg:col-span-3",
-    "lg:col-span-3",
-    "lg:col-span-3",
-    "lg:col-span-3",
-    "lg:col-span-3",
-    "lg:col-span-3",
-    "lg:col-span-3"
-  ];
-  
-  // Use API data or fallback to static data
-  const items = projects && projects.length > 0
-    ? projects.slice(0, 8).map((project, index) => ({
-        id: project._id,
-        slug: project.slug,
-        tag: project.category || "Project",
-        title: project.title,
-        img: project.featuredImage || (project.images && project.images.length > 0 ? project.images[0] : fallbackItems[index % fallbackItems.length].img),
-        span: spanClasses[index % spanClasses.length],
-        location: project.location,
-        capacity: project.capacity
-      }))
-    : fallbackItems;
+// API_BASE_URL is already defined in projectService.js, no need to redefine it here
 
-  const itemVariant = {
-    hidden: { opacity: 0, scale: 0.9 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: "easeOut" } },
+/* ------------------------- fallback data ------------------------- */
+const fallbackProjectImages = [
+  "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1529861262172-f38517de9ec3?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1566832512884-a1770ad0993b?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
+];
+
+const galleryImages = [
+  "https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1609743521648-3c52bfeae409?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1532394971762-3ec2f35b95fa?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=800&q=80",
+];
+
+export default function Portfolio() {
+  const [loading, setLoading] = useState(true);
+  const [projectData, setProjectData] = useState([]);
+  const [galleryData, setGalleryData] = useState([]);
+  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  
+  const categories = ['All', 'Residential', 'Commercial', 'Industrial', 'Utility Scale'];
+
+  useEffect(() => {
+    fetchProjectsData();
+  }, []);
+
+  const setFallbackData = () => {
+    const fallbackData = fallbackProjectImages.map((src, idx) => ({
+      _id: `fallback-${idx}`,
+      title: `Solar Project ${idx + 1}`,
+      description: `A ${idx % 2 === 0 ? 'residential' : 'commercial'} solar installation with ${(idx + 1) * 5} kW capacity.`,
+      category: idx % 2 === 0 ? 'Residential' : 'Commercial',
+      featuredImage: src,
+      location: "Gujarat, India",
+      capacity: `${(idx + 1) * 5} kW`,
+      status: 'Completed',
+      completionDate: new Date(2020 + idx, idx % 12, 15).toISOString()
+    }));
+    
+    setProjectData(fallbackData);
+    setFilteredProjects(fallbackData);
+    
+    const fallbackGallery = galleryImages.map((image, idx) => ({
+      image: image,
+      title: `Project ${idx + 1}`,
+      category: idx % 2 === 0 ? 'Residential' : 'Commercial',
+      _id: `fallback-${idx}`
+    }));
+    
+    setGalleryData(fallbackGallery);
+  };
+
+  // Filter projects based on search and category
+  useEffect(() => {
+    let filtered = [...projectData];
+    
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(project => 
+        project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.location.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Apply category filter
+    if (selectedCategory && selectedCategory !== 'All') {
+      filtered = filtered.filter(project => project.category === selectedCategory);
+    }
+    
+    setFilteredProjects(filtered);
+  }, [projectData, searchTerm, selectedCategory]);
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleCategoryFilter = (category) => {
+    setSelectedCategory(category);
+  };
+
+  const fetchProjectsData = async () => {
+    try {
+      setLoading(true);
+      
+      // Try to fetch from API first
+      const response = await getFeaturedProjects();
+      
+      // Check if we have valid data from the API
+      // Handle different API response formats
+      let data = [];
+      
+      if (response && response.data && Array.isArray(response.data)) {
+        // If response has data property with array
+        data = response.data;
+      } else if (response && Array.isArray(response)) {
+        // If response itself is an array
+        data = response;
+      } else if (response && response.data && response.data.data && Array.isArray(response.data.data)) {
+        // If response has nested data.data property with array
+        data = response.data.data;
+      }
+      
+      if (data && data.length > 0) {
+        setProjectData(data);
+        setFilteredProjects(data);
+      
+        // Extract gallery images from projects
+        const extractedImages = [];
+        data.forEach(project => {
+          if (project.images && Array.isArray(project.images)) {
+            project.images.slice(0, 2).forEach(img => {
+              extractedImages.push({
+                image: img,
+                title: project.title,
+                category: project.category,
+                _id: project._id
+              });
+            });
+          }
+          if (project.featuredImage) {
+            extractedImages.push({
+              image: project.featuredImage,
+              title: project.title,
+              category: project.category,
+              _id: project._id
+            });
+          }
+        });
+        
+        setGalleryData(extractedImages.slice(0, 8));
+      } else {
+        // If no projects from API or empty array, use fallback
+        console.log('No projects found from API, using fallback data');
+        setFallbackData();
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+      setFallbackData();
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -123,109 +182,119 @@ export default function Portfolio() {
           </h2>
         </motion.header>
 
+        {/* Search and Filter Controls */}
+        <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="relative flex-1 max-w-md">
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 outline-none"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <FiFilter className="text-gray-500 h-5 w-5" />
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => handleCategoryFilter(category)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
+                    selectedCategory === category
+                      ? 'bg-accent-400 text-accent-950'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* Loading state */}
         {loading && (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-lime-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent-500"></div>
           </div>
         )}
 
-        {/* grid */}
+        {/* Projects Grid */}
         {!loading && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 solar-grid-container">
-          {items.map((item, i) => (
-            <motion.article
-              variants={itemVariant}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              key={item.id || i}
-              className="group relative flex overflow-hidden rounded-2xl h-[250px] sm:h-[280px] md:h-[300px] solar-grid-item"
-            >
-              <img
-                src={item.img}
-                alt={item.title}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-
-              {/* overlay */}
-              <div className="absolute inset-0 bg-black/50 opacity-0 transition-opacity group-hover:opacity-70" />
-
-              {/* arrow */}
-              <Link to={`/projects/${item.slug || item.id || i}`} className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-lime-300/90 text-gray-900 transition-transform group-hover:rotate-45">
-                <ArrowUpRightIcon className="h-5 w-5" />
-              </Link>
-
-              {/* caption */}
-              <Link to={`/projects/${item.slug || item.id || i}`} className="absolute bottom-4 left-4 right-4 text-white">
-                <p className="text-xs uppercase tracking-wider text-lime-200 font-space-grotesk">
-                  {item.tag}
-                </p>
-                <h3 className="mt-1 text-lg sm:text-xl md:text-2xl font-bold leading-tight font-space-grotesk line-clamp-2">
-                  {item.title}
-                </h3>
-                {item.location && (
-                  <p className="text-xs text-white/80 mt-1">
-                    <span className="font-semibold">Location:</span> {item.location}
-                  </p>
-                )}
-                {item.capacity && (
-                  <p className="text-xs text-white/80">
-                    <span className="font-semibold">Capacity:</span> {item.capacity}
-                  </p>
-                )}
-              </Link>
-            </motion.article>
-          ))}        </div>
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-8">
+            {filteredProjects && filteredProjects.length > 0 ? (
+              // Actual project data
+              filteredProjects.map((project, idx) => (
+                <div key={project._id || idx} className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                  <div className="relative overflow-hidden">
+                    <div className="absolute top-4 right-4 z-10 bg-accent-400 text-accent-950 text-xs font-medium px-2.5 py-1 rounded-full">
+                      {project.category || (idx % 2 === 0 ? 'Residential' : 'Commercial')}
+                    </div>
+                    <img
+                      src={project.featuredImage ? 
+                        (project.featuredImage.startsWith('http') ? project.featuredImage : `https://api.cosmicpowertech.com${project.featuredImage.startsWith('/') ? '' : '/'}${project.featuredImage.replace(/^\/api\//, '/')}`) : 
+                        (project.image ? (project.image.startsWith('http') ? project.image : `https://api.cosmicpowertech.com${project.image.startsWith('/') ? '' : '/'}${project.image.replace(/^\/api\//, '/')}`) : '')}
+                      alt={project.title || `Project ${idx + 1}`}
+                      className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                      }}
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold mb-2">{project.title || `Solar Project ${idx + 1}`}</h3>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{project.description || "A state-of-the-art solar installation providing clean, renewable energy."}</p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-500">{project.location || "Gujarat, India"}</span>
+                      <Link to={`/projects/${project._id || idx}`} className="text-accent-600 hover:text-accent-800 font-medium flex items-center gap-1 text-sm">
+                        View Details <FiArrowRight className="h-4 w-4" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              // Fallback to sample images
+              fallbackProjectImages.map((src, idx) => (
+                <div key={idx} className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
+                  <div className="relative overflow-hidden">
+                    <div className="absolute top-4 right-4 z-10 bg-accent-400 text-accent-950 text-xs font-medium px-2.5 py-1 rounded-full">
+                      {idx % 2 === 0 ? 'Residential' : 'Commercial'}
+                    </div>
+                    <img
+                      src={src}
+                      alt={`project-${idx}`}
+                      className="w-full h-56 md:h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#13181f]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                      <Link to={`/projects/${idx}`} className="bg-accent-400 hover:bg-accent-500 text-accent-950 px-4 py-2 rounded-full text-sm font-medium shadow-lg transition-all duration-300">View Details</Link>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-bold text-xl mb-2">Solar Project {idx + 1}</h3>
+                    <p className="text-gray-600 text-sm mb-3">A {idx % 2 === 0 ? 'residential' : 'commercial'} solar installation with {(idx + 1) * 5} kW capacity.</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <span className="mr-3">{2020 + idx} • </span>
+                        <span>{idx % 2 === 0 ? 'Residential' : 'Commercial'}</span>
+                      </div>
+                      <Link to={`/projects/${idx}`} className="text-accent-600 hover:text-accent-700 cursor-pointer text-sm font-medium flex items-center">
+                        View Details <FiArrowRight className="ml-1" />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         )}
         
-        {/* Add CSS for hover effect */}
-        <style>
-          {`
-            .solar-grid-container:hover .solar-grid-item:not(:hover) {
-              filter: brightness(0.6) contrast(1.2) saturate(0.8) blur(1px);
-              position: relative;
-            }
-            
-            .solar-grid-container:hover .solar-grid-item:not(:hover)::before {
-              content: '';
-              position: absolute;
-              inset: 0;
-              background: linear-gradient(135deg, rgba(0, 62, 99, 0.7), rgba(0, 120, 215, 0.7), rgba(0, 80, 170, 0.7));
-              z-index: 1;
-              pointer-events: none;
-              transition: all 0.4s ease;
-              border-radius: 1rem;
-              backdrop-filter: blur(1px);
-              animation: gradientShift 3s infinite alternate;
-            }
-            
-            @keyframes gradientShift {
-              0% {
-                background-position: 0% 50%;
-              }
-              100% {
-                background-position: 100% 50%;
-              }
-            }
-            
-            .solar-grid-item {
-              transition: all 0.4s ease;
-              position: relative;
-              overflow: hidden;
-            }
-            
-            .solar-grid-container:hover .solar-grid-item:hover {
-              transform: scale(1.05);
-              z-index: 2;
-              box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.4);
-            }
-            
-            .solar-grid-container:hover .solar-grid-item:hover img {
-              filter: contrast(1.1) brightness(1.05);
-            }
-          `}
-        </style>
+        <div className="text-center mt-12">
+          <Link to="/projects" className="bg-accent-400 hover:bg-accent-500 text-accent-950 px-6 py-3 rounded-full font-medium transition-colors duration-300 shadow-md inline-block">View All Projects</Link>
+        </div>
       </div>
     </section>
   );

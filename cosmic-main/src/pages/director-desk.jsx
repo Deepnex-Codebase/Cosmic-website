@@ -243,7 +243,7 @@ const DirectorDesk = () => {
                   <div className={`relative w-full md:w-1/3 ${index % 2 !== 0 ? 'md:order-2' : ''}`}>
                     <div className="relative overflow-hidden rounded-lg shadow-xl h-[550px]" >
                       <img
-                        src={director.image}
+                        src={director.image && director.image.startsWith('/uploads') ? `https://api.cosmicpowertech.com${director.image}` : director.image}
                         alt={director.name}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       />

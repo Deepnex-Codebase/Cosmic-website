@@ -105,6 +105,13 @@ const HomeCMS = () => {
       const response = await axios.get(`${API_BASE_URL}/pan-india-presence`);
       if (response.data.success && response.data.data.length > 0) {
         const data = response.data.data[0];
+        
+        // Format mapImage URL if it exists and is not already an absolute URL
+        if (data.mapImage && !data.mapImage.startsWith('http')) {
+          // Convert from /api/uploads/... to /uploads/...
+          data.mapImage = data.mapImage.replace('/api', '');
+        }
+        
         setPanIndiaData(data);
         setPanIndiaFormData({
           title: data.title,
@@ -790,7 +797,7 @@ const HomeCMS = () => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-600 mb-1">Current image:</p>
                   <img
-                    src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : `${API_BASE_URL}${panIndiaData.mapImage}`}
+                    src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : `https://api.cosmicpowertech.com${panIndiaData.mapImage.replace('/api', '')}`}
                     alt="Current map"
                     className="w-32 h-32 object-cover rounded-md"
                   />

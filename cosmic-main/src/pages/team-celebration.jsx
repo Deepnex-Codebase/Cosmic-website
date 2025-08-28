@@ -81,7 +81,7 @@ function EventCard({ event }) {
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={event.image}
+          src={event.image && event.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + event.image : event.image}
           alt={event.title}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
@@ -233,7 +233,7 @@ const TeamCelebration = () => {
       <section 
         className="relative bg-cover bg-center py-24 text-white"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${data?.hero?.backgroundImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80'}')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${data?.hero?.backgroundImage && data?.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage : data?.hero?.backgroundImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80'}')`,
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -314,7 +314,7 @@ const TeamCelebration = () => {
               className="relative"
             >
               <img 
-                src={data?.teamCulture?.image || "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=80"} 
+                src={data?.teamCulture?.image && data?.teamCulture?.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.teamCulture?.image : data?.teamCulture?.image || "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=80"} 
                 alt="Team culture" 
                 className="rounded-lg shadow-lg w-full h-auto"
               />

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { getGreenFutureAndNewsCards } from "../services/greenFutureService";
 import Hero from "../components/Hero";
 // SmartEnergySolutions component removed
 import Portfolio from "../components/Portfolio";
@@ -35,6 +36,66 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
   const openPopup = () => setIsOpen(true);
   const closePopup = () => setIsOpen(false);
   
+  // Debug image URL
+  console.log(`NewsCard rendering with image URL: ${image}`);
+  
+  // Get API base URL from environment variables
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+  
+  // Process image URL if needed
+  const getImageUrl = (url) => {
+    if (!url) return '/newsimage.png'; // Default image
+    
+    // If URL already has http/https, return as is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log(`Image URL already has http/https prefix: ${url}`);
+      return url;
+    }
+    
+    // If URL is relative, add base URL
+    const imagePath = url.startsWith('/') ? url.substring(1) : url;
+    
+    // Use the base URL without /api suffix for image URLs
+    let normalizedBaseUrl = API_BASE_URL;
+    if (normalizedBaseUrl.endsWith('/api')) {
+      normalizedBaseUrl = normalizedBaseUrl.slice(0, -4); // Remove /api suffix
+    }
+    normalizedBaseUrl = normalizedBaseUrl.endsWith('/') ? normalizedBaseUrl.slice(0, -1) : normalizedBaseUrl;
+    
+    console.log(`Constructing image URL with base: ${normalizedBaseUrl} and path: ${imagePath}`);
+    return `${normalizedBaseUrl}/${imagePath}`;
+  };
+  
+  // Process logo URL if needed
+  const getLogoUrl = (url) => {
+    if (!url) return '/logo.png'; // Default logo
+    
+    // If URL already has http/https, return as is
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      console.log(`Logo URL already has http/https prefix: ${url}`);
+      return url;
+    }
+    
+    // If URL is relative, add base URL
+    const logoPath = url.startsWith('/') ? url.substring(1) : url;
+    
+    // Use the base URL without /api suffix for logo URLs
+    let normalizedBaseUrl = API_BASE_URL;
+    if (normalizedBaseUrl.endsWith('/api')) {
+      normalizedBaseUrl = normalizedBaseUrl.slice(0, -4); // Remove /api suffix
+    }
+    normalizedBaseUrl = normalizedBaseUrl.endsWith('/') ? normalizedBaseUrl.slice(0, -1) : normalizedBaseUrl;
+    
+    console.log(`Constructing logo URL with base: ${normalizedBaseUrl} and path: ${logoPath}`);
+    return `${normalizedBaseUrl}/${logoPath}`;
+  };
+  
+  // Get processed URLs
+  const processedImageUrl = getImageUrl(image);
+  const processedLogoUrl = getLogoUrl(logo);
+  
+  console.log(`Processed image URL: ${processedImageUrl}`);
+  
   return (
     <>
       {/* News Card - Music Player Style */}
@@ -49,7 +110,7 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
        >
           {/* Logo */}
           <div className="bg-primary-100 p-2 rounded-full shadow-sm mr-3 flex-shrink-0">
-            <img src={logo} alt="Company Logo" className="w-8 h-8" />
+            <img src={processedLogoUrl} alt="Company Logo" className="w-8 h-8" />
           </div>
           
           {/* Title and Date */}
@@ -84,7 +145,7 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
             {/* Popup Header */}
             <div className="relative h-72 overflow-hidden">
               <img 
-                src={image} 
+                src={processedImageUrl} 
                 alt={title} 
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               />
@@ -183,21 +244,54 @@ const Home = () => {
   const fetchGreenFutureData = async () => {
     try {
       setGreenFutureLoading(true);
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
-      const [greenFutureResponse, newsCardsResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/cms/green-future`),
-        axios.get(`${API_BASE_URL}/cms/news-cards/active`)
-      ]);
+      console.log('Starting to fetch Green Future data...');
       
-      if (greenFutureResponse.data) {
-        setGreenFutureData(greenFutureResponse.data);
+      // Use the service to fetch both green future and news cards data
+      const result = await getGreenFutureAndNewsCards();
+      console.log('Result from getGreenFutureAndNewsCards:', result);
+      
+      const { greenFutureData: greenFutureResult, newsCardsData: newsCardsResult } = result;
+      
+      console.log('Green Future Result:', greenFutureResult);
+      console.log('News Cards Result:', newsCardsResult);
+      console.log('News Cards Result Length:', newsCardsResult ? newsCardsResult.length : 0);
+      
+      if (greenFutureResult) {
+        console.log('Setting Green Future Data:', greenFutureResult);
+        setGreenFutureData(greenFutureResult);
+      } else {
+        console.log('No Green Future Data received');
       }
       
-      if (newsCardsResponse.data) {
-        setNewsCards(newsCardsResponse.data);
+      if (newsCardsResult && Array.isArray(newsCardsResult) && newsCardsResult.length > 0) {
+        console.log('Setting News Cards:', newsCardsResult);
+        setNewsCards(newsCardsResult);
+      } else {
+        console.log('No News Cards received or empty array');
+        // Set default news cards for testing
+        setNewsCards([
+          {
+            _id: 'test1',
+            title: 'Test News Card 1',
+            image: '/newsimage.png',
+            logo: '/logo.png',
+            date: 'Today',
+            excerpt: 'This is a test news card',
+            content: 'This is test content for debugging purposes.'
+          },
+          {
+            _id: 'test2',
+            title: 'Test News Card 2',
+            image: '/newsimage.png',
+            logo: '/logo.png',
+            date: 'Yesterday',
+            excerpt: 'This is another test news card',
+            content: 'This is more test content for debugging purposes.'
+          }
+        ]);
       }
     } catch (error) {
-      // Error handling without console.error
+      console.log('Error in fetchGreenFutureData:', error);
     } finally {
       setGreenFutureLoading(false);
     }

@@ -569,7 +569,7 @@ const AdminCompanyCulture = () => {
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Image Preview</label>
               <img 
-                src={companyCultureData.workEnvironment.image} 
+                src={companyCultureData.workEnvironment.image && companyCultureData.workEnvironment.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + companyCultureData.workEnvironment.image : companyCultureData.workEnvironment.image} 
                 alt="Work Environment" 
                 className="w-full h-64 object-cover rounded" 
               />

@@ -318,7 +318,7 @@ const CompanyCulture = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               <img 
-                src={data.companyCulture.workEnvironment.image} 
+                src={data.companyCulture.workEnvironment.image && data.companyCulture.workEnvironment.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data.companyCulture.workEnvironment.image : data.companyCulture.workEnvironment.image} 
                 alt="Collaborative work environment" 
                 className="rounded-lg shadow-lg w-full h-auto"
               />
@@ -366,7 +366,7 @@ const CompanyCulture = () => {
               >
                 <div className="h-48 overflow-hidden">
                   <img 
-                    src={card.image} 
+                    src={card.image && card.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + card.image : card.image} 
                     alt={card.title} 
                     className="w-full h-full object-cover"
                   />

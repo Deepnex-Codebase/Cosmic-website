@@ -4,6 +4,26 @@ import { Link } from 'react-router-dom';
 import { FiSun,FiCheck, FiZap, FiSettings, FiTool, FiCheckCircle, FiHome, FiTruck, FiCpu, FiBarChart, FiArrowRight, FiLoader } from 'react-icons/fi';
 import { getAllServices } from '../services/serviceService';
 
+// Define image base URL
+const IMAGE_BASE_URL = 'https://api.cosmicpowertech.com';
+
+// Helper function to format image URLs
+const formatImageUrl = (imagePath) => {
+  if (!imagePath) return null;
+  
+  // If it's already a complete URL or a blob URL, return as is
+  if (imagePath.startsWith('http') || imagePath.startsWith('blob:')) {
+    return imagePath;
+  }
+  
+  // If it starts with /uploads, prepend the base URL
+  if (imagePath.startsWith('/uploads')) {
+    return `${IMAGE_BASE_URL}${imagePath}`;
+  }
+  
+  return imagePath;
+};
+
 const Services = () => {
   // State management
   const [mainServices, setMainServices] = useState([]);
@@ -188,7 +208,7 @@ const Services = () => {
                 <div className="relative h-56 overflow-hidden">
                   <div className={`absolute inset-0 bg-gradient-to-r ${service.color || 'from-accent-400 to-accent-600'} opacity-0 group-hover:opacity-70 transition-opacity duration-500 z-10`}></div>
                   <img
-                    src={service.image || 'https://images.unsplash.com/photo-1569012871812-f38ee64cd54c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}
+                    src={formatImageUrl(service.image) || 'https://images.unsplash.com/photo-1569012871812-f38ee64cd54c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'}
                     alt={service.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />

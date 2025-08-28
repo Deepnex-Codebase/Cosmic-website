@@ -223,10 +223,17 @@ const AdminServices = () => {
 
   // Handle edit
   const handleEdit = (service) => {
+    // Format image URL if it starts with /uploads
+    let imageUrl = service.image;
+    if (imageUrl && imageUrl.startsWith('/uploads')) {
+      imageUrl = formatImageUrl(imageUrl);
+    }
+    
     setFormData({
       ...service,
       features: service.features || [],
-      seo: service.seo || { title: '', description: '', keywords: '' }
+      seo: service.seo || { title: '', description: '', keywords: '' },
+      imagePreview: imageUrl // Set the image preview URL
     });
     setEditingService(service);
     setShowModal(true);
@@ -268,7 +275,14 @@ const AdminServices = () => {
         return;
       }
       
-      setFormData(prev => ({ ...prev, image: file }));
+      // Create a temporary URL for the image preview
+      const imageUrl = URL.createObjectURL(file);
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        image: file,
+        imagePreview: imageUrl // Store the URL for preview
+      }));
     }
   };
 
@@ -674,6 +688,20 @@ const AdminServices = () => {
                     onChange={handleImageUpload}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
                   />
+                  
+                  {/* Image Preview */}
+                  {(formData.imagePreview || formData.image) && (
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Image Preview:</p>
+                      <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
+                        <img 
+                          src={formData.imagePreview || formatImageUrl(formData.image)}
+                          alt="Service preview" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+                  )}
                   
                   {/* File Upload Information */}
                   <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">

@@ -133,7 +133,7 @@ const TeamSection = () => {
                     )}
                     <div className="w-full h-80 relative">
                       <img
-                        src={member.image}
+                        src={member.image && member.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + member.image : member.image}
                         alt={member.name}
                         className="w-full h-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
                       />

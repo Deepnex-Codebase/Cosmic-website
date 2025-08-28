@@ -317,7 +317,7 @@ const TeamAdmin = () => {
                 {formData.image && (
                   <div className="mt-2">
                     <img
-                      src={formData.image.startsWith('blob:') ? formData.image : formData.image.startsWith('http') ? formData.image : `${formData.image}`}
+                      src={formData.image.startsWith('blob:') ? formData.image : formData.image.startsWith('http') ? formData.image : formData.image.startsWith('/uploads') ? `https://api.cosmicpowertech.com${formData.image}` : `${formData.image}`}
                       alt="Team Member Preview"
                       className="h-20 w-20 object-cover rounded-md"
                     />
@@ -464,7 +464,7 @@ const TeamAdmin = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {member.image && (
                           <img
-                            src={member.image}
+                            src={member.image && member.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + member.image : member.image}
                             alt={member.name}
                             className="h-10 w-10 rounded-full object-cover"
                           />

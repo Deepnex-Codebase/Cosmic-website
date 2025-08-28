@@ -1,7 +1,23 @@
 import api from './api';
+import axios from 'axios';
+
+// Import for Green Future data
+import { getGreenFutureData } from './greenFutureService';
 
 // Define API path using api service
 const API_BASE_URL = '/projects';
+
+// Define direct API URL as fallback
+const DIRECT_API_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+
+// Create a direct axios instance for fallback
+const directApi = axios.create({
+  baseURL: DIRECT_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000,
+});
 
 // Get all projects with pagination and filtering
 export const getAllProjects = async (params = {}) => {
@@ -17,11 +33,23 @@ export const getAllProjects = async (params = {}) => {
 // Get featured projects
 export const getFeaturedProjects = async () => {
   try {
+    // Try with main API first
     const response = await api.get(`${API_BASE_URL}/featured`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching featured projects:', error);
-    throw error;
+    // Return the entire response to handle different API response formats in the component
+    return response;
+  } catch (mainError) {
+    console.error('Error fetching featured projects from main API:', mainError);
+    
+    // Try with direct API as fallback
+    try {
+      console.log('Attempting to fetch from direct API URL...');
+      const directResponse = await directApi.get(`/projects/featured`);
+      return directResponse;
+    } catch (fallbackError) {
+      console.error('Error fetching featured projects from fallback API:', fallbackError);
+      // Return empty array if both attempts fail
+      return [];
+    }
   }
 };
 
@@ -39,24 +67,50 @@ export const getProjectStats = async () => {
 // Get single project by ID or slug
 export const getProjectById = async (id) => {
   try {
+    // Try with main API first
     const response = await api.get(`${API_BASE_URL}/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching project:', error);
-    throw error;
+    // Return the entire response to handle different API response formats in the component
+    return response;
+  } catch (mainError) {
+    console.error('Error fetching project from main API:', mainError);
+    
+    // Try with direct API as fallback
+    try {
+      console.log('Attempting to fetch project from direct API URL...');
+      const directResponse = await directApi.get(`/projects/${id}`);
+      return directResponse;
+    } catch (fallbackError) {
+      console.error('Error fetching project from fallback API:', fallbackError);
+      // Return empty object if both attempts fail
+      return {};
+    }
   }
 };
 
 // Get projects by category
 export const getProjectsByCategory = async (category, params = {}) => {
   try {
+    // Try with main API first
     const response = await api.get(`${API_BASE_URL}`, { 
       params: { ...params, category } 
     });
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching projects by category:', error);
-    throw error;
+    // Return the entire response to handle different API response formats in the component
+    return response;
+  } catch (mainError) {
+    console.error('Error fetching projects by category from main API:', mainError);
+    
+    // Try with direct API as fallback
+    try {
+      console.log('Attempting to fetch projects by category from direct API URL...');
+      const directResponse = await directApi.get(`/projects`, {
+        params: { ...params, category }
+      });
+      return directResponse;
+    } catch (fallbackError) {
+      console.error('Error fetching projects by category from fallback API:', fallbackError);
+      // Return empty array if both attempts fail
+      return [];
+    }
   }
 };
 

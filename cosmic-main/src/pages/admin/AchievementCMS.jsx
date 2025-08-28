@@ -191,7 +191,12 @@ export default function AchievementCMS() {
       });
     }
     
-    setImagePreview(item?.image || item?.logo || '');
+    // Check if image/logo starts with /uploads and prepend API URL
+    let imageUrl = item?.image || item?.logo || '';
+    if (imageUrl && imageUrl.startsWith('/uploads')) {
+      imageUrl = `https://api.cosmicpowertech.com${imageUrl}`;
+    }
+    setImagePreview(imageUrl);
     setShowModal(true);
   };
 
@@ -269,11 +274,12 @@ export default function AchievementCMS() {
       const fieldName = modalType === 'partner' ? 'logo' : 'image';
       setFormData({ ...formData, [fieldName]: file });
       
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+      // Create a temporary URL for the file
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreview(imageUrl);
+      
+      // Optional: Revoke the URL when it's no longer needed to free up memory
+      // This could be done in a useEffect cleanup function if needed
     }
   };
 
@@ -381,7 +387,7 @@ export default function AchievementCMS() {
                 {pageData.hero?.backgroundImage && (
                   <div className="mt-2">
                     <img
-                      src={pageData.hero?.backgroundImage}
+                      src={pageData.hero?.backgroundImage && pageData.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + pageData.hero?.backgroundImage : pageData.hero?.backgroundImage}
                       alt="Hero background"
                       className="h-32 w-48 object-cover rounded-lg"
                     />
@@ -603,7 +609,7 @@ export default function AchievementCMS() {
                   </div>
                   {partner.logo && (
                     <img
-                      src={partner.logo}
+                      src={partner.logo.startsWith('/uploads') ? `https://api.cosmicpowertech.com${partner.logo}` : partner.logo}
                       alt={partner.name}
                       className="h-16 w-auto mx-auto mb-2"
                     />
@@ -793,7 +799,7 @@ export default function AchievementCMS() {
                     {imagePreview && (
                       <div className="mt-2">
                         <img
-                          src={imagePreview}
+                          src={imagePreview.startsWith('/uploads') ? `https://api.cosmicpowertech.com${imagePreview}` : imagePreview}
                           alt="Preview"
                           className="h-32 w-32 object-cover rounded-lg"
                         />

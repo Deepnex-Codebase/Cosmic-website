@@ -267,7 +267,7 @@ const AdminTeamCelebration = () => {
                 </div>
                 {teamCelebrationData.hero?.backgroundImage && (
                   <img
-                    src={teamCelebrationData.hero.backgroundImage}
+                    src={teamCelebrationData.hero.backgroundImage && teamCelebrationData.hero.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.hero.backgroundImage : teamCelebrationData.hero.backgroundImage}
                     alt="Hero background"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />
@@ -325,7 +325,7 @@ const AdminTeamCelebration = () => {
                 </div>
                 {teamCelebrationData.teamCulture?.image && (
                   <img
-                    src={teamCelebrationData.teamCulture.image}
+                    src={teamCelebrationData.teamCulture.image && teamCelebrationData.teamCulture.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image : teamCelebrationData.teamCulture.image}
                     alt="Team culture"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />

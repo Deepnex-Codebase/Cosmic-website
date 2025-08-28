@@ -288,7 +288,7 @@ const DirectorAdmin = () => {
               {formData.image && (
                 <div className="mt-2">
                   <img 
-                    src={formData.image} 
+                    src={formData.image && formData.image.startsWith('/uploads') ? `https://api.cosmicpowertech.com${formData.image}` : formData.image} 
                     alt="Director preview" 
                     className="h-20 w-20 object-cover rounded-md" 
                   />
@@ -471,7 +471,11 @@ const DirectorAdmin = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{director.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{director.position}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <img src={director.image} alt={director.name} className="h-10 w-10 rounded-full object-cover" />
+                      <img 
+                        src={director.image && director.image.startsWith('/uploads') ? `https://api.cosmicpowertech.com${director.image}` : director.image} 
+                        alt={director.name} 
+                        className="h-10 w-10 rounded-full object-cover" 
+                      />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex space-x-2">
