@@ -52,19 +52,46 @@ const processNewsCardImages = (newsCards, baseUrl) => {
     // Create a new card object to avoid mutating the original
     const processedCard = { ...card };
     
-    // Process image URL if it exists and is a relative path
+    // Process image URL if it exists
     if (processedCard.image && typeof processedCard.image === 'string') {
       console.log(`Original image URL for card ${index}: ${processedCard.image}`);
       
-      // Check if the image URL is relative (doesn't start with http:// or https://)
-      if (!processedCard.image.startsWith('http://') && !processedCard.image.startsWith('https://')) {
+      // Fix duplicated URL pattern
+      const apiUploadsPattern = '/api/uploads/news-cards/';
+      const correctUploadsPattern = '/uploads/news-cards/';
+      
+      // Check for the specific duplicated URL pattern that was reported
+      if (processedCard.image.includes(`${normalizedBaseUrl}/api/uploads/news-cards/${normalizedBaseUrl}/api/uploads/news-cards/`)) {
+        processedCard.image = processedCard.image.replace(`${normalizedBaseUrl}/api/uploads/news-cards/${normalizedBaseUrl}/api/uploads/news-cards/`, `${normalizedBaseUrl}/uploads/news-cards/`);
+        console.log(`Fixed specific duplicated URL pattern for card ${index}: ${processedCard.image}`);
+      }
+      // Check for the exact pattern shown in the error
+      else if (processedCard.image.includes('https://api.cosmicpowertech.com/api/uploads/news-cards/https://api.cosmicpowertech.com/api/uploads/news-cards/')) {
+        // Replace all occurrences of the duplicated pattern
+        let fixedUrl = processedCard.image;
+        while (fixedUrl.includes('https://api.cosmicpowertech.com/api/uploads/news-cards/https://api.cosmicpowertech.com/api/uploads/news-cards/')) {
+          fixedUrl = fixedUrl.replace('https://api.cosmicpowertech.com/api/uploads/news-cards/https://api.cosmicpowertech.com/api/uploads/news-cards/', 'https://api.cosmicpowertech.com/uploads/news-cards/');
+        }
+        processedCard.image = fixedUrl;
+        console.log(`Fixed exact duplicated URL pattern for card ${index}: ${processedCard.image}`);
+      }
+      // Check for other variations of duplicated URL patterns
+      else if (processedCard.image.includes(`${normalizedBaseUrl}${apiUploadsPattern}${normalizedBaseUrl}${apiUploadsPattern}`)) {
+        processedCard.image = processedCard.image.replace(`${normalizedBaseUrl}${apiUploadsPattern}${normalizedBaseUrl}${apiUploadsPattern}`, `${normalizedBaseUrl}${correctUploadsPattern}`);
+        console.log(`Fixed duplicated URL pattern for card ${index}: ${processedCard.image}`);
+      }
+      // Check if URL has /api/uploads pattern that needs to be fixed
+      else if (processedCard.image.includes(`${normalizedBaseUrl}/api/uploads`)) {
+        processedCard.image = processedCard.image.replace(`${normalizedBaseUrl}/api/uploads`, `${normalizedBaseUrl}/uploads`);
+        console.log(`Fixed /api/uploads pattern for card ${index}: ${processedCard.image}`);
+      }
+      // Check if URL is relative (doesn't start with http:// or https://)
+      else if (!processedCard.image.startsWith('http://') && !processedCard.image.startsWith('https://')) {
         // Remove any leading slash from the image path
         const imagePath = processedCard.image.startsWith('/') ? processedCard.image.substring(1) : processedCard.image;
         // Combine to form the complete URL
         processedCard.image = `${normalizedBaseUrl}/${imagePath}`;
-        console.log(`Processed image URL for card ${index}: ${processedCard.image}`);
-      } else {
-        console.log(`Image URL for card ${index} already has http/https prefix, keeping as is: ${processedCard.image}`);
+        console.log(`Processed relative image URL for card ${index}: ${processedCard.image}`);
       }
     } else {
       console.log(`No image URL found or it is not a string for card ${index}`);
@@ -77,15 +104,42 @@ const processNewsCardImages = (newsCards, baseUrl) => {
     if (processedCard.logo && typeof processedCard.logo === 'string') {
       console.log(`Original logo URL for card ${index}: ${processedCard.logo}`);
       
-      // Check if the logo URL is relative (doesn't start with http:// or https://)
-      if (!processedCard.logo.startsWith('http://') && !processedCard.logo.startsWith('https://')) {
+      // Fix duplicated URL pattern
+      const apiUploadsPattern = '/api/uploads/news-cards/';
+      const correctUploadsPattern = '/uploads/news-cards/';
+      
+      // Check for the specific duplicated URL pattern that was reported
+      if (processedCard.logo.includes(`${normalizedBaseUrl}/api/uploads/news-cards/${normalizedBaseUrl}/api/uploads/news-cards/`)) {
+        processedCard.logo = processedCard.logo.replace(`${normalizedBaseUrl}/api/uploads/news-cards/${normalizedBaseUrl}/api/uploads/news-cards/`, `${normalizedBaseUrl}/uploads/news-cards/`);
+        console.log(`Fixed specific duplicated URL pattern for logo ${index}: ${processedCard.logo}`);
+      }
+      // Check for the exact pattern shown in the error
+      else if (processedCard.logo.includes('https://api.cosmicpowertech.com/api/uploads/news-cards/https://api.cosmicpowertech.com/api/uploads/news-cards/')) {
+        // Replace all occurrences of the duplicated pattern
+        let fixedUrl = processedCard.logo;
+        while (fixedUrl.includes('https://api.cosmicpowertech.com/api/uploads/news-cards/https://api.cosmicpowertech.com/api/uploads/news-cards/')) {
+          fixedUrl = fixedUrl.replace('https://api.cosmicpowertech.com/api/uploads/news-cards/https://api.cosmicpowertech.com/api/uploads/news-cards/', 'https://api.cosmicpowertech.com/uploads/news-cards/');
+        }
+        processedCard.logo = fixedUrl;
+        console.log(`Fixed exact duplicated URL pattern for logo ${index}: ${processedCard.logo}`);
+      }
+      // Check for other variations of duplicated URL patterns
+      else if (processedCard.logo.includes(`${normalizedBaseUrl}${apiUploadsPattern}${normalizedBaseUrl}${apiUploadsPattern}`)) {
+        processedCard.logo = processedCard.logo.replace(`${normalizedBaseUrl}${apiUploadsPattern}${normalizedBaseUrl}${apiUploadsPattern}`, `${normalizedBaseUrl}${correctUploadsPattern}`);
+        console.log(`Fixed duplicated URL pattern for logo ${index}: ${processedCard.logo}`);
+      }
+      // Check if URL has /api/uploads pattern that needs to be fixed
+      else if (processedCard.logo.includes(`${normalizedBaseUrl}/api/uploads`)) {
+        processedCard.logo = processedCard.logo.replace(`${normalizedBaseUrl}/api/uploads`, `${normalizedBaseUrl}/uploads`);
+        console.log(`Fixed /api/uploads pattern for logo ${index}: ${processedCard.logo}`);
+      }
+      // Check if URL is relative (doesn't start with http:// or https://)
+      else if (!processedCard.logo.startsWith('http://') && !processedCard.logo.startsWith('https://')) {
         // Remove any leading slash from the logo path
         const logoPath = processedCard.logo.startsWith('/') ? processedCard.logo.substring(1) : processedCard.logo;
         // Combine to form the complete URL
         processedCard.logo = `${normalizedBaseUrl}/${logoPath}`;
-        console.log(`Processed logo URL for card ${index}: ${processedCard.logo}`);
-      } else {
-        console.log(`Logo URL for card ${index} already has http/https prefix, keeping as is: ${processedCard.logo}`);
+        console.log(`Processed relative logo URL for card ${index}: ${processedCard.logo}`);
       }
     } else {
       console.log(`No logo URL found or it is not a string for card ${index}`);
@@ -140,6 +194,17 @@ export const getNewsCards = async () => {
     // Get API base URL from environment variables
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
     console.log('Using API_BASE_URL:', API_BASE_URL);
+    
+    // Normalize base URL for image processing
+    let normalizedBaseUrl = API_BASE_URL;
+    // Remove /api suffix if present
+    if (normalizedBaseUrl.endsWith('/api')) {
+      normalizedBaseUrl = normalizedBaseUrl.slice(0, -4); // Remove /api suffix
+      console.log(`Removed /api suffix from base URL: ${normalizedBaseUrl}`);
+    }
+    // Remove any trailing slash from the base URL
+    normalizedBaseUrl = normalizedBaseUrl.endsWith('/') ? normalizedBaseUrl.slice(0, -1) : normalizedBaseUrl;
+    console.log(`Normalized base URL for image processing: ${normalizedBaseUrl}`);
     
     // Try all possible endpoints in sequence
     const endpoints = [
@@ -230,8 +295,8 @@ export const getNewsCards = async () => {
     
     if (success && newsCards.length > 0) {
       console.log('News Cards before processing:', newsCards);
-      // Process image URLs to add base URL if needed
-      const processedCards = processNewsCardImages(newsCards, API_BASE_URL);
+      // Process image URLs to add base URL if needed and fix duplicated URL patterns
+      const processedCards = processNewsCardImages(newsCards, normalizedBaseUrl);
       console.log('News Cards after processing:', processedCards);
       return processedCards;
     } else {

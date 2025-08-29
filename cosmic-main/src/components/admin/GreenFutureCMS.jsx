@@ -5,6 +5,32 @@ import { FaSave, FaPlus, FaEdit, FaTrash, FaLeaf, FaImage, FaEye, FaTimes } from
 
 // Use environment variable directly
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+ 
+// Helper function to fixURL patterns
+const fixImageUrl = (url) => {
+  if (!url) return url;
+  
+  // First, handle the case of duplicated URL pattern
+  if (url.includes('/api/uploads/news-cards/https://')) {
+    // Extract the filename from the duplicated URL
+    const parts = url.split('/api/uploads/news-cards/https://');
+    if (parts.length > 1) {
+      const subParts = parts[1].split('/');
+      // Get the actual filename (last part)
+      if (subParts.length > 0) {
+        const filename = subParts[subParts.length - 1];
+        return `${API_BASE_URL}/uploads/news-cards/${filename}`;
+      }
+    }
+  }
+  
+  // Handle other cases
+  if (url.includes('/api/uploads/')) {
+    return url.replace('/api/uploads/', '/uploads/');
+  }
+  
+  return url;
+};
 
 const GreenFutureCMS = () => {
   const [_greenFutureData, setGreenFutureData] = useState(null); // Using underscore prefix to indicate it's set but not directly used
@@ -46,14 +72,21 @@ const GreenFutureCMS = () => {
         const data = response.data.data;
         
         // Format background image URL correctly if it exists
-        if (data.backgroundImage) {
-          if (data.backgroundImage.startsWith('/uploads')) {
-            data.backgroundImage = `${API_BASE_URL}${data.backgroundImage}`;
-          } else if (!data.backgroundImage.includes('https://api.cosmicpowertech.com/uploads/') 
-                  && !data.backgroundImage.startsWith('/uploads')) {
-            data.backgroundImage = `${API_BASE_URL}/uploads/green-future/${data.backgroundImage}`;
-          }
+      if (data.backgroundImage) {
+        // Check if URL already contains API_BASE_URL to avoid duplication
+        if (data.backgroundImage.includes(`${API_BASE_URL}/api/uploads`)) {
+          // Fix the duplicated URL by replacing /api/uploads with /uploads
+          data.backgroundImage = data.backgroundImage.replace(`${API_BASE_URL}/api/uploads`, `${API_BASE_URL}/uploads`);
+        } else if (data.backgroundImage.includes('http://localhost:8000/api/uploads')) {
+          // Fix localhost URL with /api/uploads
+          data.backgroundImage = data.backgroundImage.replace('http://localhost:8000/api/uploads', 'http://localhost:8000/uploads');
+        } else if (data.backgroundImage.startsWith('/uploads')) {
+          data.backgroundImage = `${API_BASE_URL}${data.backgroundImage}`;
+        } else if (!data.backgroundImage.includes(`${API_BASE_URL}/uploads/`) 
+                && !data.backgroundImage.startsWith('/uploads')) {
+          data.backgroundImage = `${API_BASE_URL}/uploads/green-future/${data.backgroundImage}`;
         }
+      }
         
         setGreenFutureData(data);
         setFormData({
@@ -81,24 +114,14 @@ const GreenFutureCMS = () => {
       if (response.data?.data) {
         // Format image URLs correctly
         const formattedCards = response.data.data.map(card => {
-          // Format image URL correctly if it exists
+          // Use the helper function to fix image URLs
           if (card.image) {
-            if (card.image.startsWith('/uploads')) {
-              card.image = `${API_BASE_URL}${card.image}`;
-            } else if (!card.image.includes(`${API_BASE_URL}/uploads/`) 
-                    && !card.image.startsWith('/uploads')) {
-              card.image = `${API_BASE_URL}/uploads/news-cards/${card.image}`;
-            }
+            card.image = fixImageUrl(card.image);
           }
           
-          // Format logo URL correctly if it exists
+          // Use the helper function to fix logo URLs
           if (card.logo) {
-            if (card.logo.startsWith('/uploads')) {
-              card.logo = `${API_BASE_URL}${card.logo}`;
-            } else if (!card.logo.includes(`${API_BASE_URL}/uploads/`) 
-                    && !card.logo.startsWith('/uploads')) {
-              card.logo = `${API_BASE_URL}/uploads/news-cards/${card.logo}`;
-            }
+            card.logo = fixImageUrl(card.logo);
           }
           
           return card;
@@ -230,13 +253,20 @@ const GreenFutureCMS = () => {
         const updatedData = response.data.data;
         
         // Format background image URL correctly if it exists
-        if (updatedData.backgroundImage) {
-          if (updatedData.backgroundImage.startsWith('/uploads')) {
-            updatedData.backgroundImage = `${API_BASE_URL}${updatedData.backgroundImage}`;
-          } else if (!updatedData.backgroundImage.includes('https://api.cosmicpowertech.com/uploads/') 
-                  && !updatedData.backgroundImage.startsWith('/uploads')) {
-            updatedData.backgroundImage = `${API_BASE_URL}/uploads/green-future/${updatedData.backgroundImage}`;
-          }
+      if (updatedData.backgroundImage) {
+        // Check if URL already contains API_BASE_URL to avoid duplication
+        if (updatedData.backgroundImage.includes(`${API_BASE_URL}/api/uploads`)) {
+          // Fix the duplicated URL by replacing /api/uploads with /uploads
+          updatedData.backgroundImage = updatedData.backgroundImage.replace(`${API_BASE_URL}/api/uploads`, `${API_BASE_URL}/uploads`);
+        } else if (updatedData.backgroundImage.includes('http://localhost:8000/api/uploads')) {
+          // Fix localhost URL with /api/uploads
+          updatedData.backgroundImage = updatedData.backgroundImage.replace('http://localhost:8000/api/uploads', `${API_BASE_URL}/uploads`);
+        } else if (updatedData.backgroundImage.startsWith('/uploads')) {
+          updatedData.backgroundImage = `${API_BASE_URL}${updatedData.backgroundImage}`;
+        } else if (!updatedData.backgroundImage.includes(`${API_BASE_URL}/uploads/`) 
+                && !updatedData.backgroundImage.startsWith('/uploads')) {
+          updatedData.backgroundImage = `${API_BASE_URL}/uploads/green-future/${updatedData.backgroundImage}`;
+        }
           
           // Update form data with the correct image URL
           setFormData(prev => ({
@@ -290,22 +320,14 @@ const GreenFutureCMS = () => {
           const updatedCard = response.data.data;
           
           // Format image URLs correctly if they exist
+          // Use the helper function to fix image URLs
           if (updatedCard.image) {
-            if (updatedCard.image.startsWith('/uploads')) {
-              updatedCard.image = `${API_BASE_URL}${updatedCard.image}`;
-            } else if (!updatedCard.image.includes('https://api.cosmicpowertech.com/uploads/') 
-                    && !updatedCard.image.startsWith('/uploads')) {
-              updatedCard.image = `${API_BASE_URL}/uploads/news-cards/${updatedCard.image}`;
-            }
+            updatedCard.image = fixImageUrl(updatedCard.image);
           }
           
+          // Use the helper function to fix logo URLs
           if (updatedCard.logo) {
-            if (updatedCard.logo.startsWith('/uploads')) {
-              updatedCard.logo = `${API_BASE_URL}${updatedCard.logo}`;
-            } else if (!updatedCard.logo.includes('https://api.cosmicpowertech.com/uploads/') 
-                    && !updatedCard.logo.startsWith('/uploads')) {
-              updatedCard.logo = `${API_BASE_URL}/uploads/news-cards/${updatedCard.logo}`;
-            }
+            updatedCard.logo = fixImageUrl(updatedCard.logo);
           }
           
           // Update card form data with the correct image URLs
@@ -331,7 +353,14 @@ const GreenFutureCMS = () => {
           
           // Format image URLs correctly if they exist
           if (newCard.image) {
-            if (newCard.image.startsWith('/uploads')) {
+            // Check if URL already contains API_BASE_URL to avoid duplication
+            if (newCard.image.includes(`${API_BASE_URL}/api/uploads`)) {
+              // Fix the duplicated URL by replacing /api/uploads with /uploads
+              newCard.image = newCard.image.replace(`${API_BASE_URL}/api/uploads`, `${API_BASE_URL}/uploads`);
+            } else if (newCard.image.includes('http://localhost:8000/api/uploads')) {
+              // Fix localhost URL with /api/uploads
+              newCard.image = newCard.image.replace('http://localhost:8000/api/uploads', `${API_BASE_URL}/uploads`);
+            } else if (newCard.image.startsWith('/uploads')) {
               newCard.image = `${API_BASE_URL}${newCard.image}`;
             } else if (!newCard.image.includes('https://api.cosmicpowertech.com/uploads/') 
                     && !newCard.image.startsWith('/uploads')) {
@@ -340,7 +369,14 @@ const GreenFutureCMS = () => {
           }
           
           if (newCard.logo) {
-            if (newCard.logo.startsWith('/uploads')) {
+            // Check if URL already contains API_BASE_URL to avoid duplication
+            if (newCard.logo.includes(`${API_BASE_URL}/api/uploads`)) {
+              // Fix the duplicated URL by replacing /api/uploads with /uploads
+              newCard.logo = newCard.logo.replace(`${API_BASE_URL}/api/uploads`, `${API_BASE_URL}/uploads`);
+            } else if (newCard.logo.includes('http://localhost:8000/api/uploads')) {
+              // Fix localhost URL with /api/uploads
+              newCard.logo = newCard.logo.replace('http://localhost:8000/api/uploads', `${API_BASE_URL}/uploads`);
+            } else if (newCard.logo.startsWith('/uploads')) {
               newCard.logo = `${API_BASE_URL}${newCard.logo}`;
             } else if (!newCard.logo.includes('https://api.cosmicpowertech.com/uploads/') 
                     && !newCard.logo.startsWith('/uploads')) {
@@ -389,7 +425,14 @@ const GreenFutureCMS = () => {
     let formattedImage = card.image;
     if (formattedImage && !formattedImage.startsWith('data:')) {
       // If it's not a data URL (from FileReader), format it correctly
-      if (formattedImage.startsWith('/uploads')) {
+      // Check if URL already contains API_BASE_URL to avoid duplication
+      if (formattedImage.includes(`${API_BASE_URL}/api/uploads`)) {
+        // Fix the duplicated URL by replacing /api/uploads with /uploads
+        formattedImage = formattedImage.replace(`${API_BASE_URL}/api/uploads`, `${API_BASE_URL}/uploads`);
+      } else if (formattedImage.includes('http://localhost:8000/api/uploads')) {
+        // Fix localhost URL with /api/uploads
+        formattedImage = formattedImage.replace('http://localhost:8000/api/uploads', 'http://localhost:8000/uploads');
+      } else if (formattedImage.startsWith('/uploads')) {
         formattedImage = `${API_BASE_URL}${formattedImage}`;
       } else if (!formattedImage.includes('https://api.cosmicpowertech.com/uploads/') 
               && !formattedImage.startsWith('/uploads')) {
@@ -401,7 +444,14 @@ const GreenFutureCMS = () => {
     let formattedLogo = card.logo;
     if (formattedLogo && !formattedLogo.startsWith('data:')) {
       // If it's not a data URL (from FileReader), format it correctly
-      if (formattedLogo.startsWith('/uploads')) {
+      // Check if URL already contains API_BASE_URL to avoid duplication
+      if (formattedLogo.includes(`${API_BASE_URL}/api/uploads`)) {
+        // Fix the duplicated URL by replacing /api/uploads with /uploads
+        formattedLogo = formattedLogo.replace(`${API_BASE_URL}/api/uploads`, `${API_BASE_URL}/uploads`);
+      } else if (formattedLogo.includes('http://localhost:8000/api/uploads')) {
+        // Fix localhost URL with /api/uploads
+        formattedLogo = formattedLogo.replace('http://localhost:8000/api/uploads', 'http://localhost:8000/uploads');
+      } else if (formattedLogo.startsWith('/uploads')) {
         formattedLogo = `${API_BASE_URL}${formattedLogo}`;
       } else if (!formattedLogo.includes('https://api.cosmicpowertech.com/uploads/') 
               && !formattedLogo.startsWith('/uploads')) {

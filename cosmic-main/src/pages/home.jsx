@@ -5,6 +5,7 @@ import axios from "axios";
 import { getGreenFutureAndNewsCards } from "../services/greenFutureService";
 import { getIndustryRecognition, formatImageUrl } from '../services/industryRecognitionService';
 import Hero from "../components/Hero";
+import Marquee from "../components/Marquee";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
@@ -838,8 +839,8 @@ const Home = () => {
         <section className="w-full bg-white py-12 mt-8 sm:mt-12 md:mt-16 overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 text-center">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#003e63] mb-4 font-space-grotesk">Our Clients</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">We collaborate with industry leaders to bring you the most advanced solar solutions.</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#003e63] mb-4 font-space-grotesk">Industry Recognition</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">We are recognized by industry leaders for our excellence in solar solutions.</p>
             </div>
             
             <div className="py-4">
@@ -852,15 +853,11 @@ const Home = () => {
                   <div className="w-full overflow-hidden">
                     {console.log('Rendering Industry Recognition section with data:', industryRecognition)}
                     {industryRecognition && industryRecognition.length > 0 ? (
-                      <div className="flex animate-marquee space-x-8 py-6">
-                        {/* Duplicate the array to create continuous scrolling effect */}
-                        {[...industryRecognition, ...industryRecognition, ...industryRecognition].map((recognition, index) => {
+                      <Marquee className="py-6" pauseOnHover={true}>
+                        {industryRecognition.map((recognition, index) => {
                           // Process recognition data to ensure it has the expected structure
-                          // Use formatImageUrl from industryRecognitionService.js
-                          
                           const logoUrl = recognition.logo || recognition.image;
                           // The logo URL is already formatted in getIndustryRecognition
-                          // formatImageUrl now handles empty URLs with a default fallback
                           const processedLogoUrl = logoUrl;
                           
                           const processedRecognition = {
@@ -872,12 +869,9 @@ const Home = () => {
                           console.log('Processing recognition item:', recognition, 'to:', processedRecognition);
                           
                           return (
-                            <motion.div 
+                            <div 
                               key={index}
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ duration: 0.5, delay: Math.min(index * 0.1, 1) }}
-                              className="flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md hover:shadow-lg min-w-[200px]"
+                              className="flex flex-col items-center justify-center p-6 mx-4 bg-white rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md hover:shadow-lg min-w-[200px]"
                             >
                               <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                                 <img 
@@ -895,10 +889,10 @@ const Home = () => {
                               </div>
                               <h3 className="text-[#003e63] font-semibold text-lg text-center mb-2">{processedRecognition.title}</h3>
                               <p className="text-gray-600 text-center text-sm">{processedRecognition.organization}</p>
-                            </motion.div>
+                            </div>
                           );
                         })}
-                      </div>
+                      </Marquee>
                     ) : (
                       <div className="text-center py-8">
                         <p className="text-gray-500">No industry recognition data available</p>
@@ -908,17 +902,6 @@ const Home = () => {
                 </div>
               )}
             </div>
-            
-            {/* Add marquee animation */}
-            <style jsx>{`
-              @keyframes marquee {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-              }
-              .animate-marquee {
-                animation: marquee 30s linear infinite;
-              }
-            `}</style>
           </div>
         </section>
       </div>

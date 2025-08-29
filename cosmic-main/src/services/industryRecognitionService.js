@@ -38,24 +38,50 @@ export const formatImageUrl = (url) => {
 
 export const getIndustryRecognition = async () => {
   try {
-    // Try with plural endpoint first (industry-recognitions)
-    console.log('Fetching industry recognition from API (plural):', `${API_BASE_URL}/industry-recognitions`);
+    // Try with achievements endpoint first (based on AchievementController)
+    console.log('Fetching industry recognition from API:', `${API_BASE_URL}/achievements`);
     let response;
     
     try {
+      response = await axios.get(`${API_BASE_URL}/achievements`);
+      console.log('API Response for achievements:', response);
+      
+      // Check if we have data in response
+      if (response && response.data && response.data.success && response.data.data) {
+        // Extract industry recognition partners from the achievement data
+        const achievementData = response.data.data;
+        
+        if (achievementData.industryRecognition && 
+            achievementData.industryRecognition.partners && 
+            Array.isArray(achievementData.industryRecognition.partners) && 
+            achievementData.industryRecognition.partners.length > 0) {
+          
+          console.log('Found industry recognition partners:', achievementData.industryRecognition.partners);
+          
+          // Format image URLs in the partners data
+          const formattedData = achievementData.industryRecognition.partners.map(partner => ({
+            name: partner.name,
+            title: partner.name, // Use name as title for compatibility
+            description: partner.description || '',
+            organization: partner.description || '',
+            logo: partner.logo ? formatImageUrl(partner.logo) : '/award-icon.svg',
+            image: partner.logo ? formatImageUrl(partner.logo) : '/award-icon.svg'
+          }));
+          
+          console.log('Formatted industry recognition data:', formattedData);
+          return formattedData;
+        }
+      }
+      
+      // If we didn't find partners in the achievements endpoint, try the old endpoints
+      console.log('No partners found in achievements data, trying old endpoints');
+      
+      // Try with plural endpoint
       response = await axios.get(`${API_BASE_URL}/industry-recognitions`);
       console.log('API Response for industry-recognitions:', response);
-    } catch (pluralError) {
-      console.log('Error with plural endpoint, trying singular endpoint');
-      // If plural fails, try with singular endpoint
-      response = await axios.get(`${API_BASE_URL}/industry-recognition`);
-      console.log('API Response for industry-recognition:', response);
-    }
-    
-    // Check if we have data in response
-    if (response && response.data) {
+      
       // Check if data is directly an array
-      if (Array.isArray(response.data) && response.data.length > 0) {
+      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         console.log('Using API data (array) for industry recognition:', response.data);
         // Format image URLs in the data
         const formattedData = response.data.map(item => ({
@@ -66,8 +92,9 @@ export const getIndustryRecognition = async () => {
         return formattedData;
       }
       
-      // Check if data is in response.data.data format (common API pattern)
-      if (response.data.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+      // Check if data is in response.data.data format
+      if (response && response.data && response.data.data && 
+          Array.isArray(response.data.data) && response.data.data.length > 0) {
         console.log('Using API data (nested data) for industry recognition:', response.data.data);
         // Format image URLs in the nested data
         const formattedData = response.data.data.map(item => ({
@@ -76,6 +103,37 @@ export const getIndustryRecognition = async () => {
           image: item.image ? formatImageUrl(item.image) : item.image
         }));
         return formattedData;
+      }
+      
+    } catch (error) {
+      console.log('Error with achievements endpoint, trying singular endpoint');
+      // If achievements endpoint fails, try with singular endpoint
+      try {
+        response = await axios.get(`${API_BASE_URL}/industry-recognition`);
+        console.log('API Response for industry-recognition:', response);
+        
+        // Process response data if available
+        if (response && response.data) {
+          if (Array.isArray(response.data) && response.data.length > 0) {
+            const formattedData = response.data.map(item => ({
+              ...item,
+              logo: item.logo ? formatImageUrl(item.logo) : item.logo,
+              image: item.image ? formatImageUrl(item.image) : item.image
+            }));
+            return formattedData;
+          }
+          
+          if (response.data.data && Array.isArray(response.data.data) && response.data.data.length > 0) {
+            const formattedData = response.data.data.map(item => ({
+              ...item,
+              logo: item.logo ? formatImageUrl(item.logo) : item.logo,
+              image: item.image ? formatImageUrl(item.image) : item.image
+            }));
+            return formattedData;
+          }
+        }
+      } catch (singularError) {
+        console.log('Error with singular endpoint:', singularError);
       }
     }
     
