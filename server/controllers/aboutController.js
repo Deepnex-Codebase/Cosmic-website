@@ -87,7 +87,7 @@ const testimonialUpload = multer({
 // Video upload configuration
 const videoUpload = multer({ 
   storage: videoStorage,
-  limits: { fileSize: 40 * 1024 * 1024 }, // 40MB limit
+  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB limit
   fileFilter: function (req, file, cb) {
     const filetypes = /mp4|avi|mov|wmv|flv|webm|mkv/;
     const mimetype = filetypes.test(file.mimetype);
