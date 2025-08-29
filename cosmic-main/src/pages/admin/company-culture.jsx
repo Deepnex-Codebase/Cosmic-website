@@ -7,7 +7,7 @@ import {
   FaTree, FaSun, FaWind, FaBolt,
   FaEye, FaCog
 } from 'react-icons/fa';
-import { getCompanyCulture, updateCompanyCulture, uploadCompanyCultureImage } from '../../services/companyCultureService';
+import { getCompanyCulture, updateCompanyCulture, uploadCompanyCultureImage, formatImageUrl } from '../../services/companyCultureService';
 
 const AdminCompanyCulture = () => {
   const [loading, setLoading] = useState(true);
@@ -89,6 +89,22 @@ const AdminCompanyCulture = () => {
         const response = await getCompanyCulture();
         const data = response.data || response;
         if (data && Object.keys(data).length > 0) {
+          // Format image URLs in the data
+          if (data.hero && data.hero.backgroundImage) {
+            data.hero.backgroundImage = formatImageUrl(data.hero.backgroundImage);
+          }
+          
+          if (data.workEnvironment && data.workEnvironment.image) {
+            data.workEnvironment.image = formatImageUrl(data.workEnvironment.image);
+          }
+          
+          if (data.sustainabilityManagement && data.sustainabilityManagement.cards) {
+            data.sustainabilityManagement.cards = data.sustainabilityManagement.cards.map(card => ({
+              ...card,
+              image: card.image ? formatImageUrl(card.image) : card.image
+            }));
+          }
+          
           setCompanyCultureData(data);
         } else {
           toast.warning('Using default company culture data as server data could not be loaded');
@@ -196,8 +212,8 @@ const AdminCompanyCulture = () => {
 
     // Validate file size before uploading
     const fileSizeInMB = file.size / (1024 * 1024);
-    if (fileSizeInMB > 5) {
-      toast.error('File size exceeds 5MB limit. Please choose a smaller file.');
+    if (fileSizeInMB > 40) {
+      toast.error('File size exceeds 40MB limit. Please choose a smaller file.');
       return;
     }
 

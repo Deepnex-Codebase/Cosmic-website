@@ -12,13 +12,13 @@ const fallbackProjectImages = [
   "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1529861262172-f38517de9ec3?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1566832512884-a1770ad0993b?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
 ];
 
 const galleryImages = [
-  "https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1609743521648-3c52bfeae409?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1532394971762-3ec2f35b95fa?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
@@ -240,8 +240,9 @@ export default function Portfolio() {
                       alt={project.title || `Project ${idx + 1}`}
                       className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
-                      }}
+                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.src = 'https://placehold.co/400x300?text=Image+Not+Found';
+                  }}
                     />
                   </div>
                   <div className="p-5">

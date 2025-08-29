@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { blogService } from '../../services/blogService';
+import { useAppContext } from '../../context/AppContext';
 import { 
   Search, 
   Plus, 
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 
 const BlogCMS = () => {
+  const { fetchBlogPosts } = useAppContext();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -190,6 +192,8 @@ const BlogCMS = () => {
         resetForm();
         fetchBlogs();
         fetchStats();
+        // Update blogs in AppContext to refresh blog list across the application
+        fetchBlogPosts();
       }
     } catch (error) {
       alert('Error saving blog: ' + (error.response?.data?.message || error.message));
@@ -208,6 +212,8 @@ const BlogCMS = () => {
         alert('Blog deleted successfully!');
         fetchBlogs();
         fetchStats();
+        // Update blogs in AppContext to refresh blog list across the application
+        fetchBlogPosts();
       }
     } catch (error) {
       alert('Error deleting blog: ' + (error.response?.data?.message || error.message));

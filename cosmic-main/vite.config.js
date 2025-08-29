@@ -12,7 +12,7 @@ export default defineConfig({
         target: 'https://api.cosmicpowertech.com',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
@@ -24,6 +24,28 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/uploads/, '/uploads'),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+      },
+      '/placeholder-image': {
+        target: 'https://api.cosmicpowertech.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/placeholder-image/, '/uploads/blogs'),
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+        }
+      },
+      '/newsimage.pn': {
+        target: 'https://api.cosmicpowertech.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/newsimage.pn/, '/uploads/news-cards'),
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',

@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import {FaCalendarAlt, FaTrophy, FaUsers, FaGlassCheers } from 'react-icons/fa';
 import { getTeamCelebration } from '../services/teamCelebrationService';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
+
 // Sample team celebration events data
 const celebrationEvents = [
   {
@@ -81,7 +84,7 @@ function EventCard({ event }) {
       {/* Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={event.image && event.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + event.image : event.image}
+          src={event.image && (event.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + event.image : (event.image.startsWith('data:image') ? event.image : 'https://api.cosmicpowertech.com' + event.image))}
           alt={event.title}
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
         />
@@ -132,18 +135,29 @@ function AchievementItem({ achievement, index }) {
       whileInView={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
-      className="flex items-start gap-4 p-6 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+      className="flex flex-col rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow overflow-hidden"
     >
-      <div className="flex-shrink-0 bg-[#cae28e] text-[#13181f] p-3 rounded-full">
-        <FaTrophy className="h-6 w-6" />
-      </div>
-      <div>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm font-semibold bg-gray-100 px-2 py-0.5 rounded">{achievement.year}</span>
-          <h3 className="text-lg font-bold text-gray-900">{achievement.title}</h3>
+      {achievement.image && (
+        <div className="h-48 overflow-hidden">
+          <img 
+            src={achievement.image && (achievement.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + achievement.image : (achievement.image.startsWith('data:image') ? achievement.image : 'https://api.cosmicpowertech.com' + achievement.image))}
+            alt={achievement.title}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+          />
         </div>
-        <p className="text-sm text-gray-600 mb-2">Awarded by: {achievement.organization}</p>
-        <p className="text-gray-700">{achievement.description}</p>
+      )}
+      <div className="flex items-start gap-4 p-6">
+        <div className="flex-shrink-0 bg-[#cae28e] text-[#13181f] p-3 rounded-full">
+          <FaTrophy className="h-6 w-6" />
+        </div>
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm font-semibold bg-gray-100 px-2 py-0.5 rounded">{achievement.year}</span>
+            <h3 className="text-lg font-bold text-gray-900">{achievement.title}</h3>
+          </div>
+          <p className="text-sm text-gray-600 mb-2">Awarded by: {achievement.organization}</p>
+          <p className="text-gray-700">{achievement.description}</p>
+        </div>
       </div>
     </motion.div>
   );
@@ -233,7 +247,7 @@ const TeamCelebration = () => {
       <section 
         className="relative bg-cover bg-center py-24 text-white"
         style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${data?.hero?.backgroundImage && data?.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage : data?.hero?.backgroundImage || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80'}')`,
+          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${data?.hero?.backgroundImage && (data?.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage : (data?.hero?.backgroundImage.startsWith('data:image') ? data?.hero?.backgroundImage : 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage)) || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80'}')`,
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -314,7 +328,7 @@ const TeamCelebration = () => {
               className="relative"
             >
               <img 
-                src={data?.teamCulture?.image && data?.teamCulture?.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.teamCulture?.image : data?.teamCulture?.image || "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=80"} 
+                src={data?.teamCulture?.image && (data?.teamCulture?.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.teamCulture?.image : (data?.teamCulture?.image.startsWith('data:image') ? data?.teamCulture?.image : 'https://api.cosmicpowertech.com' + data?.teamCulture?.image)) || "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=800&q=80"} 
                 alt="Team culture" 
                 className="rounded-lg shadow-lg w-full h-auto"
               />

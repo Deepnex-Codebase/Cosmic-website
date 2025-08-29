@@ -153,8 +153,13 @@ const VideoHero = () => {
     if (!videoHeroData.videoSource) return '';
     
     let videoSrc = '';
-    if (videoHeroData.videoSource.startsWith('/uploads')) {
-      videoSrc = `${SERVER_URL}${videoHeroData.videoSource}`;
+    // If it's already a full URL with our API domain, use it directly
+    if (videoHeroData.videoSource.startsWith('https://api.cosmicpowertech.com/uploads/videos/')) {
+      videoSrc = videoHeroData.videoSource;
+    } else if (videoHeroData.videoSource.startsWith('/uploads')) {
+      // Format to match the desired pattern
+      const filename = videoHeroData.videoSource.split('/').pop();
+      videoSrc = `https://api.cosmicpowertech.com/uploads/videos/${filename}`;
     } else if (videoHeroData.videoSource.startsWith('/videos')) {
       videoSrc = `${window.location.origin}${videoHeroData.videoSource}`;
     } else if (videoHeroData.videoSource.startsWith('http')) {

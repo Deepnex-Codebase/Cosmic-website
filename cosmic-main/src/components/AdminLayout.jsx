@@ -52,6 +52,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/team', icon: FaUsers, label: 'Team Members' },
         { path: '/admin/about', icon: FaInfoCircle, label: 'About Page' },
         { path: '/admin/company-culture', icon: FaHandshake, label: 'Company Culture' },
+        { path: '/admin/team-celebration', icon: FaTrophy, label: 'Team Celebrations' },
         { path: '/admin/achievements', icon: FaAward, label: 'Achievements' },
       ]
     },

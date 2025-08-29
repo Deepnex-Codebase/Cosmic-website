@@ -14,7 +14,7 @@ const fallbackProjectImages = [
   "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1529861262172-f38517de9ec3?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1566832512884-a1770ad0993b?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=800&q=80",
 ];
@@ -43,7 +43,7 @@ const processSteps = [
 ];
 
 const galleryImages = [
-  "https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1609743521648-3c52bfeae409?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1532394971762-3ec2f35b95fa?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80",
@@ -153,22 +153,26 @@ const ProjectsPage = () => {
           setProjectData(apiProjects);
           setFilteredProjects(apiProjects);
         
-        // Extract gallery images from projects
+        // Extract gallery images from projects - one card per project with multiple images
         const extractedImages = [];
         apiProjects.forEach(project => {
+          // Create a single gallery item for each project
+          const projectImages = [];
+          
+          // Add project images if available
           if (project.images && Array.isArray(project.images)) {
-            project.images.slice(0, 2).forEach(img => {
-              extractedImages.push({
-                image: img,
-                title: project.title,
-                category: project.category,
-                _id: project._id
-              });
-            });
+            projectImages.push(...project.images);
           }
-          if (project.featuredImage) {
+          
+          // Add featured image if available and not already included
+          if (project.featuredImage && !projectImages.includes(project.featuredImage)) {
+            projectImages.push(project.featuredImage);
+          }
+          
+          // Only add to gallery if project has at least one image
+          if (projectImages.length > 0) {
             extractedImages.push({
-              image: project.featuredImage,
+              images: projectImages,  // Store all images in an array
               title: project.title,
               category: project.category,
               _id: project._id
@@ -322,7 +326,8 @@ const ProjectsPage = () => {
                     alt={project.title || `Project ${idx + 1}`}
                     className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
-                      e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                      e.target.onerror = null; // Prevent infinite loop
+                      e.target.src = 'https://placehold.co/400x300?text=Image+Not+Found';
                     }}
                   />
                 </div>
@@ -457,11 +462,11 @@ const ProjectsPage = () => {
                 <div key={idx} className="rounded-lg h-48 md:h-64 bg-gray-200 animate-pulse"></div>
               ))
             ) : galleryData && galleryData.length > 0 ? (
-              // Dynamic gallery from backend data
+              // Dynamic gallery from backend data - one card per project
               galleryData.map((item, idx) => (
                 <div key={idx} className="group relative overflow-hidden rounded-lg h-48 md:h-64 shadow-md hover:shadow-xl transition-all duration-300">
                   <img 
-                    src={item.image} 
+                    src={item.images && item.images.length > 0 ? item.images[0] : ''} 
                     alt={item.title || `Gallery image ${idx + 1}`} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
@@ -472,6 +477,7 @@ const ProjectsPage = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#13181f]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                     <h3 className="text-white font-medium text-lg">{item.title || `Project ${idx + 1}`}</h3>
                     <p className="text-gray-200 text-sm">{item.category || (idx % 2 === 0 ? 'Residential' : 'Commercial')} Installation</p>
+                    <p className="text-gray-200 text-xs mt-1">{item.images ? `${item.images.length} Images` : '0 Images'}</p>
                     <Link to={`/projects/${item._id || idx}`} className="mt-2 bg-accent-400 hover:bg-accent-500 text-accent-950 px-3 py-1.5 rounded-full text-xs font-medium shadow-lg transition-all duration-300 w-max">View Details</Link>
                   </div>
                 </div>

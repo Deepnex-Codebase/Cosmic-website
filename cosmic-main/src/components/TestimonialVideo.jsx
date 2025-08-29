@@ -78,7 +78,7 @@ const testimonials = [
     role: 'IT Professional',
     image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     quote: 'The smart home integration with my solar system from Cosmic Powertech is fantastic. I can monitor energy production and consumption right from my phone.',
-    productImage: 'https://images.unsplash.com/photo-1526481280690-9c06f8f9d5b1?auto=format&fit=crop&w=800&q=80',
+    productImage: 'https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=800&q=80',
     productName: 'Smart Solar Integration',
     discount: '56% OFF',
   },

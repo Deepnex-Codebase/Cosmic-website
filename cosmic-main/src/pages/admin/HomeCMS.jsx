@@ -11,6 +11,7 @@ import SolarJourneyCMS from '../../components/admin/SolarJourneyCMS';
 import FaqCMS from '../../components/admin/FaqCMS';
 // Define API_BASE_URL using environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
 
 const HomeCMS = () => {
   // Icon mapping for safe component rendering
@@ -206,8 +207,8 @@ const HomeCMS = () => {
           // Remove Content-Type header to let the browser set it with the boundary parameter
           // for proper multipart/form-data encoding
         },
-        maxContentLength: 50 * 1024 * 1024, // 50MB max content length
-        maxBodyLength: 50 * 1024 * 1024 // 50MB max body length
+        maxContentLength: 40 * 1024 * 1024, // 40MB max content length
+        maxBodyLength: 40 * 1024 * 1024 // 40MB max body length
       });
 
       if (response.data.success) {
@@ -218,7 +219,7 @@ const HomeCMS = () => {
       // Check for specific error responses
       if (error.response) {
         if (error.response.status === 413) {
-          toast.error('Image file is too large. Maximum size is 50MB.');
+          toast.error('Image file is too large. Maximum size is 40MB.');
         } else if (error.response.data && error.response.data.message) {
           toast.error(error.response.data.message);
         } else {
@@ -299,11 +300,15 @@ const HomeCMS = () => {
       let response;
       if (editingHero) {
         response = await axios.put(`${API_BASE_URL}/heroes/${editingHero._id}`, submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
+          maxContentLength: 40 * 1024 * 1024, // 40MB max content length
+          maxBodyLength: 40 * 1024 * 1024 // 40MB max body length
         });
       } else {
         response = await axios.post(`${API_BASE_URL}/heroes`, submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+          headers: { 'Content-Type': 'multipart/form-data' },
+          maxContentLength: 40 * 1024 * 1024, // 40MB max content length
+          maxBodyLength: 40 * 1024 * 1024 // 40MB max body length
         });
       }
 
@@ -316,7 +321,7 @@ const HomeCMS = () => {
       // Check for specific error responses
       if (error.response) {
         if (error.response.status === 413) {
-          toast.error('Image file is too large. Maximum size is 50MB.');
+          toast.error('Image file is too large. Maximum size is 40MB.');
         } else if (error.response.data && error.response.data.message) {
           toast.error(error.response.data.message);
         } else {
@@ -797,7 +802,10 @@ const HomeCMS = () => {
                 <div className="mt-2">
                   <p className="text-sm text-gray-600 mb-1">Current image:</p>
                   <img
-                    src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : `https://api.cosmicpowertech.com${panIndiaData.mapImage.replace('/api', '')}`}
+                    src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : 
+                      (panIndiaData.mapImage.startsWith('/uploads') ? 
+                        `${SERVER_URL}${panIndiaData.mapImage}` : 
+                        `${SERVER_URL}${panIndiaData.mapImage.replace('/api', '')}`)}
                     alt="Current map"
                     className="w-32 h-32 object-cover rounded-md"
                   />

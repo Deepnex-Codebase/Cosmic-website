@@ -17,10 +17,10 @@ const api = axios.create({
 const apiFormData = axios.create({
   baseURL: API_BASE_URL,
   // Add default timeout to prevent hanging requests
-  timeout: 30000,
+  timeout: 60000, // Increased timeout for file uploads
   // Set max content length and max body length for file uploads
-  maxContentLength: 10 * 1024 * 1024, // 10MB
-  maxBodyLength: 10 * 1024 * 1024, // 10MB
+  maxContentLength: 40 * 1024 * 1024, // 40MB
+  maxBodyLength: 40 * 1024 * 1024, // 40MB
 });
 
 import { getAuthToken } from '../utils/cookies';
@@ -34,7 +34,7 @@ api.interceptors.response.use(
       switch (error.response.status) {
         case 413:
           // Request entity too large
-          error.message = 'The file size is too large. Please use a smaller file (max 2MB).';
+          error.message = 'The file size is too large. Please use a smaller file (max 40MB).';
           break;
         case 500:
           // Server error
@@ -61,7 +61,7 @@ apiFormData.interceptors.response.use(
       switch (error.response.status) {
         case 413:
           // Request entity too large
-          error.message = 'The file size is too large. Please use a smaller file (max 2MB).';
+          error.message = 'The file size is too large. Please use a smaller file (max 40MB).';
           break;
         case 500:
           // Server error
@@ -240,9 +240,9 @@ export const teamService = {
     // Get auth token
     const token = getAuthToken() || localStorage.getItem('token');
     
-    // Try using the Vite proxy instead of direct URL
-    // This will use the proxy configured in vite.config.js
-    const url = `/api/team/${id}`;
+    // Use the correct URL without duplicate /api prefix
+    // The api instance already includes the API_BASE_URL which has /api
+    const url = `/team/${id}`;
     
     return api.delete(url)
     .then(response => {
@@ -253,7 +253,8 @@ export const teamService = {
       if (error.response) {
         // Try direct URL as fallback if proxy fails
         if (error.response.status === 500) {
-          const directUrl = `https://api.cosmicpowertech.com/api/team/${id}`;
+          // Fix the URL to avoid duplicate /api
+          const directUrl = `https://api.cosmicpowertech.com/team/${id}`;
           
           return axios({
             method: 'DELETE',

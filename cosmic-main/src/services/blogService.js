@@ -1,12 +1,16 @@
 import axios from 'axios';
 // Define API_BASE_URL using environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+console.log('API_BASE_URL for blog service:', API_BASE_URL);
 
-// Create axios instance for blog API
+// Create axios instance for blog API with cache-busting headers
 const blogApi = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   },
 });
 

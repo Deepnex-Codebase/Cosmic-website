@@ -3,13 +3,16 @@ import { Link } from 'react-router-dom';
 import AwardsTimeline from '../components/AwardsTimeline';
 import achievementService from '../services/achievementService';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
+
 // Achievement Card Component
 function AchievementCard({ achievement }) {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-accent-200">
       <div className="relative h-56 overflow-hidden">
         <img 
-          src={achievement.image?.startsWith('/uploads') ? `https://api.cosmicpowertech.com${achievement.image}` : achievement.image} 
+          src={achievement.image?.startsWith('/uploads') ? `${SERVER_URL}${achievement.image}` : achievement.image} 
           alt={achievement.title} 
           className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
         />
@@ -124,6 +127,16 @@ function RecognitionSection({ industryRecognition }) {
     return null;
   }
 
+  // Function to format image URL properly
+  const formatImageUrl = (imageUrl) => {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    // All paths starting with / should be treated as relative to the base URL
+    return imageUrl.startsWith('/') ? 
+      `${SERVER_URL}${imageUrl}` : 
+      imageUrl;
+  };
+
   return (
     <section className="py-16 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -140,7 +153,7 @@ function RecognitionSection({ industryRecognition }) {
           {industryRecognition.partners.map((partner, index) => (
             <div key={partner._id || index} className="grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110">
               <img 
-                src={partner.logo?.startsWith('/uploads') ? `https://api.cosmicpowertech.com${partner.logo}` : partner.logo} 
+                src={formatImageUrl(partner.logo)} 
                 alt={partner.name || `Partner logo ${index + 1}`} 
                 className="h-16 object-contain" 
               />
@@ -240,7 +253,7 @@ export default function AchievementsAwardsPage() {
       <div 
         className="relative bg-cover bg-center h-[300px] flex items-center justify-center"
         style={{
-          backgroundImage: `url('${hero.backgroundImage && hero.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + hero.backgroundImage : hero.backgroundImage || '/quality1.jpg'}')`,
+          backgroundImage: `url('${hero.backgroundImage && hero.backgroundImage.startsWith('/uploads') ? SERVER_URL + hero.backgroundImage : hero.backgroundImage || '/quality1.jpg'}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}

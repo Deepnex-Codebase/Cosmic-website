@@ -16,12 +16,14 @@ const formatImageUrl = (imagePath) => {
     return imagePath;
   }
   
-  // If it starts with /uploads, prepend the base URL
-  if (imagePath.startsWith('/uploads')) {
-    return `${IMAGE_BASE_URL}${imagePath}`;
+  // Handle paths with or without leading slash
+  let cleanImagePath = imagePath;
+  if (cleanImagePath.startsWith('/')) {
+    cleanImagePath = cleanImagePath.substring(1);
   }
   
-  return imagePath;
+  // Combine with base URL
+  return `${IMAGE_BASE_URL}/${cleanImagePath}`;
 };
 
 const Services = () => {

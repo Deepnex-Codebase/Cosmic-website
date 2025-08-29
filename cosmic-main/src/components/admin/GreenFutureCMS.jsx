@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { FaSave, FaPlus, FaEdit, FaTrash, FaLeaf, FaImage, FaEye, FaTimes } from 'react-icons/fa';
 
 // Use environment variable directly
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
 const GreenFutureCMS = () => {
   const [_greenFutureData, setGreenFutureData] = useState(null); // Using underscore prefix to indicate it's set but not directly used
@@ -44,6 +44,17 @@ const GreenFutureCMS = () => {
       const response = await axios.get(`${API_BASE_URL}/cms/green-future`);
       if (response.data?.success) {
         const data = response.data.data;
+        
+        // Format background image URL correctly if it exists
+        if (data.backgroundImage) {
+          if (data.backgroundImage.startsWith('/uploads')) {
+            data.backgroundImage = `${API_BASE_URL}${data.backgroundImage}`;
+          } else if (!data.backgroundImage.includes('https://api.cosmicpowertech.com/uploads/') 
+                  && !data.backgroundImage.startsWith('/uploads')) {
+            data.backgroundImage = `${API_BASE_URL}/uploads/green-future/${data.backgroundImage}`;
+          }
+        }
+        
         setGreenFutureData(data);
         setFormData({
           title: data.title || 'ENABLING A GREEN FUTURE',
@@ -66,7 +77,37 @@ const GreenFutureCMS = () => {
     try {
       setNewsLoading(true);
       const response = await axios.get(`${API_BASE_URL}/cms/news-cards`);
-      setNewsCards(response.data?.data || []);
+      
+      if (response.data?.data) {
+        // Format image URLs correctly
+        const formattedCards = response.data.data.map(card => {
+          // Format image URL correctly if it exists
+          if (card.image) {
+            if (card.image.startsWith('/uploads')) {
+              card.image = `${API_BASE_URL}${card.image}`;
+            } else if (!card.image.includes(`${API_BASE_URL}/uploads/`) 
+                    && !card.image.startsWith('/uploads')) {
+              card.image = `${API_BASE_URL}/uploads/news-cards/${card.image}`;
+            }
+          }
+          
+          // Format logo URL correctly if it exists
+          if (card.logo) {
+            if (card.logo.startsWith('/uploads')) {
+              card.logo = `${API_BASE_URL}${card.logo}`;
+            } else if (!card.logo.includes(`${API_BASE_URL}/uploads/`) 
+                    && !card.logo.startsWith('/uploads')) {
+              card.logo = `${API_BASE_URL}/uploads/news-cards/${card.logo}`;
+            }
+          }
+          
+          return card;
+        });
+        
+        setNewsCards(formattedCards);
+      } else {
+        setNewsCards([]);
+      }
     } catch (error) {
       console.error('Error fetching news cards:', error);
       toast.error('Failed to fetch news cards');
@@ -106,9 +147,14 @@ const GreenFutureCMS = () => {
       // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
+        // Store the file name for later use
+        const fileName = file.name;
+        // For preview during upload, use the data URL
         setFormData(prev => ({
           ...prev,
-          backgroundImage: e.target.result
+          backgroundImage: e.target.result,
+          // Store the original file name for reference
+          backgroundImageName: fileName
         }));
       };
       reader.readAsDataURL(file);
@@ -123,9 +169,14 @@ const GreenFutureCMS = () => {
       // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
+        // Store the file name for later use
+        const fileName = file.name;
+        // For preview during upload, use the data URL
         setCardFormData(prev => ({
           ...prev,
-          image: e.target.result
+          image: e.target.result,
+          // Store the original file name for reference
+          imageName: fileName
         }));
       };
       reader.readAsDataURL(file);
@@ -140,9 +191,14 @@ const GreenFutureCMS = () => {
       // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
+        // Store the file name for later use
+        const fileName = file.name;
+        // For preview during upload, use the data URL
         setCardFormData(prev => ({
           ...prev,
-          logo: e.target.result
+          logo: e.target.result,
+          // Store the original file name for reference
+          logoName: fileName
         }));
       };
       reader.readAsDataURL(file);
@@ -171,7 +227,27 @@ const GreenFutureCMS = () => {
       });
       
       if (response.data?.success) {
-        setGreenFutureData(response.data.data);
+        const updatedData = response.data.data;
+        
+        // Format background image URL correctly if it exists
+        if (updatedData.backgroundImage) {
+          if (updatedData.backgroundImage.startsWith('/uploads')) {
+            updatedData.backgroundImage = `${API_BASE_URL}${updatedData.backgroundImage}`;
+          } else if (!updatedData.backgroundImage.includes('https://api.cosmicpowertech.com/uploads/') 
+                  && !updatedData.backgroundImage.startsWith('/uploads')) {
+            updatedData.backgroundImage = `${API_BASE_URL}/uploads/green-future/${updatedData.backgroundImage}`;
+          }
+          
+          // Update form data with the correct image URL
+          setFormData(prev => ({
+            ...prev,
+            backgroundImage: updatedData.backgroundImage,
+            // Clear the base64 data if it was an upload
+            backgroundImageName: null
+          }));
+        }
+        
+        setGreenFutureData(updatedData);
         setBackgroundImageFile(null);
         toast.success('Green Future section updated successfully!');
         fetchGreenFutureData(); // Refresh data
@@ -211,6 +287,37 @@ const GreenFutureCMS = () => {
           }
         });
         if (response.data?.success) {
+          const updatedCard = response.data.data;
+          
+          // Format image URLs correctly if they exist
+          if (updatedCard.image) {
+            if (updatedCard.image.startsWith('/uploads')) {
+              updatedCard.image = `${API_BASE_URL}${updatedCard.image}`;
+            } else if (!updatedCard.image.includes('https://api.cosmicpowertech.com/uploads/') 
+                    && !updatedCard.image.startsWith('/uploads')) {
+              updatedCard.image = `${API_BASE_URL}/uploads/news-cards/${updatedCard.image}`;
+            }
+          }
+          
+          if (updatedCard.logo) {
+            if (updatedCard.logo.startsWith('/uploads')) {
+              updatedCard.logo = `${API_BASE_URL}${updatedCard.logo}`;
+            } else if (!updatedCard.logo.includes('https://api.cosmicpowertech.com/uploads/') 
+                    && !updatedCard.logo.startsWith('/uploads')) {
+              updatedCard.logo = `${API_BASE_URL}/uploads/news-cards/${updatedCard.logo}`;
+            }
+          }
+          
+          // Update card form data with the correct image URLs
+          setCardFormData(prev => ({
+            ...prev,
+            image: updatedCard.image,
+            logo: updatedCard.logo,
+            // Clear the base64 data if it was an upload
+            imageName: null,
+            logoName: null
+          }));
+          
           toast.success('News card updated successfully!');
         }
       } else {
@@ -220,6 +327,30 @@ const GreenFutureCMS = () => {
           }
         });
         if (response.data?.success) {
+          const newCard = response.data.data;
+          
+          // Format image URLs correctly if they exist
+          if (newCard.image) {
+            if (newCard.image.startsWith('/uploads')) {
+              newCard.image = `${API_BASE_URL}${newCard.image}`;
+            } else if (!newCard.image.includes('https://api.cosmicpowertech.com/uploads/') 
+                    && !newCard.image.startsWith('/uploads')) {
+              newCard.image = `${API_BASE_URL}/uploads/news-cards/${newCard.image}`;
+            }
+          }
+          
+          if (newCard.logo) {
+            if (newCard.logo.startsWith('/uploads')) {
+              newCard.logo = `${API_BASE_URL}${newCard.logo}`;
+            } else if (!newCard.logo.includes('https://api.cosmicpowertech.com/uploads/') 
+                    && !newCard.logo.startsWith('/uploads')) {
+              newCard.logo = `${API_BASE_URL}/uploads/news-cards/${newCard.logo}`;
+            }
+          }
+          
+          // Reset card form data with the correct image URLs
+          resetCardForm();
+          
           toast.success('News card created successfully!');
         }
       }
@@ -253,10 +384,35 @@ const GreenFutureCMS = () => {
   // Edit news card
   const editNewsCard = (card) => {
     setEditingCard(card);
+    
+    // Format image URL correctly if it exists
+    let formattedImage = card.image;
+    if (formattedImage && !formattedImage.startsWith('data:')) {
+      // If it's not a data URL (from FileReader), format it correctly
+      if (formattedImage.startsWith('/uploads')) {
+        formattedImage = `${API_BASE_URL}${formattedImage}`;
+      } else if (!formattedImage.includes('https://api.cosmicpowertech.com/uploads/') 
+              && !formattedImage.startsWith('/uploads')) {
+        formattedImage = `${API_BASE_URL}/uploads/news-cards/${formattedImage}`;
+      }
+    }
+    
+    // Format logo URL correctly if it exists
+    let formattedLogo = card.logo;
+    if (formattedLogo && !formattedLogo.startsWith('data:')) {
+      // If it's not a data URL (from FileReader), format it correctly
+      if (formattedLogo.startsWith('/uploads')) {
+        formattedLogo = `${API_BASE_URL}${formattedLogo}`;
+      } else if (!formattedLogo.includes('https://api.cosmicpowertech.com/uploads/') 
+              && !formattedLogo.startsWith('/uploads')) {
+        formattedLogo = `${API_BASE_URL}/uploads/news-cards/${formattedLogo}`;
+      }
+    }
+    
     setCardFormData({
       title: card.title,
-      image: card.image,
-      logo: card.logo,
+      image: formattedImage,
+      logo: formattedLogo,
       date: card.date,
       excerpt: card.excerpt,
       content: card.content,

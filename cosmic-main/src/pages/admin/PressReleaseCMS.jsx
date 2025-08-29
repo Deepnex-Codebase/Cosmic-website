@@ -51,15 +51,27 @@ const PressReleaseCMS = () => {
   const fetchPressReleases = async () => {
     try {
       setLoading(true);
+      // Add timestamp to prevent caching
+      const timestamp = new Date().getTime();
+      
       const params = new URLSearchParams({
         page: currentPage,
         limit: 10,
         ...(statusFilter && { status: statusFilter }),
-        ...(searchTerm && { search: searchTerm })
+        ...(searchTerm && { search: searchTerm }),
+        _: timestamp // Add cache-busting parameter
       });
       
-      const response = await fetch(`${API_BASE_URL}/press-releases?${params}`);
+      console.log('Fetching press releases with params:', params.toString());
+      const response = await fetch(`${API_BASE_URL}/press-releases?${params}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      });
       const data = await response.json();
+      console.log('Press releases API response:', data);
       
       if (data.success) {
         setPressReleases(data.data);

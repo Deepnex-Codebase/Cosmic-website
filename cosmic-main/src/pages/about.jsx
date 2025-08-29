@@ -9,7 +9,7 @@ import TeamSection from "../components/TeamSection";
 import Testimonials from "../components/Testimonials";
 import { FaCheck } from "react-icons/fa";
 import { Helmet } from "react-helmet";
-import { getAboutPage } from "../services/aboutService";
+import { getAboutPage, formatImageUrl } from "../services/aboutService";
 import { toast } from "react-toastify";
 
 const fadeUpVariant = {
@@ -171,7 +171,7 @@ const About = () => {
                   <div key={index} className="rounded-xl overflow-hidden shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] h-52">
                     <div className="relative h-full w-full overflow-hidden group">
                       <img
-                        src={item.image || "/back_Image.avif"}
+                        src={formatImageUrl(item.image) || "/back_Image.avif"}
                         alt={item.title}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />

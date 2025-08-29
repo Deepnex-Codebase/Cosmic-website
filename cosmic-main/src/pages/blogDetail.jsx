@@ -5,7 +5,7 @@ import { useAppContext } from '../context/AppContext';
 import axios from 'axios';
 
 // Define API_BASE_URL using environment variable
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
 // Import the fallback blog posts data
 import { fallbackBlogPosts } from './blog';

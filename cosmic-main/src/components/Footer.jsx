@@ -124,7 +124,15 @@ const Footer = () => {
           {/* Logo and Company Info */}
           <div className="lg:col-span-1">
             <Link to="/" className="inline-block mb-6 hover-pulse">
-              <img src={footerConfig.companyInfo.logo} alt={footerConfig.companyInfo.name} className="h-12" />
+              <img 
+                src={footerConfig.companyInfo.logo.startsWith('http') 
+                  ? footerConfig.companyInfo.logo 
+                  : footerConfig.companyInfo.logo.startsWith('/uploads') 
+                    ? `https://api.cosmicpowertech.com${footerConfig.companyInfo.logo}` 
+                    : `${API_BASE_URL}/${footerConfig.companyInfo.logo}`} 
+                alt={footerConfig.companyInfo.name} 
+                className="h-12" 
+              />
             </Link>
             <p className="text-gray-300 mb-6 max-w-md">
               {footerConfig.companyInfo.description}

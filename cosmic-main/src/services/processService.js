@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Define API_BASE_URL using environment variable
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 const API_BASE_URL = `${BASE_URL}/processes`;
 
 // Get all processes with filtering

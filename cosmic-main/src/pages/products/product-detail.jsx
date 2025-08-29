@@ -258,9 +258,9 @@ const ProductDetail = () => {
                 {product.oldPrice && (
                   <span className="text-lg text-gray-500 line-through">₹{product.oldPrice.toLocaleString()}</span>
                 )}
-                {product.discountPercentage > 0 && (
+                {product.oldPrice && product.newPrice && product.oldPrice > product.newPrice && (
                   <span className="bg-red-100 text-red-800 text-sm px-2 py-1 rounded-md flex items-center">
-                    <Percent size={14} className="mr-1" /> {product.discountPercentage}% OFF
+                    {Math.round(((product.oldPrice - product.newPrice) / product.oldPrice) * 100)}% OFF
                   </span>
                 )}
               </div>

@@ -5,7 +5,7 @@ import { getProjectById, getProjectsByCategory } from '../services/projectServic
 
 // Helper function to format image URLs
 const formatImageUrl = (imageUrl) => {
-  if (!imageUrl) return '';
+  if (!imageUrl) return 'https://placehold.co/800x450?text=Image+Not+Found';
   if (imageUrl.startsWith('http')) return imageUrl;
   // Use base URL without /api path
   const baseUrl = 'https://api.cosmicpowertech.com';
@@ -260,7 +260,8 @@ const ProjectDetail = () => {
                 alt={project.title} 
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.target.src = 'https://via.placeholder.com/800x450?text=Image+Not+Found';
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = 'https://placehold.co/800x450?text=Image+Not+Found';
                 }}
               />
             </div>
@@ -279,7 +280,8 @@ const ProjectDetail = () => {
                       alt={`${project.title} ${index + 1}`} 
                       className="w-full h-16 object-cover" 
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/100x100?text=Image+Not+Found';
+                        e.target.onerror = null; // Prevent infinite loop
+                        e.target.src = 'https://placehold.co/100x100?text=Image+Not+Found';
                       }}
                     />
                   </div>
@@ -412,7 +414,8 @@ const ProjectDetail = () => {
                       alt={relatedProject.title} 
                       className="w-full h-full object-center object-cover group-hover:opacity-75"
                       onError={(e) => {
-                        e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                        e.target.onerror = null; // Prevent infinite loop
+                        e.target.src = 'https://placehold.co/400x300?text=Image+Not+Found';
                       }}
                     />
                   </div>

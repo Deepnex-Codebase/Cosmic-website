@@ -53,6 +53,7 @@ import PressReleaseCMS from './pages/admin/PressReleaseCMS'
 import ProductCMS from './pages/admin/ProductCMS'
 import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
+import AdminTeamCelebration from './pages/admin/team-celebration';
 
 import NavbarCMS from './components/NavbarCMS';
 
@@ -147,6 +148,7 @@ const AdminRoutes = () => {
               <Route path="/processes" element={<AdminProcesses />} />
               <Route path="/about" element={<AboutAdmin />} />
               <Route path="/company-culture" element={<CompanyCultureAdmin />} />
+              <Route path="/team-celebration" element={<AdminTeamCelebration />} />
               <Route path="/achievements" element={<AchievementCMS />} />
               <Route path="/products" element={<ProductCMS />} />
               <Route path="/blogs" element={<BlogCMS />} />

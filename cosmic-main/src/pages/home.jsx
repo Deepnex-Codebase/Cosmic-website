@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { getGreenFutureAndNewsCards } from "../services/greenFutureService";
+import { getIndustryRecognition, formatImageUrl } from '../services/industryRecognitionService';
 import Hero from "../components/Hero";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
 // SmartEnergySolutions component removed
 import Portfolio from "../components/Portfolio";
 import SolarJourney from "../components/SolarJourney";
@@ -13,7 +17,6 @@ import CompanyIntro from "../components/CompanyIntro";
 import VideoHero from "../components/VideoHero";
 import TimelineSection from "../components/TimelineSection";
 import TestimonialVideo from "../components/TestimonialVideo";
-import Marquee from "../components/Marquee";
 import { useAppContext } from "../context/AppContext";
 
 // Import necessary icons for static SolarJourney component
@@ -39,55 +42,18 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
   // Debug image URL
   console.log(`NewsCard rendering with image URL: ${image}`);
   
-  // Get API base URL from environment variables
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+  // API_BASE_URL is no longer needed as we use formatImageUrl
   
-  // Process image URL if needed
+  // Use formatImageUrl from industryRecognitionService.js
   const getImageUrl = (url) => {
     if (!url) return '/newsimage.png'; // Default image
-    
-    // If URL already has http/https, return as is
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      console.log(`Image URL already has http/https prefix: ${url}`);
-      return url;
-    }
-    
-    // If URL is relative, add base URL
-    const imagePath = url.startsWith('/') ? url.substring(1) : url;
-    
-    // Use the base URL without /api suffix for image URLs
-    let normalizedBaseUrl = API_BASE_URL;
-    if (normalizedBaseUrl.endsWith('/api')) {
-      normalizedBaseUrl = normalizedBaseUrl.slice(0, -4); // Remove /api suffix
-    }
-    normalizedBaseUrl = normalizedBaseUrl.endsWith('/') ? normalizedBaseUrl.slice(0, -1) : normalizedBaseUrl;
-    
-    console.log(`Constructing image URL with base: ${normalizedBaseUrl} and path: ${imagePath}`);
-    return `${normalizedBaseUrl}/${imagePath}`;
+    return formatImageUrl(url);
   };
   
-  // Process logo URL if needed
+  // Use formatImageUrl from industryRecognitionService.js for logos too
   const getLogoUrl = (url) => {
     if (!url) return '/logo.png'; // Default logo
-    
-    // If URL already has http/https, return as is
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      console.log(`Logo URL already has http/https prefix: ${url}`);
-      return url;
-    }
-    
-    // If URL is relative, add base URL
-    const logoPath = url.startsWith('/') ? url.substring(1) : url;
-    
-    // Use the base URL without /api suffix for logo URLs
-    let normalizedBaseUrl = API_BASE_URL;
-    if (normalizedBaseUrl.endsWith('/api')) {
-      normalizedBaseUrl = normalizedBaseUrl.slice(0, -4); // Remove /api suffix
-    }
-    normalizedBaseUrl = normalizedBaseUrl.endsWith('/') ? normalizedBaseUrl.slice(0, -1) : normalizedBaseUrl;
-    
-    console.log(`Constructing logo URL with base: ${normalizedBaseUrl} and path: ${logoPath}`);
-    return `${normalizedBaseUrl}/${logoPath}`;
+    return formatImageUrl(url);
   };
   
   // Get processed URLs
@@ -145,9 +111,16 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
             {/* Popup Header */}
             <div className="relative h-72 overflow-hidden">
               <img 
-                src={processedImageUrl} 
+                src={processedImageUrl || "/newsimage.png"} 
                 alt={title} 
                 className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                onError={(e) => {
+                  // Prevent infinite error loop by checking if already using fallback
+                  if (e.target.src !== window.location.origin + "/newsimage.png") {
+                    console.log('News image error, using fallback');
+                    e.target.src = "/newsimage.png";
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-primary-900/90 to-transparent"></div>
               
@@ -163,7 +136,18 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
               <div className="absolute bottom-4 left-4 right-4">
                 <div className="flex items-center mb-2">
                   <div className="bg-primary-50 p-1.5 rounded-full shadow-md mr-2 animate-pulse-slow">
-                    <img src={logo} alt="Company Logo" className="w-5 h-5" />
+                    <img 
+                      src={processedLogoUrl || "/logo.png"} 
+                      alt="Company Logo" 
+                      className="w-5 h-5" 
+                      onError={(e) => {
+                        // Prevent infinite error loop by checking if already using fallback
+                        if (e.target.src !== window.location.origin + "/logo.png") {
+                          console.log('Logo image error, using fallback');
+                          e.target.src = "/logo.png";
+                        }
+                      }}
+                    />
                   </div>
                   <span className="text-white text-sm font-medium">{date}</span>
                 </div>
@@ -220,6 +204,10 @@ const Home = () => {
   const [greenFutureData, setGreenFutureData] = useState(null);
   const [newsCards, setNewsCards] = useState([]);
   const [greenFutureLoading, setGreenFutureLoading] = useState(true);
+  
+  // Industry Recognition state
+  const [industryRecognition, setIndustryRecognition] = useState([]);
+  const [industryRecognitionLoading, setIndustryRecognitionLoading] = useState(true);
   
   // Fetch Pan India Presence data
   const fetchPanIndiaData = async () => {
@@ -297,11 +285,29 @@ const Home = () => {
     }
   };
   
+  // Fetch Industry Recognition data
+  const fetchIndustryRecognitionData = async () => {
+    try {
+      console.log('Starting to fetch Industry Recognition data...');
+      setIndustryRecognitionLoading(true);
+      const data = await getIndustryRecognition();
+      console.log('Industry Recognition data received:', data);
+      setIndustryRecognition(data);
+      console.log('Industry Recognition state after setting data:', data);
+    } catch (error) {
+      console.error('Error in fetchIndustryRecognitionData:', error);
+    } finally {
+      setIndustryRecognitionLoading(false);
+      console.log('Industry Recognition loading set to false');
+    }
+  };
+
   // Fetch homepage data when component mounts
   useEffect(() => {
     fetchHomepageData();
     fetchPanIndiaData();
     fetchGreenFutureData();
+    fetchIndustryRecognitionData();
   }, []);
 
   useEffect(() => {
@@ -389,7 +395,11 @@ const Home = () => {
                 >
                   <div className="relative">
                     <img 
-                      src={panIndiaData?.mapImage || "/mapindea.png"} 
+                      src={panIndiaData?.mapImage ? 
+                        (panIndiaData.mapImage.startsWith('/uploads') ? 
+                          `${SERVER_URL}${panIndiaData.mapImage}` : 
+                          panIndiaData.mapImage) : 
+                        "/mapindea.png"} 
                       alt="Cosmic Energy India Presence Map" 
                       className="w-full h-auto max-w-lg mx-auto shadow-lg rounded-lg"
                     />
@@ -824,7 +834,7 @@ const Home = () => {
         {/* ---------- Solar Solutions ---------- */}
       
         
-        {/* ---------- Marquee Section ---------- */}
+        {/* ---------- Industry Recognition Section ---------- */}
         <section className="w-full bg-white py-12 mt-8 sm:mt-12 md:mt-16 overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="mb-8 text-center">
@@ -833,29 +843,82 @@ const Home = () => {
             </div>
             
             <div className="py-4">
-              <Marquee className="py-4" pauseOnHover={true}>
-                <div className="flex flex-col items-center justify-center mx-4 h-48 w-64 bg-white px-6 py-8 rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md">
-                  <img src="/kia.png" alt="Kia Motors Logo" className="h-16 w-auto mb-4" />
-                  <span className="text-[#003e63] font-semibold text-lg">Kia Motors</span>
+              {industryRecognitionLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#003e63]"></div>
                 </div>
-                <div className="flex flex-col items-center justify-center mx-4 h-48 w-64 bg-white px-6 py-8 rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md">
-                  <img src="/mahavir.webp" alt="Mahavir Hospital Logo" className="h-16 w-auto mb-4" />
-                  <span className="text-[#003e63] font-semibold text-lg">Mahavir Hospital</span>
+              ) : (
+                <div className="flex flex-wrap justify-center">
+                  <div className="w-full overflow-hidden">
+                    {console.log('Rendering Industry Recognition section with data:', industryRecognition)}
+                    {industryRecognition && industryRecognition.length > 0 ? (
+                      <div className="flex animate-marquee space-x-8 py-6">
+                        {/* Duplicate the array to create continuous scrolling effect */}
+                        {[...industryRecognition, ...industryRecognition, ...industryRecognition].map((recognition, index) => {
+                          // Process recognition data to ensure it has the expected structure
+                          // Use formatImageUrl from industryRecognitionService.js
+                          
+                          const logoUrl = recognition.logo || recognition.image;
+                          // The logo URL is already formatted in getIndustryRecognition
+                          // formatImageUrl now handles empty URLs with a default fallback
+                          const processedLogoUrl = logoUrl;
+                          
+                          const processedRecognition = {
+                            title: recognition.title || recognition.name || 'Award Title',
+                            organization: recognition.organization || recognition.description || 'Organization',
+                            logo: processedLogoUrl
+                          };
+                          
+                          console.log('Processing recognition item:', recognition, 'to:', processedRecognition);
+                          
+                          return (
+                            <motion.div 
+                              key={index}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ duration: 0.5, delay: Math.min(index * 0.1, 1) }}
+                              className="flex flex-col items-center justify-center p-6 bg-white rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md hover:shadow-lg min-w-[200px]"
+                            >
+                              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                                <img 
+                                  src={processedRecognition.logo || "/award-icon.svg"} 
+                                  alt={processedRecognition.title} 
+                                  className="w-10 h-10 object-contain"
+                                  onError={(e) => {
+                                    // Prevent infinite error loop by checking if already using fallback
+                                    if (e.target.src !== window.location.origin + "/award-icon.svg") {
+                                      console.log('Image error, using fallback');
+                                      e.target.src = "/award-icon.svg";
+                                    }
+                                  }}
+                                />
+                              </div>
+                              <h3 className="text-[#003e63] font-semibold text-lg text-center mb-2">{processedRecognition.title}</h3>
+                              <p className="text-gray-600 text-center text-sm">{processedRecognition.organization}</p>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-gray-500">No industry recognition data available</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex flex-col items-center justify-center mx-4 h-48 w-64 bg-white px-6 py-8 rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md">
-                  <img src="/bharatpetrlium1.jpg" alt="Bharat Petroleum Logo" className="h-16 w-auto mb-4" />
-                  <span className="text-[#003e63] font-semibold text-lg">Bharat Petroleum</span>
-                </div>
-                <div className="flex flex-col items-center justify-center mx-4 h-48 w-64 bg-white px-6 py-8 rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md">
-                  <img src="/logo.png" alt="Kabeer Taxation Logo" className="h-16 w-auto mb-4" />
-                  <span className="text-[#003e63] font-semibold text-lg">Kabeer Taxation</span>
-                </div>
-                <div className="flex flex-col items-center justify-center mx-4 h-48 w-64 bg-white px-6 py-8 rounded-xl border border-gray-200 hover:border-[#003e63] transition-all duration-300 shadow-md">
-                  <img src="/logo.png" alt="Bhageerath Logo" className="h-16 w-auto mb-4" />
-                  <span className="text-[#003e63] font-semibold text-lg">Bhageerath</span>
-                </div>
-              </Marquee>
+              )}
             </div>
+            
+            {/* Add marquee animation */}
+            <style jsx>{`
+              @keyframes marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+              }
+              .animate-marquee {
+                animation: marquee 30s linear infinite;
+              }
+            `}</style>
           </div>
         </section>
       </div>

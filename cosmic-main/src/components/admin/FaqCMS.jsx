@@ -4,7 +4,7 @@ import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
 // Use environment variable directly
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
 const FaqCMS = () => {
   const [faqs, setFaqs] = useState([]);

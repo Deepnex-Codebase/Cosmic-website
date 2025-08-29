@@ -119,6 +119,18 @@ const ProductCMS = () => {
         }));
       } else {
         setImages(prev => ({ ...prev, [type]: file }));
+        
+        // Show image preview
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const previewId = type === 'image' ? 'imagePreview' : 'hoverImagePreview';
+          const previewElement = document.getElementById(previewId);
+          if (previewElement) {
+            previewElement.src = event.target.result;
+            previewElement.style.display = 'block';
+          }
+        };
+        reader.readAsDataURL(file);
       }
     }
   };
@@ -343,6 +355,36 @@ const ProductCMS = () => {
       specifications: mergedSpecs
     });
     
+    // Set image previews for existing images
+    const formatImageUrl = (img) => {
+      if (!img) return null;
+      if (img.startsWith('http')) return img;
+      if (img.includes('/uploads/products/')) {
+        return `${BASE_URL}${img}`;
+      }
+      return `${BASE_URL}/uploads/products/${img.split('/').pop()}`;
+    };
+
+    // Reset images state
+    setImages({
+      image: null,
+      hoverImage: null,
+      additionalImages: []
+    });
+
+    // Set image previews if they exist
+    if (product.image) {
+      const imagePreview = formatImageUrl(product.image);
+      document.getElementById('imagePreview').src = imagePreview;
+      document.getElementById('imagePreview').style.display = 'block';
+    }
+
+    if (product.hoverImage) {
+      const hoverImagePreview = formatImageUrl(product.hoverImage);
+      document.getElementById('hoverImagePreview').src = hoverImagePreview;
+      document.getElementById('hoverImagePreview').style.display = 'block';
+    }
+    
     console.log('Form data set with specifications:', mergedSpecs);
     setShowForm(true);
   };
@@ -559,6 +601,16 @@ const ProductCMS = () => {
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       required={!editingProduct}
                     />
+                    {/* Image Preview */}
+                    <div className="mt-2">
+                      <img 
+                        id="imagePreview" 
+                        src="" 
+                        alt="Main Image Preview" 
+                        className="max-h-40 rounded-lg border border-gray-300" 
+                        style={{ display: 'none' }} 
+                      />
+                    </div>
                   </div>
                   
                   <div>
@@ -571,6 +623,16 @@ const ProductCMS = () => {
                       onChange={(e) => handleFileChange(e, 'hoverImage')}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
+                    {/* Hover Image Preview */}
+                    <div className="mt-2">
+                      <img 
+                        id="hoverImagePreview" 
+                        src="" 
+                        alt="Hover Image Preview" 
+                        className="max-h-40 rounded-lg border border-gray-300" 
+                        style={{ display: 'none' }} 
+                      />
+                    </div>
                   </div>
                 </div>
                 

@@ -56,12 +56,35 @@ export const createService = async (serviceData) => {
     Object.keys(serviceData).forEach(key => {
       if (key === 'features' || key === 'seo') {
         formData.append(key, JSON.stringify(serviceData[key]));
-      } else if (key === 'image' && serviceData[key] instanceof File) {
-        formData.append('image', serviceData[key]);
-      } else {
+      } else if (key === 'image') {
+        if (serviceData[key] instanceof File) {
+          // Ensure we're dealing with a proper File object
+          const imageFile = new File([serviceData[key]], serviceData[key].name, {
+            type: serviceData[key].type,
+            lastModified: serviceData[key].lastModified
+          });
+          
+          formData.append('image', imageFile);
+          console.log('Appending image file to FormData for create:', imageFile.name, imageFile.size, 'bytes');
+          console.log('Image file type:', imageFile.type);
+          console.log('Image file is instance of File:', imageFile instanceof File);
+        } else if (serviceData[key] && typeof serviceData[key] === 'string' && !serviceData[key].startsWith('blob:')) {
+          // If it's a string URL but not a blob URL, append it to FormData
+          // The backend needs the existing image path
+          formData.append('image', serviceData[key]);
+          console.log('Existing image path appended to FormData for create:', serviceData[key]);
+        } else {
+          console.log('Image is neither a File nor a valid URL, skipping in create');
+        }
+      } else if (key !== 'imagePreview') { // Skip imagePreview field
         formData.append(key, serviceData[key]);
       }
     });
+
+    // Log FormData contents for debugging
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
 
     const response = await api.post(API_BASE_URL, formData, {
       headers: {
@@ -84,18 +107,42 @@ export const updateService = async (id, serviceData) => {
     Object.keys(serviceData).forEach(key => {
       if (key === 'features' || key === 'seo') {
         formData.append(key, JSON.stringify(serviceData[key]));
-      } else if (key === 'image' && serviceData[key] instanceof File) {
-        formData.append('image', serviceData[key]);
-      } else {
+      } else if (key === 'image') {
+        if (serviceData[key] instanceof File) {
+          // Ensure we're dealing with a proper File object
+          const imageFile = new File([serviceData[key]], serviceData[key].name, {
+            type: serviceData[key].type,
+            lastModified: serviceData[key].lastModified
+          });
+          
+          formData.append('image', imageFile);
+          console.log('Appending image file to FormData for update:', imageFile.name, imageFile.size, 'bytes');
+          console.log('Image file type:', imageFile.type);
+          console.log('Image file is instance of File:', imageFile instanceof File);
+        } else if (serviceData[key] && typeof serviceData[key] === 'string' && !serviceData[key].startsWith('blob:')) {
+          // If it's a string URL but not a blob URL, append it to FormData
+          // The backend needs the existing image path
+          formData.append('image', serviceData[key]);
+          console.log('Existing image path appended to FormData for update:', serviceData[key]);
+        } else {
+          console.log('Image is neither a File nor a valid URL, skipping');
+        }
+      } else if (key !== 'imagePreview') { // Skip imagePreview field
         formData.append(key, serviceData[key]);
       }
     });
+
+    // Log FormData contents for debugging
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
 
     const response = await api.put(`${API_BASE_URL}/${id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
+
     return response.data;
   } catch (error) {
     console.error('Error updating service:', error);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaQuoteLeft, FaQuoteRight, FaStar } from 'react-icons/fa';
+import { formatImageUrl } from '../services/aboutService';
 
 /* ---------------- TESTIMONIALS DATA ---------------- */
 const testimonials = [
@@ -247,7 +248,7 @@ const Testimonials = ({ testimonialsData }) => {
                 <div className="flex items-center mb-3">
                   <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-[#a3c267] shadow-md mr-3">
                     <img 
-                      src={testimonial.image} 
+                      src={formatImageUrl(testimonial.image)} 
                       alt={testimonial.name}
                       className="w-full h-full object-cover"
                     />

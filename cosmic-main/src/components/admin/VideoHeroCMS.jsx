@@ -51,6 +51,19 @@ const VideoHeroCMS = () => {
       const response = await axios.get(`${API_BASE_URL}/cms/video-hero`);
       if (response.data.success) {
         const data = response.data.data;
+        
+        // Format video source URL if it exists
+        if (data.videoSource) {
+          // Check if the URL needs to be formatted
+          if (!data.videoSource.startsWith('https://api.cosmicpowertech.com/uploads/videos/')) {
+            // Extract the filename if it exists in the path
+            const filename = data.videoSource.split('/').pop();
+            if (filename) {
+              data.videoSource = `https://api.cosmicpowertech.com/uploads/videos/${filename}`;
+            }
+          }
+        }
+        
         setVideoHeroData(data);
         setFormData(data);
       }
@@ -83,9 +96,9 @@ const VideoHeroCMS = () => {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Check file size (150MB limit)
-    if (file.size > 150 * 1024 * 1024) {
-      toast.error('Video size exceeds 150MB limit. Please upload a smaller file.');
+    // Check file size (200MB limit)
+    if (file.size > 200 * 1024 * 1024) {
+      toast.error('Video size exceeds 200MB limit. Please upload a smaller file.');
       return;
     }
     
@@ -111,11 +124,13 @@ const VideoHeroCMS = () => {
         // Get the video path from the response
         const videoPath = response.data.data.videoPath;
         
-        // Use the videoPath directly without modification
-        // This ensures we're using the exact path returned by the server
+        // Format the URL to match the desired pattern
+        // https://api.cosmicpowertech.com/uploads/videos/video-hero-1756463469621-510086161.mp4
+        const formattedUrl = `https://api.cosmicpowertech.com/uploads/videos/${videoPath.split('/').pop()}`;
+        
         setFormData(prev => ({
           ...prev,
-          videoSource: videoPath
+          videoSource: formattedUrl
         }));
         toast.success('Video uploaded successfully!');
       }
@@ -163,7 +178,7 @@ const VideoHeroCMS = () => {
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
           <h4 className="text-sm font-medium text-blue-800 mb-1">File Upload Guidelines:</h4>
           <ul className="text-xs text-blue-700 list-disc pl-4">
-            <li>Maximum file size: 150MB</li>
+            <li>Maximum file size: 200MB</li>
             <li>Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM</li>
             <li>Recommended resolution: 1920x1080 (16:9 ratio)</li>
             <li>For best performance, use compressed MP4 files</li>

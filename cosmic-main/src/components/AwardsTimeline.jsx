@@ -1,5 +1,9 @@
 import React from "react";
 
+// Import environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
+
 // Simple slider without external dependencies
 
 /* ------------------------------------------------------------------ */
@@ -239,10 +243,14 @@ const AwardsTimeline = ({
                 <div key={award._id || award.year || index} className="award-card">
                   <div className="relative">
                     <img 
-                      src={award.image || (index === 0 ? "/installation.jpg" : 
-                           index === 1 ? "/solar-panels.jpg" : 
-                           index === 2 ? "/quality-assurance.jpg" : 
-                           "/site-assessment.jpg")} 
+                      src={award.image ? 
+                        (award.image.startsWith('/uploads') ? 
+                          `${SERVER_URL}${award.image}` : 
+                          award.image) : 
+                        (index === 0 ? "/installation.jpg" : 
+                         index === 1 ? "/solar-panels.jpg" : 
+                         index === 2 ? "/quality-assurance.jpg" : 
+                         "/site-assessment.jpg")} 
                       alt={`${award.year} milestone`}
                       className="w-full h-52 object-cover"
                     />

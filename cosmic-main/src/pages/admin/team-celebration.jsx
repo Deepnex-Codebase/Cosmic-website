@@ -159,8 +159,7 @@ const AdminTeamCelebration = () => {
     { id: 'hero', label: 'Hero Section' },
     { id: 'teamCulture', label: 'Team Culture' },
     { id: 'eventsSection', label: 'Events' },
-    { id: 'achievementsSection', label: 'Achievements' },
-    { id: 'joinTeamCTA', label: 'Call to Action' }
+    { id: 'achievementsSection', label: 'Achievements' }
   ];
 
   return (
@@ -267,7 +266,11 @@ const AdminTeamCelebration = () => {
                 </div>
                 {teamCelebrationData.hero?.backgroundImage && (
                   <img
-                    src={teamCelebrationData.hero.backgroundImage && teamCelebrationData.hero.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.hero.backgroundImage : teamCelebrationData.hero.backgroundImage}
+                    src={teamCelebrationData.hero.backgroundImage.startsWith('data:image') ? 
+                      teamCelebrationData.hero.backgroundImage : 
+                      (teamCelebrationData.hero.backgroundImage.startsWith('/uploads') || !teamCelebrationData.hero.backgroundImage.startsWith('https://') ? 
+                        `https://api.cosmicpowertech.com${teamCelebrationData.hero.backgroundImage.startsWith('/') ? '' : '/'}${teamCelebrationData.hero.backgroundImage}` : 
+                        teamCelebrationData.hero.backgroundImage)}
                     alt="Hero background"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />
@@ -325,7 +328,7 @@ const AdminTeamCelebration = () => {
                 </div>
                 {teamCelebrationData.teamCulture?.image && (
                   <img
-                    src={teamCelebrationData.teamCulture.image && teamCelebrationData.teamCulture.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image : teamCelebrationData.teamCulture.image}
+                    src={teamCelebrationData.teamCulture.image && (teamCelebrationData.teamCulture.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image : (teamCelebrationData.teamCulture.image.startsWith('data:image') ? teamCelebrationData.teamCulture.image : 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image))}
                     alt="Team culture"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />
@@ -555,10 +558,10 @@ const AdminTeamCelebration = () => {
                       </div>
                       {event.image && (
                         <img
-                          src={event.image}
-                          alt="Event"
-                          className="mt-2 w-full h-32 object-cover rounded-md"
-                        />
+                    src={event.image && (event.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + event.image : (event.image.startsWith('data:image') ? event.image : 'https://api.cosmicpowertech.com' + event.image))}
+                    alt="Event"
+                    className="mt-2 w-full h-48 object-cover rounded-md"
+                  />
                       )}
                     </div>
                   </div>
@@ -698,6 +701,68 @@ const AdminTeamCelebration = () => {
                         placeholder="Enter organization name"
                       />
                     </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={achievement.image || ''}
+                          onChange={(e) => {
+                            setTeamCelebrationData(prev => ({
+                              ...prev,
+                              achievementsSection: {
+                                ...prev.achievementsSection,
+                                achievements: (prev.achievementsSection?.achievements || []).map((item, i) => 
+                                  i === index ? { ...item, image: e.target.value } : item
+                                )
+                              }
+                            }));
+                          }}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Enter image URL"
+                        />
+                        <label className="flex items-center gap-2 px-3 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 cursor-pointer">
+                          <FaUpload />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              if (e.target.files[0]) {
+                                try {
+                                  setUploading(true);
+                                  const imageUrl = await uploadTeamCelebrationImage(e.target.files[0]);
+                                  setTeamCelebrationData(prev => ({
+                                    ...prev,
+                                    achievementsSection: {
+                                      ...prev.achievementsSection,
+                                      achievements: (prev.achievementsSection?.achievements || []).map((item, i) => 
+                                        i === index ? { ...item, image: imageUrl } : item
+                                      )
+                                    }
+                                  }));
+                                  setMessage('Image uploaded successfully!');
+                                  setTimeout(() => setMessage(''), 3000);
+                                } catch (error) {
+                                  console.error('Error uploading image:', error);
+                                  setMessage('Error uploading image');
+                                } finally {
+                                  setUploading(false);
+                                }
+                              }
+                            }}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
+                      {achievement.image && (
+                        <img
+                    src={achievement.image && (achievement.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + achievement.image : (achievement.image.startsWith('data:image') ? achievement.image : 'https://api.cosmicpowertech.com' + achievement.image))}
+                    alt="Achievement"
+                    className="mt-2 w-full h-48 object-cover rounded-md"
+                  />
+                      )}
+                    </div>
                   </div>
                   
                   <div className="mt-4">
@@ -725,56 +790,7 @@ const AdminTeamCelebration = () => {
             </div>
           )}
 
-          {/* CTA Section */}
-          {activeTab === 'cta' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold mb-4">Call to Action Section</h2>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input
-                  type="text"
-                  value={teamCelebrationData.cta?.title || ''}
-                  onChange={(e) => handleInputChange('cta', 'title', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter CTA title"
-                />
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea
-                  value={teamCelebrationData.cta?.description || ''}
-                  onChange={(e) => handleInputChange('cta', 'description', e.target.value)}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter CTA description"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
-                <input
-                  type="text"
-                  value={teamCelebrationData.cta?.buttonText || ''}
-                  onChange={(e) => handleInputChange('cta', 'buttonText', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter button text"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Button Link</label>
-                <input
-                  type="text"
-                  value={teamCelebrationData.cta?.buttonLink || ''}
-                  onChange={(e) => handleInputChange('cta', 'buttonLink', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter button link (e.g., /careers)"
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

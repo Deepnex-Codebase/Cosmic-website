@@ -7,7 +7,7 @@ import {
   FaSun, FaWind, FaBolt, FaEye, 
   FaCog 
 } from 'react-icons/fa';
-import { getCompanyCulture } from '../services/companyCultureService';
+import { getCompanyCulture, formatImageUrl } from '../services/companyCultureService';
 
 const CompanyCulture = () => {
   const [aboutData, setAboutData] = useState(null);
@@ -195,7 +195,7 @@ const CompanyCulture = () => {
         className="relative bg-cover bg-center h-64 sm:h-80 md:h-[300px] flex items-center justify-center"
         style={{
           backgroundImage:
-            `url('${data.companyCulture.hero.backgroundImage}')`,
+            `url('${formatImageUrl(data.companyCulture.hero.backgroundImage)}')`,
         }}
       >
         <div className="absolute inset-0 bg-black/50" />
@@ -318,7 +318,7 @@ const CompanyCulture = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="order-2 md:order-1">
               <img 
-                src={data.companyCulture.workEnvironment.image && data.companyCulture.workEnvironment.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data.companyCulture.workEnvironment.image : data.companyCulture.workEnvironment.image} 
+                src={formatImageUrl(data.companyCulture.workEnvironment.image)} 
                 alt="Collaborative work environment" 
                 className="rounded-lg shadow-lg w-full h-auto"
               />
@@ -366,7 +366,7 @@ const CompanyCulture = () => {
               >
                 <div className="h-48 overflow-hidden">
                   <img 
-                    src={card.image && card.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + card.image : card.image} 
+                    src={formatImageUrl(card.image)} 
                     alt={card.title} 
                     className="w-full h-full object-cover"
                   />

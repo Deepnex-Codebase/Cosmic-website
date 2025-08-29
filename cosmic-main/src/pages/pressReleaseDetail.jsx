@@ -4,7 +4,7 @@ import { Calendar, ArrowLeft, User2, Tag, Share2, Facebook, Twitter, Linkedin } 
 import axios from 'axios';
 
 // Define API_BASE_URL using environment variable
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
 // Import the fallback press releases data
 import { samplePressReleases } from './pr';

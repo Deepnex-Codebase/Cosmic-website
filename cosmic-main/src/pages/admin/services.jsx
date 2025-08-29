@@ -25,18 +25,28 @@ const IMAGE_BASE_URL = 'https://api.cosmicpowertech.com';
 
 // Helper function to format image URLs
 const formatImageUrl = (imagePath) => {
-  if (!imagePath) return null;
+  if (!imagePath) {
+    console.log('formatImageUrl received null or empty path');
+    return null;
+  }
   
   // If it's already a complete URL or a blob URL, return as is
   if (imagePath.startsWith('http') || imagePath.startsWith('blob:')) {
     return imagePath;
   }
   
-  // Clean the path by removing /api/ if present
-  const cleanImagePath = imagePath.replace(/^\/api\//, '/');
+  // Clean the path by removing /api/ if present and ensure it doesn't start with a slash
+  let cleanImagePath = imagePath.replace(/^\/api\//, '');
+  
+  // Remove leading slash if present
+  if (cleanImagePath.startsWith('/')) {
+    cleanImagePath = cleanImagePath.substring(1);
+  }
   
   // Combine with base URL
-  return `${IMAGE_BASE_URL}${cleanImagePath}`;
+  const formattedUrl = `${IMAGE_BASE_URL}/${cleanImagePath}`;
+  console.log('Formatted URL:', formattedUrl);
+  return formattedUrl;
 };
 
 const AdminServices = () => {
@@ -150,18 +160,50 @@ const AdminServices = () => {
     setError(null);
 
     try {
+      // Prepare service data, filtering out empty features
       const serviceData = {
         ...formData,
         features: formData.features.filter(f => f.trim() !== '')
       };
+      
+      // Log form submission data for debugging
+      console.log('Submitting service form with data:', {
+        ...serviceData,
+        image: serviceData.image instanceof File ? 
+          `File: ${serviceData.image.name} (${serviceData.image.size} bytes)` : 
+          serviceData.image
+      });
 
+      // Check if we have a valid image file
+      if (serviceData.image instanceof File) {
+        console.log('Image file detected for upload:', serviceData.image.name, serviceData.image.size, 'bytes');
+        console.log('Image file type:', serviceData.image.type);
+        console.log('Image file last modified:', new Date(serviceData.image.lastModified).toISOString());
+        
+        // Ensure the image is properly set as a File object
+        const imageFile = new File([serviceData.image], serviceData.image.name, {
+          type: serviceData.image.type,
+          lastModified: serviceData.image.lastModified
+        });
+        
+        serviceData.image = imageFile;
+        console.log('Recreated image file for upload:', imageFile.name, imageFile.size, 'bytes');
+      } else if (serviceData.imagePreview && !serviceData.image) {
+        // If we have a preview but no file, it might be a blob URL
+        console.log('Image preview without file detected');
+        console.log('Image preview URL:', serviceData.imagePreview);
+      }
+
+      let result;
       if (editingService) {
-        await updateService(editingService._id, serviceData);
+        result = await updateService(editingService._id, serviceData);
         toast.success('Service updated successfully!');
       } else {
-        await createService(serviceData);
+        result = await createService(serviceData);
         toast.success('Service created successfully!');
       }
+      
+      console.log('Service saved successfully:', result);
 
       // Auto refresh services list
       await fetchServices();
@@ -203,6 +245,7 @@ const AdminServices = () => {
       features: [],
       icon: 'FiSun',
       image: null,
+      imagePreview: null,
       category: 'core',
       color: 'from-accent-400 to-accent-600',
       bgColor: 'bg-accent-50',
@@ -219,23 +262,38 @@ const AdminServices = () => {
     });
     setEditingService(null);
     setNewFeature('');
+    
+    // Reset any file input elements
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   // Handle edit
   const handleEdit = (service) => {
-    // Format image URL if it starts with /uploads
-    let imageUrl = service.image;
-    if (imageUrl && imageUrl.startsWith('/uploads')) {
-      imageUrl = formatImageUrl(imageUrl);
-    }
+    // Format image URL if it exists
+    let imageUrl = service.image ? formatImageUrl(service.image) : null;
+    console.log('Editing service with image:', service.image);
+    console.log('Formatted image URL for preview:', imageUrl);
     
+    // When editing, we store the existing image path in a separate property
+    // This helps distinguish between an existing image and a new uploaded file
     setFormData({
       ...service,
       features: service.features || [],
       seo: service.seo || { title: '', description: '', keywords: '' },
+      image: service.image, // Store the existing image path string
       imagePreview: imageUrl // Set the image preview URL
     });
     setEditingService(service);
+    
+    // Reset any file input elements
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+      fileInput.value = '';
+    }
+    
     setShowModal(true);
   };
 
@@ -278,11 +336,27 @@ const AdminServices = () => {
       // Create a temporary URL for the image preview
       const imageUrl = URL.createObjectURL(file);
       
+      // Log file information for debugging
+      console.log('Selected image file:', file.name, file.type, file.size);
+      console.log('File is instance of File:', file instanceof File);
+      
+      // Create a new File object to ensure it's properly recognized
+      const newFile = new File([file], file.name, {
+        type: file.type,
+        lastModified: file.lastModified
+      });
+      
+      console.log('Created new File object:', newFile.name, newFile.type, newFile.size);
+      console.log('New file is instance of File:', newFile instanceof File);
+      
       setFormData(prev => ({ 
         ...prev, 
-        image: file,
+        image: newFile,
         imagePreview: imageUrl // Store the URL for preview
       }));
+      
+      // Reset the file input value to ensure onChange triggers even if same file is selected again
+      e.target.value = '';
     }
   };
 
@@ -392,8 +466,8 @@ const AdminServices = () => {
                   alt={service.title}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = '/placeholder-image.png';
+                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.src = 'https://placehold.co/400x300?text=Image+Not+Found';
                   }}
                 />
               ) : (
@@ -682,36 +756,52 @@ const AdminServices = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Service Image
                   </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-                  />
-                  
-                  {/* Image Preview */}
-                  {(formData.imagePreview || formData.image) && (
-                    <div className="mt-4">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Image Preview:</p>
-                      <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
+                  <div className="flex items-center gap-4">
+                    <div className="w-32 h-32 border border-gray-300 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center relative">
+                      {formData.imagePreview ? (
                         <img 
-                          src={formData.imagePreview || formatImageUrl(formData.image)}
+                          src={formData.imagePreview} 
                           alt="Service preview" 
-                          className="w-full h-full object-contain"
+                          className="w-full h-full object-cover"
                         />
-                      </div>
+                      ) : formData.image ? (
+                        <img 
+                          src={formatImageUrl(formData.image)} 
+                          alt="Service image" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.onerror = null; // Prevent infinite loop
+                            e.target.src = 'https://placehold.co/400x300?text=Image+Not+Found';
+                          }}
+                        />
+                      ) : (
+                        <FiUpload className="w-12 h-12 text-gray-400" />
+                      )}
                     </div>
-                  )}
-                  
-                  {/* File Upload Information */}
-                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                    <h4 className="text-xs font-medium text-blue-800 mb-1">Image Upload Guidelines:</h4>
-                    <ul className="text-xs text-blue-700 list-disc pl-4">
-                      <li>Maximum file size: 40MB</li>
-                      <li>Supported formats: JPEG, PNG, JPG, GIF, WEBP</li>
-                      <li>Recommended resolution: At least 800x600 pixels</li>
-                      <li>For best quality, use images with transparent background (PNG)</li>
-                    </ul>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        id="service-image-upload"
+                        name="image"
+                        accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                        onChange={handleImageUpload}
+                        className="w-full text-sm text-gray-500
+                          file:mr-4 file:py-2 file:px-4
+                          file:rounded-lg file:border-0
+                          file:text-sm file:font-semibold
+                          file:bg-accent-50 file:text-accent-700
+                          hover:file:bg-accent-100
+                          cursor-pointer"
+                      />
+                      <p className="mt-1 text-xs text-gray-500">
+                        Recommended size: 800x600px. Max size: 40MB. Supported formats: JPEG, PNG, JPG, GIF, WEBP.
+                      </p>
+                      {formData.image instanceof File && (
+                        <p className="mt-1 text-xs text-green-500">
+                          Selected file: {formData.image.name} ({Math.round(formData.image.size / 1024)} KB)
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
 

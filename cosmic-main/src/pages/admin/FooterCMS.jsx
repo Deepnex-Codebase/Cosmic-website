@@ -27,6 +27,7 @@ const FooterCMS = () => {
   const [editingLink, setEditingLink] = useState(null);
   const [editingSocial, setEditingSocial] = useState(null);
   const [selectedSectionId, setSelectedSectionId] = useState(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   // Define API_BASE_URL using environment variable
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
@@ -74,6 +75,34 @@ const FooterCMS = () => {
       setError(err.message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploadingLogo(true);
+      const formData = new FormData();
+      formData.append('logo', file);
+
+      const response = await fetch(`${API_BASE_URL}/footer-config/${footerConfig._id}/upload-logo`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload logo');
+      }
+
+      const data = await response.json();
+      setFooterConfig(data);
+    } catch (err) {
+      console.error('Error uploading logo:', err);
+      setError(err.message);
+    } finally {
+      setUploadingLogo(false);
     }
   };
 
@@ -381,22 +410,27 @@ const FooterCMS = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Logo URL</label>
-            <input
-              type="text"
-              value={footerConfig?.companyInfo?.logo || ''}
-              onChange={(e) => {
-                const updatedConfig = {
-                  ...footerConfig,
-                  companyInfo: {
-                    ...footerConfig.companyInfo,
-                    logo: e.target.value
-                  }
-                };
-                setFooterConfig(updatedConfig);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Logo</label>
+            <div className="flex items-center space-x-4">
+              {footerConfig?.companyInfo?.logo && (
+                <div className="w-16 h-16 relative">
+                  <img 
+                    src={footerConfig.companyInfo.logo.startsWith('http') ? footerConfig.companyInfo.logo : `https://api.cosmicpowertech.com/${footerConfig.companyInfo.logo}`} 
+                    alt="Footer Logo" 
+                    className="w-full h-full object-contain border rounded"
+                  />
+                </div>
+              )}
+              <div className="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {uploadingLogo && <p className="text-sm text-blue-600 mt-1">Uploading logo...</p>}
+              </div>
+            </div>
           </div>
         </div>
 

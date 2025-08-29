@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { FaPlus, FaTrash, FaEdit, FaSave, FaUpload } from 'react-icons/fa';
-import { getAboutPage, updateAboutPage, uploadExpertiseImage, uploadHeroVideo, addExpertiseItem, removeExpertiseItem } from '../../services/aboutService';
+import { getAboutPage, updateAboutPage, uploadExpertiseImage, uploadHeroVideo, addExpertiseItem, removeExpertiseItem, formatImageUrl, uploadTestimonialImage } from '../../services/aboutService';
 
 const AdminAbout = () => {
   const [loading, setLoading] = useState(true);
@@ -38,6 +38,15 @@ const AdminAbout = () => {
         const data = await getAboutPage();
         // Only update state if we got valid data
         if (data && Object.keys(data).length > 0) {
+          // Format all expertise item image URLs
+          if (data.expertise && data.expertise.items && Array.isArray(data.expertise.items)) {
+            data.expertise.items = data.expertise.items.map(item => {
+              if (item.image && typeof item.image === 'string' && item.image.includes('localhost')) {
+                return { ...item, image: formatImageUrl(item.image) };
+              }
+              return item;
+            });
+          }
           setAboutData(data);
         } else {
           toast.warning('Using default about page data as server data could not be loaded');
@@ -96,7 +105,13 @@ const AdminAbout = () => {
         newData[section][field][index] = {};
       }
       
-      newData[section][field][index][subfield] = value;
+      // Format image URLs if this is an image field
+      if (subfield === 'image' && typeof value === 'string' && value.includes('localhost')) {
+        newData[section][field][index][subfield] = formatImageUrl(value);
+      } else {
+        newData[section][field][index][subfield] = value;
+      }
+      
       return newData;
     });
   };
@@ -137,7 +152,9 @@ const AdminAbout = () => {
     try {
       setUploadingImage(true);
       const result = await uploadExpertiseImage(file);
-      setNewExpertiseItem(prev => ({ ...prev, image: result.imageUrl }));
+      // Format the image URL to ensure it uses the production API URL
+      const formattedImageUrl = formatImageUrl(result.imageUrl);
+      setNewExpertiseItem(prev => ({ ...prev, image: formattedImageUrl }));
       toast.success('Image uploaded successfully');
     } catch (error) {
       // Display specific error message if available
@@ -407,7 +424,7 @@ const AdminAbout = () => {
                 className="hidden"
               />
             </div>
-            <p className="text-sm text-gray-500 mt-1">Upload a video file (MP4, WebM, Ogg, AVI, MOV) - Max size: 50MB</p>
+            <p className="text-sm text-gray-500 mt-1">Upload a video file (MP4, WebM, Ogg, AVI, MOV) - Max size: 200MB</p>
           </div>
           
           {aboutData.hero.videoUrl && (
@@ -556,7 +573,7 @@ const AdminAbout = () => {
                   {item.image && (
                     <div className="mt-2">
                       <img 
-                        src={item.image} 
+                        src={formatImageUrl(item.image)} 
                         alt={item.title} 
                         className="w-full h-32 object-cover rounded" 
                       />
@@ -595,7 +612,7 @@ const AdminAbout = () => {
               {newExpertiseItem.image && (
                 <div className="mt-2 mb-2">
                   <img 
-                    src={newExpertiseItem.image} 
+                    src={formatImageUrl(newExpertiseItem.image)} 
                     alt="Preview" 
                     className="w-full h-32 object-cover rounded" 
                   />
@@ -1000,24 +1017,66 @@ const AdminAbout = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                    <input
-                      type="text"
-                      value={testimonial.image || ''}
-                      onChange={(e) => {
-                        const newTestimonials = [...(aboutData.clientTestimonials?.testimonials || [])];
-                        newTestimonials[index] = { ...newTestimonials[index], image: e.target.value };
-                        setAboutData(prev => ({
-                          ...prev,
-                          clientTestimonials: {
-                            ...prev.clientTestimonials,
-                            testimonials: newTestimonials
-                          }
-                        }));
-                      }}
-                      className="w-full p-2 border border-gray-300 rounded"
-                      placeholder="Image URL"
-                    />
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="text"
+                        value={testimonial.image || ''}
+                        onChange={(e) => {
+                          const newTestimonials = [...(aboutData.clientTestimonials?.testimonials || [])];
+                          newTestimonials[index] = { ...newTestimonials[index], image: e.target.value };
+                          setAboutData(prev => ({
+                            ...prev,
+                            clientTestimonials: {
+                              ...prev.clientTestimonials,
+                              testimonials: newTestimonials
+                            }
+                          }));
+                        }}
+                        className="w-full p-2 border border-gray-300 rounded"
+                        placeholder="Image URL"
+                      />
+                      <label className="cursor-pointer bg-blue-500 text-white px-3 py-2 rounded flex items-center">
+                        <FaUpload className="mr-1" />
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              try {
+                                setUploadingImage(true);
+                                const response = await uploadTestimonialImage(e.target.files[0]);
+                                const newTestimonials = [...(aboutData.clientTestimonials?.testimonials || [])];
+                                newTestimonials[index] = { ...newTestimonials[index], image: response.imageUrl };
+                                setAboutData(prev => ({
+                                  ...prev,
+                                  clientTestimonials: {
+                                    ...prev.clientTestimonials,
+                                    testimonials: newTestimonials
+                                  }
+                                }));
+                                toast.success('Image uploaded successfully');
+                              } catch (error) {
+                                console.error('Error uploading image:', error);
+                                toast.error(error.message || 'Failed to upload image');
+                              } finally {
+                                setUploadingImage(false);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                    {testimonial.image && (
+                      <div className="mt-2">
+                        <img 
+                          src={formatImageUrl(testimonial.image)} 
+                          alt={testimonial.name} 
+                          className="w-20 h-20 object-cover rounded-full" 
+                        />
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Rating (1-5)</label>

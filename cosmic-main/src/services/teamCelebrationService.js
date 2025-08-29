@@ -51,7 +51,24 @@ export const uploadTeamCelebrationImage = async (file) => {
     }
     
     const result = await response.json();
-    return `${API_BASE_URL}${result.imageUrl}`;
+    // Handle different types of image URLs
+    if (result.imageUrl) {
+      // If it's a data:image URL (base64), return it directly
+      if (result.imageUrl.startsWith('data:image')) {
+        return result.imageUrl;
+      }
+      // If it starts with /uploads, prepend the server URL
+      else if (result.imageUrl.startsWith('/uploads')) {
+        return `https://api.cosmicpowertech.com${result.imageUrl}`;
+      }
+      // If it's not an https URL, prepend the server URL
+      else if (!result.imageUrl.startsWith('https://')) {
+        return `https://api.cosmicpowertech.com${result.imageUrl.startsWith('/') ? '' : '/'}${result.imageUrl}`;
+      }
+      // Otherwise return the URL as is
+      return result.imageUrl;
+    }
+    return '';
   } catch (error) {
     // Error handling without console.error
     throw error;

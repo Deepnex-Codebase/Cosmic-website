@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import achievementService from '../../services/achievementService';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
+
 export default function AchievementCMS() {
   const [pageData, setPageData] = useState({
     hero: {
@@ -194,7 +197,7 @@ export default function AchievementCMS() {
     // Check if image/logo starts with /uploads and prepend API URL
     let imageUrl = item?.image || item?.logo || '';
     if (imageUrl && imageUrl.startsWith('/uploads')) {
-      imageUrl = `https://api.cosmicpowertech.com${imageUrl}`;
+      imageUrl = `${SERVER_URL}${imageUrl}`;
     }
     setImagePreview(imageUrl);
     setShowModal(true);
@@ -387,7 +390,7 @@ export default function AchievementCMS() {
                 {pageData.hero?.backgroundImage && (
                   <div className="mt-2">
                     <img
-                      src={pageData.hero?.backgroundImage && pageData.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + pageData.hero?.backgroundImage : pageData.hero?.backgroundImage}
+                      src={pageData.hero?.backgroundImage && pageData.hero?.backgroundImage.startsWith('/uploads') ? SERVER_URL + pageData.hero?.backgroundImage : pageData.hero?.backgroundImage}
                       alt="Hero background"
                       className="h-32 w-48 object-cover rounded-lg"
                     />
@@ -609,7 +612,7 @@ export default function AchievementCMS() {
                   </div>
                   {partner.logo && (
                     <img
-                      src={partner.logo.startsWith('/uploads') ? `https://api.cosmicpowertech.com${partner.logo}` : partner.logo}
+                      src={partner.logo.startsWith('/uploads') ? `${SERVER_URL}${partner.logo}` : partner.logo}
                       alt={partner.name}
                       className="h-16 w-auto mx-auto mb-2"
                     />
@@ -799,7 +802,7 @@ export default function AchievementCMS() {
                     {imagePreview && (
                       <div className="mt-2">
                         <img
-                          src={imagePreview.startsWith('/uploads') ? `https://api.cosmicpowertech.com${imagePreview}` : imagePreview}
+                          src={imagePreview.startsWith('/uploads') ? `${SERVER_URL}${imagePreview}` : imagePreview}
                           alt="Preview"
                           className="h-32 w-32 object-cover rounded-lg"
                         />

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Define API_URL using environment variable
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
 // Log the API URL for debugging
 console.log('Company Culture API URL:', API_URL);
@@ -67,8 +67,8 @@ export const uploadCompanyCultureImage = async (file) => {
     
     // Check file size before uploading
     const fileSizeInMB = file.size / (1024 * 1024);
-    if (fileSizeInMB > 5) {
-      throw new Error('File size exceeds 5MB limit. Please choose a smaller file.');
+    if (fileSizeInMB > 40) {
+      throw new Error('File size exceeds 40MB limit. Please choose a smaller file.');
     }
     
     // Use fetch API instead of axios for more reliable multipart/form-data handling
@@ -82,6 +82,12 @@ export const uploadCompanyCultureImage = async (file) => {
     }
     
     const result = await response.json();
+    
+    // Format the image URL before returning
+    if (result && result.imageUrl) {
+      result.imageUrl = formatImageUrl(result.imageUrl);
+    }
+    
     return result;
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -89,8 +95,31 @@ export const uploadCompanyCultureImage = async (file) => {
   }
 };
 
+// Format image URL to ensure it uses the production API URL
+export const formatImageUrl = (url) => {
+  if (!url) return url;
+  
+  // If the URL already contains the production API URL, return it as is
+  if (url.includes('https://api.cosmicpowertech.com')) {
+    return url;
+  }
+  
+  // If the URL contains localhost, replace it with the production API URL
+  if (url.includes('localhost')) {
+    return url.replace(/http:\/\/localhost:[0-9]+/, 'https://api.cosmicpowertech.com');
+  }
+  
+  // If the URL is a relative path (starts with /), prepend the production API URL
+  if (url.startsWith('/')) {
+    return `https://api.cosmicpowertech.com${url}`;
+  }
+  
+  return url;
+};
+
 export default {
   getCompanyCulture,
   updateCompanyCulture,
   uploadCompanyCultureImage,
+  formatImageUrl,
 };
