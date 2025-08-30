@@ -13,14 +13,20 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@headlessui/react": "^1.7.18",
     "@heroicons/react": "^2.2.0",
+    "@mui/icons-material": "^7.3.1",
+    "@mui/material": "^7.3.1",
     "@tailwindcss/vite": "^4.1.10",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
+    "bootstrap": "^5.3.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "formik": "^2.4.6",
     "framer-motion": "^12.18.1",
     "fullpage.js": "^4.0.37",
     "gsap": "^3.13.0",
@@ -30,6 +36,7 @@
     "multer": "^2.0.1",
     "nodemailer": "^6.9.13",
     "react": "^18.2.0",
+    "react-bootstrap": "^2.10.10",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
@@ -41,7 +48,8 @@
     "react-toastify": "^11.0.5",
     "react-transition-group": "^4.4.5",
     "recharts": "^2.15.3",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "yup": "^1.7.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

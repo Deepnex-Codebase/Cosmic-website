@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { ToastContainer } from 'react-toastify';
@@ -54,6 +54,7 @@ import ProductCMS from './pages/admin/ProductCMS'
 import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
 import AdminTeamCelebration from './pages/admin/team-celebration';
+import SolarConfigPage from './pages/admin/solar-config';
 
 import NavbarCMS from './components/NavbarCMS';
 
@@ -139,7 +140,7 @@ const AdminRoutes = () => {
         <ProtectedRoute>
           <AdminLayout>
             <Routes>
-              <Route path="/" element={<Navigate to="/admin/home" replace />} />
+              <Route path="/" element={<HomeCMS />} />
               <Route path="/home" element={<HomeCMS />} />
               <Route path="/directors" element={<DirectorAdmin />} />
               <Route path="/team" element={<TeamAdmin />} />
@@ -156,6 +157,7 @@ const AdminRoutes = () => {
               <Route path="/forms" element={<FormCMS />} />
               <Route path="/footer" element={<FooterCMS />} />
               <Route path="/navbar" element={<NavbarCMS />} />
+              <Route path="/solar-config" element={<SolarConfigPage />} />
             </Routes>
           </AdminLayout>
         </ProtectedRoute>

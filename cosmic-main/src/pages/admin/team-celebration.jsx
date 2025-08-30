@@ -328,7 +328,7 @@ const AdminTeamCelebration = () => {
                 </div>
                 {teamCelebrationData.teamCulture?.image && (
                   <img
-                    src={teamCelebrationData.teamCulture.image && (teamCelebrationData.teamCulture.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image : (teamCelebrationData.teamCulture.image.startsWith('data:image') ? teamCelebrationData.teamCulture.image : 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image))}
+                    src={teamCelebrationData.teamCulture.image && (teamCelebrationData.teamCulture.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image : (teamCelebrationData.teamCulture.image.startsWith('data:image') ? teamCelebrationData.teamCulture.image : teamCelebrationData.teamCulture.image.startsWith('https://') ? teamCelebrationData.teamCulture.image : 'https://api.cosmicpowertech.com' + teamCelebrationData.teamCulture.image))}
                     alt="Team culture"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />
@@ -558,7 +558,7 @@ const AdminTeamCelebration = () => {
                       </div>
                       {event.image && (
                         <img
-                    src={event.image && (event.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + event.image : (event.image.startsWith('data:image') ? event.image : 'https://api.cosmicpowertech.com' + event.image))}
+                    src={event.image && (event.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + event.image : (event.image.startsWith('data:image') ? event.image : event.image.startsWith('https://') ? event.image : event.image))}
                     alt="Event"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />
@@ -757,7 +757,7 @@ const AdminTeamCelebration = () => {
                       </div>
                       {achievement.image && (
                         <img
-                    src={achievement.image && (achievement.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + achievement.image : (achievement.image.startsWith('data:image') ? achievement.image : 'https://api.cosmicpowertech.com' + achievement.image))}
+                    src={achievement.image && (achievement.image.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + achievement.image : (achievement.image.startsWith('data:image') ? achievement.image : achievement.image.startsWith('https://') ? achievement.image : achievement.image))}
                     alt="Achievement"
                     className="mt-2 w-full h-48 object-cover rounded-md"
                   />

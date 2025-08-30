@@ -9,6 +9,7 @@ const path = require('path');
 const chatRoutes = require('./routes/chatRoutes');
 const leadRoutes = require('./routes/leadRoutes');
 const configRoutes = require('./routes/configRoutes');
+const solarConfigRoutes = require('./routes/solarConfigRoutes');
 const whatsappRoutes = require('./routes/whatsappRoutes');
 const directorRoutes = require('./routes/directorRoutes');
 const teamRoutes = require('./routes/teamRoutes');
@@ -59,7 +60,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set port
-const PORT = process.env.PORT || 5000;
+const PORT = 8000;
 
 
 // Webhook route is now handled by whatsappRoutes
@@ -87,6 +88,7 @@ if (process.env.NODE_ENV !== 'test') {
 app.use('/api/chat', chatRoutes);
 app.use('/api/lead', leadRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/solar-config', solarConfigRoutes);
 app.use('/webhook/whatsapp', whatsappRoutes);
 app.use('/api/directors', directorRoutes);
 app.use('/api/team', teamRoutes);

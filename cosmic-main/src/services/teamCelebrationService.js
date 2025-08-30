@@ -61,9 +61,13 @@ export const uploadTeamCelebrationImage = async (file) => {
       else if (result.imageUrl.startsWith('/uploads')) {
         return `https://api.cosmicpowertech.com${result.imageUrl}`;
       }
+      // If it's already an https URL, return it as is
+      else if (result.imageUrl.startsWith('https://')) {
+        return result.imageUrl;
+      }
       // If it's not an https URL, prepend the server URL
-      else if (!result.imageUrl.startsWith('https://')) {
-        return `https://api.cosmicpowertech.com${result.imageUrl.startsWith('/') ? '' : '/'}${result.imageUrl}`;
+      else {
+        return `${result.imageUrl}`;
       }
       // Otherwise return the URL as is
       return result.imageUrl;

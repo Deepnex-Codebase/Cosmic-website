@@ -40,7 +40,7 @@ const AdminLayout = ({ children }) => {
       label: 'Dashboard',
       icon: MdDashboard,
       items: [
-        { path: '/admin/home', icon: FaHome, label: 'Home Dashboard' },
+        { path: '/admin', icon: FaHome, label: 'Dashboard' },
       ]
     },
     {
@@ -77,6 +77,7 @@ const AdminLayout = ({ children }) => {
       items: [
         { path: '/admin/navbar', icon: BiSolidNavigation, label: 'Navigation Bar' },
         { path: '/admin/footer', icon: FaStream, label: 'Footer Management' },
+        { path: '/admin/solar-config', icon: FaSolarPanel, label: 'Solar Configuration' },
         { path: '/admin/settings', icon: FaCog, label: 'Settings' },
       ]
     }

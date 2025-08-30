@@ -4,10 +4,10 @@
   "configuration": {
     "tariff": {
       "Gujarat": 8.7,
-      "Maharashtra": 7.00,
-      "Rajasthan": 6.20,
-      "Delhi": 4.50,
-      "Default": 6.50
+      "Maharashtra": 7,
+      "Rajasthan": 6.2,
+      "Delhi": 4.5,
+      "Default": 6.5
     },
     "yield": {
       "Rajasthan": 1750,
