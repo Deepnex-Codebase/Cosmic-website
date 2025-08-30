@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Enable smooth scrolling for the entire site */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Apply base transition to all interactive elements */
+a, button, input, select, textarea {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideRight {
+  from { transform: translateX(-15px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(15px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-15px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Button hover animations */
+@keyframes buttonPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes buttonGlow {
+  0% { box-shadow: 0 0 0 0 rgba(159, 194, 47, 0.6); }
+  50% { box-shadow: 0 0 10px 3px rgba(159, 194, 47, 0.4); }
+  100% { box-shadow: 0 0 0 0 rgba(159, 194, 47, 0); }
+}
+
+@keyframes buttonShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes buttonSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slideRight {
+  animation: slideRight 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+/* Button hover animation classes */
+.hover-pulse:hover {
+  animation: buttonPulse 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.hover-glow:hover {
+  animation: buttonGlow 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.hover-shake:hover {
+  animation: buttonShake 0.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.hover-spin:hover {
+  animation: buttonSpin 1s linear infinite;
+}
+
+/* Animation delay classes */
+.delay-100 {
+  animation-delay: 100ms;
+}
+
+.delay-200 {
+  animation-delay: 200ms;
+}
+
+.delay-300 {
+  animation-delay: 300ms;
+}
+
+.delay-400 {
+  animation-delay: 400ms;
+}
+
+.delay-500 {
+  animation-delay: 500ms;
+}
+
+/* Add once to your global CSS (e.g., index.css or globals.css) */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;              /* Chrome / Safari */
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;   /* IE & Edge */
+  scrollbar-width: none;      /* Firefox */
+}
