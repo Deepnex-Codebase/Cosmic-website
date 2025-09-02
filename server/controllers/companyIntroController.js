@@ -163,7 +163,7 @@ exports.createOrUpdateCompanyIntro = async (req, res) => {
 
     // Handle video upload
     if (req.file) {
-      updateData.backgroundVideo = `/uploads/company-intro/${req.file.filename}`;
+      updateData.backgroundVideo = `${process.env.BASE_URL}/uploads/company-intro/${req.file.filename}`;
     }
 
     let companyIntroData;
@@ -294,7 +294,7 @@ exports.initializeDefaultCompanyIntro = async () => {
           { word: 'High-performance', color: '#cae28e' }
         ],
         description: 'We are committed to delivering cutting-edge solar solutions that transform how businesses and homes harness energy. Our expertise in high-performance solar technology sets new industry standards for efficiency and reliability.',
-        backgroundVideo: '/videos/about.mp4',
+        backgroundVideo: `${process.env.BASE_URL}/videos/about.mp4`,
         isActive: true,
         order: 1
       });

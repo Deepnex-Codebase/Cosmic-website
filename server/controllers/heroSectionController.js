@@ -56,14 +56,14 @@ const updateHeroSection = async (req, res) => {
       if (req.files.companyVideo && req.files.companyVideo[0]) {
         // Don't delete old file to ensure persistence
         // Just update with new file path
-        heroSection.companyVideo = `/uploads/videos/${req.files.companyVideo[0].filename}`;
+        heroSection.companyVideo = `${process.env.BASE_URL}/uploads/videos/${req.files.companyVideo[0].filename}`;
       }
       
       // Handle background video upload
       if (req.files.backgroundVideo && req.files.backgroundVideo[0]) {
         // Don't delete old file to ensure persistence
         // Just update with new file path
-        heroSection.backgroundVideo = `/uploads/videos/${req.files.backgroundVideo[0].filename}`;
+        heroSection.backgroundVideo = `${process.env.BASE_URL}/uploads/videos/${req.files.backgroundVideo[0].filename}`;
       }
     }
 

@@ -97,15 +97,15 @@ exports.createProduct = async (req, res) => {
     // Handle file uploads
     if (req.files) {
       if (req.files.image && req.files.image[0]) {
-        req.body.image = `/uploads/products/${req.files.image[0].filename}`;
+        req.body.image = `${process.env.BASE_URL}/uploads/products/${req.files.image[0].filename}`;
       }
       
       if (req.files.hoverImage && req.files.hoverImage[0]) {
-        req.body.hoverImage = `/uploads/products/${req.files.hoverImage[0].filename}`;
+        req.body.hoverImage = `${process.env.BASE_URL}/uploads/products/${req.files.hoverImage[0].filename}`;
       }
       
       if (req.files.images) {
-        req.body.images = req.files.images.map(file => `/uploads/products/${file.filename}`);
+        req.body.images = req.files.images.map(file => `${process.env.BASE_URL}/uploads/products/${file.filename}`);
       }
     }
     
@@ -185,15 +185,15 @@ exports.updateProduct = async (req, res) => {
     // Handle file uploads
     if (req.files) {
       if (req.files.image && req.files.image[0]) {
-        req.body.image = `/uploads/products/${req.files.image[0].filename}`;
+        req.body.image = `${process.env.BASE_URL}/uploads/products/${req.files.image[0].filename}`;
       }
       
       if (req.files.hoverImage && req.files.hoverImage[0]) {
-        req.body.hoverImage = `/uploads/products/${req.files.hoverImage[0].filename}`;
+        req.body.hoverImage = `${process.env.BASE_URL}/uploads/products/${req.files.hoverImage[0].filename}`;
       }
       
       if (req.files.images) {
-        req.body.images = req.files.images.map(file => `/uploads/products/${file.filename}`);
+        req.body.images = req.files.images.map(file => `${process.env.BASE_URL}/uploads/products/${file.filename}`);
       }
     }
     

@@ -139,7 +139,7 @@ exports.createOrUpdatePanIndiaPresence = async (req, res) => {
 
     // Handle file upload
     if (req.file) {
-      mapImage = `/uploads/pan-india/${req.file.filename}`;
+      mapImage = `${process.env.BASE_URL}/uploads/pan-india/${req.file.filename}`;
     }
 
     // Parse stats if it's a string

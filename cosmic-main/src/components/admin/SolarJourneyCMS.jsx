@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaEye, FaArrowUp, FaArrowDown } from 'react-icons/fa';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'https://api.cosmicpowertech.com';
 
 const SolarJourneyCMS = () => {
   const [milestones, setMilestones] = useState([]);
@@ -265,7 +266,7 @@ const SolarJourneyCMS = () => {
               {imagePreview && (
                 <div className="mt-2">
                   <img
-                    src={imagePreview}
+                    src={imagePreview.startsWith('data:') ? imagePreview : (imagePreview.startsWith('http') ? imagePreview : `${IMAGE_BASE_URL}${imagePreview}`)}
                     alt="Preview"
                     className="w-32 h-20 object-cover rounded border"
                   />
@@ -335,7 +336,7 @@ const SolarJourneyCMS = () => {
                     {item.image && (
                       <div className="flex items-center gap-2">
                         <img
-                          src={item.image}
+                          src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image}`}
                           alt={item.title}
                           className="w-16 h-16 object-cover rounded border"
                         />

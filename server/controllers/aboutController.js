@@ -190,8 +190,8 @@ exports.uploadExpertiseImage = async (req, res) => {
         return res.status(400).json({ message: 'No file uploaded' });
       }
       
-      // Create the image URL
-      const imageUrl = `/uploads/about/${req.file.filename}`;
+      // Create the image URL with BASE_URL
+      const imageUrl = `${process.env.BASE_URL}/uploads/about/${req.file.filename}`;
       
       res.status(200).json({ 
         message: 'Image uploaded successfully', 
@@ -218,8 +218,8 @@ exports.uploadHeroVideo = async (req, res) => {
         return res.status(400).json({ message: 'No video file uploaded' });
       }
       
-      // Create the video URL
-      const videoUrl = `/uploads/about/${req.file.filename}`;
+      // Create the video URL with BASE_URL
+      const videoUrl = `${process.env.BASE_URL}/uploads/about/${req.file.filename}`;
       
       // Update the hero section in the database with the new video URL
       let aboutData = await About.findOne();
@@ -382,8 +382,8 @@ exports.uploadTestimonialImage = async (req, res) => {
         return res.status(400).json({ message: 'No file uploaded' });
       }
       
-      // Create the image URL
-      const imageUrl = `/uploads/about/testimonials/${req.file.filename}`;
+      // Create the image URL with BASE_URL
+      const imageUrl = `${process.env.BASE_URL}/uploads/about/testimonials/${req.file.filename}`;
       
       res.status(200).json({ 
         message: 'Testimonial image uploaded successfully', 

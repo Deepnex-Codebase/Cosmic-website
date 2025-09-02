@@ -140,11 +140,11 @@ const createNewsCard = async (req, res) => {
     if (req.files) {
       if (req.files.image && req.files.image[0]) {
         // Set the correct path for uploaded image files
-        image = `/uploads/news-cards/${req.files.image[0].filename}`;
+        image = `${process.env.BASE_URL}/uploads/news-cards/${req.files.image[0].filename}`;
       }
       if (req.files.logo && req.files.logo[0]) {
         // Set the correct path for uploaded logo files
-        logo = `/uploads/news-cards/${req.files.logo[0].filename}`;
+        logo = `${process.env.BASE_URL}/uploads/news-cards/${req.files.logo[0].filename}`;
       }
     }
     
@@ -197,11 +197,11 @@ const updateNewsCard = async (req, res) => {
     if (req.files) {
       if (req.files.image && req.files.image[0]) {
         // Set the correct path for uploaded image files
-        image = `/uploads/news-cards/${req.files.image[0].filename}`;
+        image = `${process.env.BASE_URL}/uploads/news-cards/${req.files.image[0].filename}`;
       }
       if (req.files.logo && req.files.logo[0]) {
         // Set the correct path for uploaded logo files
-        logo = `/uploads/news-cards/${req.files.logo[0].filename}`;
+        logo = `${process.env.BASE_URL}/uploads/news-cards/${req.files.logo[0].filename}`;
       }
     }
     

@@ -54,7 +54,7 @@ exports.createDirector = async (req, res) => {
 
     // If file was uploaded, add the file path to the request body
     if (req.file) {
-      req.body.image = `/uploads/directors/${req.file.filename}`;
+      req.body.image = `${process.env.BASE_URL}/uploads/directors/${req.file.filename}`;
     }
 
     // Parse socialLinks if it's a string
@@ -107,7 +107,7 @@ exports.updateDirector = async (req, res) => {
 
     // If file was uploaded, add the file path to the request body
     if (req.file) {
-      req.body.image = `/uploads/directors/${req.file.filename}`;
+      req.body.image = `${process.env.BASE_URL}/uploads/directors/${req.file.filename}`;
     } else if (!req.body.image) {
       // If no new image and no existing image in request, keep the existing one
       req.body.image = existingDirector.image;

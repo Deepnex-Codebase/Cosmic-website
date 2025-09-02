@@ -91,7 +91,7 @@ const createTimeline = async (req, res) => {
     // Handle background image
     let backgroundImage = req.body.backgroundImage || '';
     if (req.file) {
-      backgroundImage = `/uploads/timeline/${req.file.filename}`;
+      backgroundImage = `${process.env.BASE_URL}/uploads/timeline/${req.file.filename}`;
     }
     
     const timelineItem = new Timeline({
@@ -138,7 +138,7 @@ const updateTimeline = async (req, res) => {
     let backgroundImage = timelineItem.backgroundImage;
     if (req.file) {
       // Keep old image and just update the path in database
-      backgroundImage = `/uploads/timeline/${req.file.filename}`;
+      backgroundImage = `${process.env.BASE_URL}/uploads/timeline/${req.file.filename}`;
     } else if (req.body.backgroundImage) {
       backgroundImage = req.body.backgroundImage;
     }

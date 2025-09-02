@@ -54,7 +54,7 @@ exports.createTeamMember = async (req, res) => {
 
     // If file was uploaded, add the file path to the request body
     if (req.file) {
-      req.body.image = `/uploads/team/${req.file.filename}`;
+      req.body.image = `${process.env.BASE_URL}/uploads/team/${req.file.filename}`;
     }
 
     // Parse socialLinks if it's a string
@@ -108,7 +108,7 @@ exports.updateTeamMember = async (req, res) => {
 
     // If file was uploaded, add the file path to the request body
     if (req.file) {
-      req.body.image = `/uploads/team/${req.file.filename}`;
+      req.body.image = `${process.env.BASE_URL}/uploads/team/${req.file.filename}`;
     }
 
     // Parse socialLinks if it's a string

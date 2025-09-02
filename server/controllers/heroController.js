@@ -143,7 +143,7 @@ exports.createHero = async (req, res) => {
     
     // Handle image upload
     if (req.file) {
-      heroData.img = `/uploads/heroes/${req.file.filename}`;
+      heroData.img = `${process.env.BASE_URL}/uploads/heroes/${req.file.filename}`;
     }
     
     // Set order if not provided
@@ -186,7 +186,7 @@ exports.updateHero = async (req, res) => {
     
     // Handle image upload
     if (req.file) {
-      updateData.img = `/uploads/heroes/${req.file.filename}`;
+      updateData.img = `${process.env.BASE_URL}/uploads/heroes/${req.file.filename}`;
       
       // Don't delete old image to ensure persistence
       // Just update with new file path
@@ -334,7 +334,7 @@ exports.initializeDefaultHeroes = async () => {
           subtitle: 'Eco-Friendly Energy',
           title: ['Powering A Greener', 'Future With Solar'],
           body: 'Elit himenaeos risus blandit; sociosqu nulla suspendisse. Dignissim urna dapibus mollis efficitur pharetra varius congue.',
-          img: '/solar-panels.jpg',
+          img: `${process.env.BASE_URL}/solar-panels.jpg`,
           icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><g><path d="M34,62.1h-6.9c-0.4,0-0.7-0.3-0.7-0.7v-6.9c0-0.4,0.3-0.7,0.7-0.7H34c0.4,0,0.7,0.3,0.7,0.7v6.9   C34.7,61.8,34.4,62.1,34,62.1z M27.9,60.7h5.4v-5.4h-5.4V60.7z"></path></g></svg>',
           order: 1,
           isActive: true
@@ -346,7 +346,7 @@ exports.initializeDefaultHeroes = async () => {
           subtitle: 'Intelligent Solution',
           title: ['Next-Gen Solar', 'For Your Home!'],
           body: 'Ante orci diam semper cursus magna sem scelerisque. Amet ligula maximus nam ad class vulputate felis enim.',
-          img: '/installation.jpg',
+          img: `${process.env.BASE_URL}/installation.jpg`,
           icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><g><path d="M73.2,96c-0.7,0-1.3-0.6-1.3-1.3V83.8c0-0.4,0.1-0.7,0.4-0.9l16.4-16.4c0.1-0.1,2.3-2.5,2.3-7.3V31.9   c0-0.7-0.2-4.1-4.1-4.1c-3.9,0-4.1,3.5-4.1,4.1v19.8c0,0.7-0.6,1.3-1.3,1.3c-0.7,0-1.3-0.6-1.3-1.3V31.9c0-2.3,1.4-6.8,6.8-6.8   c5.4,0,6.8,4.4,6.8,6.8v27.3c0,5.9-3,9-3.1,9.1l-16,16v10.4C74.5,95.4,73.9,96,73.2,96z"></path></g></svg>',
           order: 2,
           isActive: true
@@ -358,7 +358,7 @@ exports.initializeDefaultHeroes = async () => {
           subtitle: 'Cleaner Future',
           title: ['Powering A Greener', 'Future With Solar'],
           body: 'Hendrerit volutpat sectetur metus volutpat memmasse.',
-          img: '/quality.jpg',
+          img: `${process.env.BASE_URL}/quality.jpg`,
           icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><g><path d="M81.4,62.3c-0.3,0-0.6-0.1-0.9-0.4c-0.5-0.5-0.5-1.3,0-1.8l6.6-6.6L76,55c-0.5,0.1-1-0.2-1.2-0.6c-0.3-0.4-0.2-1,0.1-1.4   L82.6,42h-4.9c-0.7,0-1.3-0.6-1.3-1.3s0.6-1.3,1.3-1.3h7.4c0.5,0,0.9,0.3,1.1,0.7c0.2,0.4,0.2,0.9-0.1,1.3l-7.5,10.6l11.9-1.5   c0.6-0.1,1.1,0.2,1.3,0.7c0.2,0.5,0.1,1.1-0.2,1.5L82.3,62C82,62.2,81.7,62.3,81.4,62.3z"></path></g></svg>',
           order: 3,
           isActive: true

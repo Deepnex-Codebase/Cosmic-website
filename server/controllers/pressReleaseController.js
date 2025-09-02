@@ -154,7 +154,7 @@ exports.createPressRelease = async (req, res) => {
 
     // Handle file upload
     if (req.file) {
-      pressReleaseData.featuredImage = `/uploads/press-releases/${req.file.filename}`;
+      pressReleaseData.featuredImage = `${process.env.BASE_URL}/uploads/press-releases/${req.file.filename}`;
     }
 
     // Parse tags if they're sent as string
@@ -202,7 +202,7 @@ exports.updatePressRelease = async (req, res) => {
 
     // Handle file upload
     if (req.file) {
-      updateData.featuredImage = `/uploads/press-releases/${req.file.filename}`;
+      updateData.featuredImage = `${process.env.BASE_URL}/uploads/press-releases/${req.file.filename}`;
     }
 
     // Parse tags if they're sent as string

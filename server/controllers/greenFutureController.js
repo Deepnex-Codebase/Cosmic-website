@@ -78,7 +78,7 @@ const updateGreenFuture = async (req, res) => {
     let backgroundImage = greenFuture?.backgroundImage || '/solar-panels.jpg';
     if (req.file) {
       // Set the correct path for uploaded image files
-      backgroundImage = `/uploads/green-future/${req.file.filename}`;
+      backgroundImage = `${process.env.BASE_URL}/uploads/green-future/${req.file.filename}`;
     }
     
     if (!greenFuture) {

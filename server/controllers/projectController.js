@@ -133,10 +133,10 @@ const createProject = async (req, res) => {
     // Handle file uploads if present
     if (req.files) {
       if (req.files.featuredImage) {
-        projectData.featuredImage = `/uploads/projects/${req.files.featuredImage[0].filename}`;
+        projectData.featuredImage = `${process.env.BASE_URL}/uploads/projects/${req.files.featuredImage[0].filename}`;
       }
       if (req.files.images) {
-        projectData.images = req.files.images.map(file => `/uploads/projects/${file.filename}`);
+        projectData.images = req.files.images.map(file => `${process.env.BASE_URL}/uploads/projects/${file.filename}`);
       }
     }
 
@@ -186,10 +186,10 @@ const updateProject = async (req, res) => {
     // Handle file uploads if present
     if (req.files) {
       if (req.files.featuredImage) {
-        updateData.featuredImage = `/uploads/projects/${req.files.featuredImage[0].filename}`;
+        updateData.featuredImage = `${process.env.BASE_URL}/uploads/projects/${req.files.featuredImage[0].filename}`;
       }
       if (req.files.images) {
-        updateData.images = req.files.images.map(file => `/uploads/projects/${file.filename}`);
+        updateData.images = req.files.images.map(file => `${process.env.BASE_URL}/uploads/projects/${file.filename}`);
       }
     }
 

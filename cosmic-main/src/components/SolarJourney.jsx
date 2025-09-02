@@ -5,7 +5,9 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
 // Get API URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'https://api.cosmicpowertech.com';
 console.log('DEBUG: Using API_BASE_URL:', API_BASE_URL);
+console.log('DEBUG: Using IMAGE_BASE_URL:', IMAGE_BASE_URL);
 
 // Icon mapping for dynamic icon selection
 const ICON_MAP = {
@@ -219,7 +221,7 @@ const SolarJourney = () => {
                   {(index + 1).toString().padStart(2, '0')}
                 </span>
                 <img
-                  src={step.image || `/placeholder-step-${index + 1}.jpg`}
+                  src={step.image ? (step.image.startsWith('http') ? step.image : `${IMAGE_BASE_URL}${step.image}`) : `/placeholder-step-${index + 1}.jpg`}
                   alt={step.title}
                   className="h-full w-full object-cover object-center"
                 />

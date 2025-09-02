@@ -108,7 +108,7 @@ exports.uploadVideo = async (req, res) => {
     }
     
     // Create a proper path that will work with the frontend
-    const videoPath = `/uploads/videos/${req.file.filename}`;
+    const videoPath = `${process.env.BASE_URL}/uploads/videos/${req.file.filename}`;
     console.log('Video uploaded, path:', videoPath);
     
     // Update the video source in the database

@@ -212,7 +212,7 @@ const uploadImage = async (req, res) => {
       });
     }
     
-    const imageUrl = `/uploads/company-culture/${req.file.filename}`;
+    const imageUrl = `${process.env.BASE_URL}/uploads/company-culture/${req.file.filename}`;
     
     res.json({
       success: true,

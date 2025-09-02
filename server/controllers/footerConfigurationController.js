@@ -126,7 +126,7 @@ const uploadFooterLogo = async (req, res) => {
     }
     
     // Update the logo path in the database
-    footerConfig.companyInfo.logo = `/uploads/footer/${req.file.filename}`;
+    footerConfig.companyInfo.logo = `${process.env.BASE_URL}/uploads/footer/${req.file.filename}`;
     await footerConfig.save();
     
     res.json(footerConfig);

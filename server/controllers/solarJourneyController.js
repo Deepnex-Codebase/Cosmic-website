@@ -150,7 +150,7 @@ exports.createMilestone = async (req, res) => {
       
       // Add image path if file was uploaded
       if (req.file) {
-        milestoneData.image = `/uploads/solar-journey/${req.file.filename}`;
+        milestoneData.image = `${process.env.BASE_URL}/uploads/solar-journey/${req.file.filename}`;
       }
       
       // Create milestone
@@ -210,13 +210,15 @@ exports.updateMilestone = async (req, res) => {
       if (req.file) {
         // Delete old image if it exists
         if (milestone.image) {
-          const oldImagePath = path.join(__dirname, '..', milestone.image);
+          // Remove BASE_URL from the path if it exists
+          const imagePath = milestone.image.replace(process.env.BASE_URL, '');
+          const oldImagePath = path.join(__dirname, '..', imagePath);
           if (fs.existsSync(oldImagePath)) {
             fs.unlinkSync(oldImagePath);
           }
         }
         
-        milestone.image = `/uploads/solar-journey/${req.file.filename}`;
+        milestone.image = `${process.env.BASE_URL}/uploads/solar-journey/${req.file.filename}`;
       }
       
       // Save updated milestone
@@ -249,9 +251,11 @@ exports.deleteMilestone = async (req, res) => {
     
     // Delete image file if it exists
     if (milestone.image) {
-      const imagePath = path.join(__dirname, '..', milestone.image);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+      // Remove BASE_URL from the path if it exists
+      const imagePath = milestone.image.replace(process.env.BASE_URL, '');
+      const fullImagePath = path.join(__dirname, '..', imagePath);
+      if (fs.existsSync(fullImagePath)) {
+        fs.unlinkSync(fullImagePath);
       }
     }
     

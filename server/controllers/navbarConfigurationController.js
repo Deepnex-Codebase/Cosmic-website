@@ -132,7 +132,7 @@ const uploadLogo = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const logoUrl = `/uploads/navbar/${req.file.filename}`;
+    const logoUrl = `${process.env.BASE_URL}/uploads/navbar/${req.file.filename}`;
     
     // Update navbar configuration with new logo
     let config = await NavbarConfiguration.findOne({ isActive: true });

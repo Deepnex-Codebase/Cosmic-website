@@ -158,9 +158,9 @@ exports.createBlog = async (req, res) => {
   try {
     const blogData = req.body;
 
-    // If file was uploaded, add the file path
+    // If file was uploaded, add the file path with BASE_URL
     if (req.file) {
-      blogData.featuredImage = `/uploads/blogs/${req.file.filename}`;
+      blogData.featuredImage = `${process.env.BASE_URL}/uploads/blogs/${req.file.filename}`;
     }
 
     // Parse tags if it's a string
@@ -216,9 +216,9 @@ exports.updateBlog = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    // If file was uploaded, add the file path
+    // If file was uploaded, add the file path with BASE_URL
     if (req.file) {
-      updateData.featuredImage = `/uploads/blogs/${req.file.filename}`;
+      updateData.featuredImage = `${process.env.BASE_URL}/uploads/blogs/${req.file.filename}`;
     }
 
     // Parse tags if it's a string
@@ -289,10 +289,19 @@ exports.deleteBlog = async (req, res) => {
     }
 
     // Delete associated image file
-    if (blog.featuredImage && blog.featuredImage.startsWith('/uploads/')) {
-      const imagePath = path.join(__dirname, '..', blog.featuredImage);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
+    if (blog.featuredImage) {
+      // Remove BASE_URL from the path if present
+      let imagePath = blog.featuredImage;
+      if (process.env.BASE_URL && imagePath.startsWith(process.env.BASE_URL)) {
+        imagePath = imagePath.replace(process.env.BASE_URL, '');
+      }
+      
+      // Ensure path starts with /uploads/
+      if (imagePath.startsWith('/uploads/')) {
+        const fullImagePath = path.join(__dirname, '..', imagePath);
+        if (fs.existsSync(fullImagePath)) {
+          fs.unlinkSync(fullImagePath);
+        }
       }
     }
 
@@ -324,7 +333,7 @@ exports.uploadBlogImage = [upload.single('image'), (req, res) => {
       });
     }
 
-    const imageUrl = `/uploads/blogs/${req.file.filename}`;
+    const imageUrl = `${process.env.BASE_URL}/uploads/blogs/${req.file.filename}`;
 
     res.status(200).json({
       success: true,

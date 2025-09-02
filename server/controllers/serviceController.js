@@ -227,7 +227,7 @@ exports.createService = async (req, res) => {
     if (req.file) {
       const imagePath = req.file.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
       const relativePath = imagePath.split('uploads')[1]; // Get path relative to uploads directory
-      serviceData.image = `/uploads${relativePath}`;
+      serviceData.image = `${process.env.BASE_URL}/uploads${relativePath}`;
     } else {
       // No image provided, set to empty or default image
       serviceData.image = '';
@@ -311,7 +311,7 @@ exports.updateService = async (req, res) => {
       // Format new image URL
       const imagePath = req.file.path.replace(/\\/g, '/'); // Replace backslashes with forward slashes
       const relativePath = imagePath.split('uploads')[1]; // Get path relative to uploads directory
-      serviceData.image = `/uploads${relativePath}`;
+      serviceData.image = `${process.env.BASE_URL}/uploads${relativePath}`;
       
       // Delete old image if it exists and is not a remote URL
       if (existingService.image && !existingService.image.startsWith('http')) {
@@ -395,9 +395,14 @@ exports.deleteService = async (req, res) => {
     // Delete image file if it exists and is not a remote URL
     if (service.image && !service.image.startsWith('http')) {
       try {
-        const imagePath = path.join(__dirname, '..', service.image);
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath);
+        // Remove BASE_URL from the image path if it exists
+        let imagePath = service.image;
+        if (process.env.BASE_URL && imagePath.startsWith(process.env.BASE_URL)) {
+          imagePath = imagePath.replace(process.env.BASE_URL, '');
+        }
+        const fullImagePath = path.join(__dirname, '..', imagePath);
+        if (fs.existsSync(fullImagePath)) {
+          fs.unlinkSync(fullImagePath);
           console.log('Deleted service image:', imagePath);
         }
       } catch (unlinkError) {

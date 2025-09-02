@@ -232,7 +232,7 @@ exports.addAchievement = async (req, res) => {
       year: req.body.year,
       organization: req.body.organization,
       description: req.body.description,
-      image: req.file ? `/uploads/achievements/${req.file.filename}` : req.body.image,
+      image: req.file ? `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}` : req.body.image,
       order: req.body.order || achievementData.awardWinningSolutions.achievements.length + 1
     };
     
@@ -286,7 +286,7 @@ exports.updateAchievement = async (req, res) => {
     achievement.order = req.body.order || achievement.order;
     
     if (req.file) {
-      achievement.image = `/uploads/achievements/${req.file.filename}`;
+      achievement.image = `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}`;
     } else if (req.body.image) {
       achievement.image = req.body.image;
     }
@@ -486,7 +486,7 @@ exports.addPartner = async (req, res) => {
     
     const newPartner = {
       name: req.body.name,
-      logo: req.file ? `/uploads/achievements/${req.file.filename}` : req.body.logo,
+      logo: req.file ? `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}` : req.body.logo,
       order: req.body.order || achievementData.industryRecognition.partners.length + 1
     };
     

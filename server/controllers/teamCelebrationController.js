@@ -108,7 +108,7 @@ const uploadTeamCelebrationImage = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const imageUrl = `/uploads/team-celebration/${req.file.filename}`;
+    const imageUrl = `${process.env.BASE_URL}/uploads/team-celebration/${req.file.filename}`;
     res.json({ imageUrl });
   } catch (error) {
     console.error('Error uploading team celebration image:', error);
