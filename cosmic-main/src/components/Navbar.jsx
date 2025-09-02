@@ -67,6 +67,7 @@ export default function Navbar() {
     { label: "Services", href: "/services" },
     { label: "Projects", href: "/projects" },
     { label: "Calculator", href: "/calculator" },
+    { label: "FAQ", href: "/faq" },
     { 
       label: "Media", 
       href: "/blog",
@@ -150,9 +151,13 @@ export default function Navbar() {
           {navbarConfig?.ctaButton?.isVisible !== false && (
             <Link
               to={navbarConfig?.ctaButton?.href || "/contact"}
-              className={`group hidden md:inline-flex lg:hidden relative overflow-hidden items-center rounded-full ${navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500'} px-5 py-2 text-sm font-semibold shadow-md border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
+              className={`group hidden md:inline-flex lg:hidden relative overflow-hidden items-center rounded-full ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} px-5 py-2 text-sm font-semibold shadow-md border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
+              style={navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? { backgroundColor: navbarConfig.ctaButton.backgroundColor } : null}
             >
-              <span className={`relative z-10 transition-colors duration-300 group-hover:text-white ${navbarConfig?.ctaButton?.textColor || 'text-white'}`}>
+              <span 
+                className={`relative z-10 transition-colors duration-300 group-hover:text-white ${!navbarConfig?.ctaButton?.textColor?.startsWith('#') ? navbarConfig?.ctaButton?.textColor || 'text-white' : ''}`}
+                style={navbarConfig?.ctaButton?.textColor?.startsWith('#') ? { color: navbarConfig.ctaButton.textColor } : null}
+              >
                 {navbarConfig?.ctaButton?.text || 'Enquire Now'}
               </span>
               <span className="absolute inset-0 bg-black transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
@@ -173,9 +178,13 @@ export default function Navbar() {
           {navbarConfig?.ctaButton?.isVisible !== false && (
             <Link
               to={navbarConfig?.ctaButton?.href || "/contact"}
-              className={`group hidden lg:inline-flex relative overflow-hidden items-center rounded-full ${navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500'} px-7 py-2.5 text-base font-semibold shadow-lg border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
+              className={`group hidden lg:inline-flex relative overflow-hidden items-center rounded-full ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} px-7 py-2.5 text-base font-semibold shadow-lg border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
+              style={navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? { backgroundColor: navbarConfig.ctaButton.backgroundColor } : null}
             >
-              <span className={`relative z-10 transition-colors duration-300 group-hover:text-white ${navbarConfig?.ctaButton?.textColor || 'text-white'}`}>
+              <span 
+                className={`relative z-10 transition-colors duration-300 group-hover:text-white ${!navbarConfig?.ctaButton?.textColor?.startsWith('#') ? navbarConfig?.ctaButton?.textColor || 'text-white' : ''}`}
+                style={navbarConfig?.ctaButton?.textColor?.startsWith('#') ? { color: navbarConfig.ctaButton.textColor } : null}
+              >
                 {navbarConfig?.ctaButton?.text || 'Enquire Now'}
               </span>
               <span className="absolute inset-0 bg-black transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
@@ -284,10 +293,16 @@ export default function Navbar() {
             <Link
               to={navbarConfig?.ctaButton?.href || "/contact"}
               onClick={() => setOpen(false)}
-              style={{ transitionDelay: `${navigation.length * 60}ms` }}
-              className={`group relative overflow-hidden mt-6 mx-6 block px-7 py-3 text-base font-semibold ${navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500'} rounded-full text-center transform-gpu transition-all duration-400 ease-out border-2 border-transparent hover:border-accent-500 ${open ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}
+              style={{ 
+                transitionDelay: `${navigation.length * 60}ms`,
+                ...(navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? { backgroundColor: navbarConfig.ctaButton.backgroundColor } : null)
+              }}
+              className={`group relative overflow-hidden mt-6 mx-6 block px-7 py-3 text-base font-semibold ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} rounded-full text-center transform-gpu transition-all duration-400 ease-out border-2 border-transparent hover:border-accent-500 ${open ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"}`}
             >
-              <span className={`relative z-10 transition-colors duration-300 group-hover:text-white ${navbarConfig?.ctaButton?.textColor || 'text-white'}`}>
+              <span 
+                className={`relative z-10 transition-colors duration-300 group-hover:text-white ${!navbarConfig?.ctaButton?.textColor?.startsWith('#') ? navbarConfig?.ctaButton?.textColor || 'text-white' : ''}`}
+                style={navbarConfig?.ctaButton?.textColor?.startsWith('#') ? { color: navbarConfig.ctaButton.textColor } : null}
+              >
                 {navbarConfig?.ctaButton?.text || 'Get Quotes'}
               </span>
               <span className="absolute inset-0 bg-black transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
@@ -334,8 +349,18 @@ export default function Navbar() {
       }
     };
     
+    // Check if backgroundColor is a CSS class or a direct color value
+    const bgColorStyle = topBarConfig.backgroundColor?.startsWith('#') ? 
+      { backgroundColor: topBarConfig.backgroundColor } : null;
+    
+    // Check if textColor is a CSS class or a direct color value
+    const textColorStyle = topBarConfig.textColor?.startsWith('#') ? 
+      { color: topBarConfig.textColor } : null;
+    
     return (
-      <div className={`${topBarConfig.backgroundColor} ${topBarConfig.textColor} py-2`}>
+      <div 
+        className={`${!bgColorStyle ? topBarConfig.backgroundColor : ''} ${!textColorStyle ? topBarConfig.textColor : ''} py-2`}
+        style={{...bgColorStyle, ...textColorStyle}}>
         <div className="w-4/5 mx-auto flex justify-between items-center">
           <div className="text-sm font-medium">
             {topBarConfig.contactInfo.phone.isVisible && (

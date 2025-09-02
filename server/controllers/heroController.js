@@ -188,14 +188,8 @@ exports.updateHero = async (req, res) => {
     if (req.file) {
       updateData.img = `/uploads/heroes/${req.file.filename}`;
       
-      // Delete old image if it exists
-      const existingHero = await Hero.findById(id);
-      if (existingHero && existingHero.img && existingHero.img.startsWith('/uploads/')) {
-        const oldImagePath = path.join(__dirname, '..', existingHero.img);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
+      // Don't delete old image to ensure persistence
+      // Just update with new file path
     }
     
     updateData.updatedAt = new Date();

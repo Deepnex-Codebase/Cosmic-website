@@ -91,7 +91,7 @@ const defaultCompanyStats = [
     value: 30,
     label: 'Years of Experience',
     icon: 'FaUsers',
-    color: '#9fc22f',
+    color: '#cae28e',
     suffix: '+',
     animationDelay: 0
   },
@@ -100,7 +100,7 @@ const defaultCompanyStats = [
     value: 10000,
     label: 'Successful Projects',
     icon: 'FaProjectDiagram',
-    color: 'rgb(28 155 231)',
+    color: '#cae28e',
     suffix: '+',
     animationDelay: 0.2
   },
@@ -109,7 +109,7 @@ const defaultCompanyStats = [
     value: 2,
     label: 'Modules Shipped',
     icon: 'FaSolarPanel',
-    color: '#9fc22f',
+    color: '#cae28e',
     suffix: 'M+',
     animationDelay: 0.4
   },
@@ -118,7 +118,7 @@ const defaultCompanyStats = [
     value: 1.5,
     label: 'PV Modules Manufacturing Capacity',
     icon: 'FaBolt',
-    color: 'rgb(28 155 231)',
+    color: '#cae28e',
     suffix: 'GW',
     description: '+2.5 GW Under Development',
     animationDelay: 0.6

@@ -27,6 +27,10 @@ const solarJourneySchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  showArrow: {
+    type: Boolean,
+    default: true
+  },
   isActive: {
     type: Boolean,
     default: true

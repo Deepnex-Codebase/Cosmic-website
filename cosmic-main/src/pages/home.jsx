@@ -11,16 +11,14 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpow
 const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
 // SmartEnergySolutions component removed
 import Portfolio from "../components/Portfolio";
-import SolarJourney from "../components/SolarJourney";
 import FaqSection from "../components/FaqSection";
 // CO2Section and CO2Counter imports removed
 import CompanyIntro from "../components/CompanyIntro";
 import VideoHero from "../components/VideoHero";
 import TimelineSection from "../components/TimelineSection";
 import TestimonialVideo from "../components/TestimonialVideo";
+import SolarJourney from "../components/SolarJourney";
 import { useAppContext } from "../context/AppContext";
-
-// Import necessary icons for static SolarJourney component
 import {
   CalculatorIcon,
   ClipboardDocumentCheckIcon,
@@ -604,224 +602,9 @@ const Home = () => {
           </section>
         </div>
         
-       
-         {/* ---------- SolarJourney ---------- */}
+              {/* ---------- SolarJourney ---------- */}
         <div className="mt-8 sm:mt-12 md:mt-16">
-          {/* Static SolarJourney */}
-          <section className="relative overflow-hidden bg-[#f8f9fa] py-24">
-            {/* ───────────────── heading */}
-            <div className="mx-auto mb-20 max-w-7xl px-4 text-center">
-              <p className="mb-3 text-sm uppercase tracking-wider text-gray-600 font-space-grotesk">
-                —⚡ End-To-End Services ⚡—
-              </p>
-              <h2 className="text-4xl font-extrabold text-black sm:text-5xl font-space-grotesk">
-                The Solar Journey
-              </h2>
-            </div>
-
-            {/* ───────────────── steps grid */}
-            <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-4 sm:grid-cols-2 lg:grid-cols-4">
-              {/* Step 1 */}
-              <div
-                className="relative flex flex-col items-center text-center opacity-0 animate-slide-in"
-                style={{ animationDelay: '0s' }}
-              >
-                {/* connector arrow */}
-                <img
-                  src="/arrow.svg"
-                  alt="Arrow"
-                  style={{ animationDelay: '0.3s' }}
-                  className="absolute left-[87%] top-[20%] z-10 hidden h-[60px] w-[60px] -translate-x-1/2 -translate-y-1/2 transform-gpu animate-arrow animate-color-gradient sm:block lg:h-[80px] lg:w-[80px]"
-                />
-
-                {/* image circle */}
-                <div className="relative mb-6 h-44 w-44 overflow-hidden rounded-full shadow-lg transition-transform duration-300 hover:scale-105 animate-border-pulse">
-                  <span
-                    style={{ animationDelay: '0.3s' }}
-                    className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full bg-[#9fc22f]/20 text-[11px] font-semibold text-black animate-pulse-in z-10"
-                  >
-                    01
-                  </span>
-                  <img
-                    src="/Assessment.jpg"
-                    alt="Site Assessment"
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-
-                <h3
-                  style={{ animationDelay: '0.45s' }}
-                  className="mb-2 text-lg font-semibold opacity-0 animate-fade-up font-space-grotesk"
-                >
-                  Site Assessment
-                </h3>
-                <p
-                  style={{ animationDelay: '0.55s' }}
-                  className="mx-auto max-w-xs text-sm text-gray-600 opacity-0 animate-fade-up"
-                >
-                  We evaluate your property to determine the optimal solar panel placement and system design.
-                </p>
-              </div>
-
-              {/* Step 2 */}
-              <div
-                className="relative flex flex-col items-center text-center opacity-0 animate-slide-in"
-                style={{ animationDelay: '0.2s' }}
-              >
-                {/* connector arrow */}
-                <img
-                  src="/arrow.svg"
-                  alt="Arrow"
-                  style={{ animationDelay: '0.5s' }}
-                  className="absolute left-[87%] top-[20%] z-10 hidden h-[60px] w-[60px] -translate-x-1/2 -translate-y-1/2 transform-gpu animate-arrow animate-color-gradient sm:block lg:h-[80px] lg:w-[80px]"
-                />
-
-                {/* image circle */}
-                <div className="relative mb-6 h-44 w-44 overflow-hidden rounded-full shadow-lg transition-transform duration-300 hover:scale-105 animate-border-pulse">
-                  <span
-                    style={{ animationDelay: '0.5s' }}
-                    className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full bg-[#9fc22f]/20 text-[11px] font-semibold text-black animate-pulse-in z-10"
-                  >
-                    02
-                  </span>
-                  <img
-                    src="/Agreement.jpg"
-                    alt="Agreement"
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-
-                <h3
-                  style={{ animationDelay: '0.65s' }}
-                  className="mb-2 text-lg font-semibold opacity-0 animate-fade-up font-space-grotesk"
-                >
-                  Agreement
-                </h3>
-                <p
-                  style={{ animationDelay: '0.75s' }}
-                  className="mx-auto max-w-xs text-sm text-gray-600 opacity-0 animate-fade-up"
-                >
-                  We provide a detailed proposal and agreement outlining system specifications and costs.
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div
-                className="relative flex flex-col items-center text-center opacity-0 animate-slide-in"
-                style={{ animationDelay: '0.4s' }}
-              >
-                {/* connector arrow */}
-                <img
-                  src="/arrow.svg"
-                  alt="Arrow"
-                  style={{ animationDelay: '0.7s' }}
-                  className="absolute left-[87%] top-[20%] z-10 hidden h-[60px] w-[60px] -translate-x-1/2 -translate-y-1/2 transform-gpu animate-arrow animate-color-gradient sm:block lg:h-[80px] lg:w-[80px]"
-                />
-
-                {/* image circle */}
-                <div className="relative mb-6 h-44 w-44 overflow-hidden rounded-full shadow-lg transition-transform duration-300 hover:scale-105 animate-border-pulse">
-                  <span
-                    style={{ animationDelay: '0.7s' }}
-                    className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full bg-[#9fc22f]/20 text-[11px] font-semibold text-black animate-pulse-in z-10"
-                  >
-                    03
-                  </span>
-                  <img
-                    src="/installation2.jpg"
-                    alt="Installation"
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-
-                <h3
-                  style={{ animationDelay: '0.85s' }}
-                  className="mb-2 text-lg font-semibold opacity-0 animate-fade-up font-space-grotesk"
-                >
-                  Installation
-                </h3>
-                <p
-                  style={{ animationDelay: '0.95s' }}
-                  className="mx-auto max-w-xs text-sm text-gray-600 opacity-0 animate-fade-up"
-                >
-                  Our expert team installs your solar system with minimal disruption to your property.
-                </p>
-              </div>
-
-              {/* Step 4 */}
-              <div
-                className="relative flex flex-col items-center text-center opacity-0 animate-slide-in"
-                style={{ animationDelay: '0.6s' }}
-              >
-                {/* image circle */}
-                <div className="relative mb-6 h-44 w-44 overflow-hidden rounded-full shadow-lg transition-transform duration-300 hover:scale-105 animate-border-pulse">
-                  <span
-                    style={{ animationDelay: '0.9s' }}
-                    className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full bg-[#9fc22f]/20 text-[11px] font-semibold text-black animate-pulse-in z-10"
-                  >
-                    04
-                  </span>
-                  <img
-                    src="/quality1.jpg"
-                    alt="Quality Assurance"
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-
-                <h3
-                  style={{ animationDelay: '1.05s' }}
-                  className="mb-2 text-lg font-semibold opacity-0 animate-fade-up font-space-grotesk"
-                >
-                  Quality Assurance
-                </h3>
-                <p
-                  style={{ animationDelay: '1.15s' }}
-                  className="mx-auto max-w-xs text-sm text-gray-600 opacity-0 animate-fade-up"
-                >
-                  We conduct thorough testing and quality checks to ensure your system performs optimally.
-                </p>
-              </div>
-            </div>
-
-            {/* ───────────────── CTA buttons */}
-            <div className="mx-auto mt-16 flex max-w-4xl flex-col items-center gap-4 px-4 sm:flex-row sm:justify-center">
-              <Link
-                 to="/services"
-                 style={{ animationDelay: "0.8s" }}
-                 className="group relative overflow-hidden w-full animate-fade-up rounded-full bg-[#9fc22f] px-8 py-3 text-sm font-semibold text-black shadow-md border-2 border-transparent hover:border-[#9fc22f] transition-all duration-300 sm:w-auto"
-               >
-                 <span className="relative z-10 transition-colors duration-300 group-hover:text-white">Explore All Services</span>
-                 <span className="absolute inset-0 bg-[#003e63] transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-               </Link>
-              <a
-                href="tel:+652582355889"
-                style={{ animationDelay: "1s" }}
-                className="group flex w-full animate-fade-up items-center justify-center rounded-full border border-black px-8 py-3 text-sm font-semibold text-black shadow-sm transition hover:-translate-y-0.5 hover:bg-black/5 sm:w-auto"
-              >
-                Talk To Us
-                <span className="ml-2 text-xs font-medium group-hover:underline">
-                  (+65) 258 235 5889
-                </span>
-              </a>
-            </div>
-
-            {/* ───────────────── keyframes */}
-            <style>{`
-              @keyframes slide-in{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
-              @keyframes fade-up{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
-              @keyframes pulse-in{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-              @keyframes arrow-move{0%,100%{transform:translateX(0)}50%{transform:translateX(15px)}}
-              @keyframes arrow-hue{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(-45deg)}100%{filter:hue-rotate(0deg)}}
-              @keyframes color-change{0%{filter:brightness(1) sepia(0.3) hue-rotate(70deg) saturate(1.5)}25%{filter:brightness(1.2) sepia(0.4) hue-rotate(80deg) saturate(1.7)}50%{filter:brightness(1.1) sepia(0.5) hue-rotate(90deg) saturate(1.9)}75%{filter:brightness(1.2) sepia(0.4) hue-rotate(80deg) saturate(1.7)}100%{filter:brightness(1) sepia(0.3) hue-rotate(70deg) saturate(1.5)}}
-              @keyframes border-pulse{0%{box-shadow:0 0 0 0 rgba(159, 194, 47, 0.6)}50%{box-shadow:0 0 0 8px rgba(159, 194, 47, 0.2)}100%{box-shadow:0 0 0 0 rgba(159, 194, 47, 0)}}
-
-              .animate-slide-in{animation:slide-in .6s cubic-bezier(.33,.99,.58,1) forwards}
-              .animate-fade-up{animation:fade-up .5s ease-out forwards}
-              .animate-pulse-in{animation:pulse-in 1.5s ease-in-out infinite}
-              .animate-arrow{animation:arrow-move 1.6s ease-in-out infinite}
-              .animate-color-change{animation:color-change 3s linear infinite}
-              .animate-border-pulse{animation:border-pulse 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite}
-            `}</style>
-          </section>
+          <SolarJourney />
         </div>
 
 

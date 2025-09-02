@@ -244,12 +244,20 @@ export const AppProvider = ({ children }) => {
       
       // Check if response.data.data exists, otherwise use response.data directly
       const faqData = response.data.data || response.data || [];
-      setFaqs(faqData);
+      
+      // Validate that the FAQ data is properly formatted
+      const validFaqs = Array.isArray(faqData) ? 
+        faqData.filter(faq => faq && typeof faq === 'object' && faq.question && faq.answer) : [];
+      
+      // If we have valid FAQs, use them; otherwise set to empty array
+      setFaqs(validFaqs.length > 0 ? validFaqs : []);
       
       setErrors(prev => ({ ...prev, faqs: null }));
     } catch (error) {
       // Error handling without console.error
       setErrors(prev => ({ ...prev, faqs: error.message }));
+      // Set empty array on error
+      setFaqs([]);
     } finally {
       setLoading(prev => ({ ...prev, faqs: false }));
     }

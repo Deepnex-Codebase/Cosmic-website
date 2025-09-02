@@ -16,7 +16,7 @@ import ScrollToTop from './components/ScrollToTop';
 import AdminLayout from './components/AdminLayout';
 
 // Pages
-import Home from './pages/home'
+import Home from './pages/Home'
 import About from './pages/about'
 import Services from './pages/services'
 import Projects from './pages/projects'
@@ -36,6 +36,7 @@ import TeamCelebration from './pages/team-celebration'
 import DirectorDesk from './pages/director-desk'
 import CompanyCulture from './pages/company-culture'
 import AchievementsAwards from './pages/achievements-awards'
+import FAQ from './pages/faq'
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -101,6 +102,7 @@ function AppContent() {
                 <Route path="/director-desk" element={<DirectorDesk />} />
                 <Route path="/company-culture" element={<CompanyCulture />} />
                 <Route path="/careers" element={<Careers />} />
+                <Route path="/faq" element={<FAQ />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>
             </div>

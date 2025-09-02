@@ -137,13 +137,7 @@ const updateTimeline = async (req, res) => {
     // Handle background image update
     let backgroundImage = timelineItem.backgroundImage;
     if (req.file) {
-      // Delete old image if it exists
-      if (timelineItem.backgroundImage && timelineItem.backgroundImage.startsWith('/uploads/')) {
-        const oldImagePath = path.join(__dirname, '..', timelineItem.backgroundImage);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-        }
-      }
+      // Keep old image and just update the path in database
       backgroundImage = `/uploads/timeline/${req.file.filename}`;
     } else if (req.body.backgroundImage) {
       backgroundImage = req.body.backgroundImage;
@@ -186,13 +180,8 @@ const deleteTimeline = async (req, res) => {
       });
     }
     
-    // Delete associated image
-    if (timelineItem.backgroundImage && timelineItem.backgroundImage.startsWith('/uploads/')) {
-      const imagePath = path.join(__dirname, '..', timelineItem.backgroundImage);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    }
+    // Keep the image file on the server
+    // No need to delete the image file as we want to keep all uploaded files
     
     await Timeline.findByIdAndDelete(req.params.id);
     

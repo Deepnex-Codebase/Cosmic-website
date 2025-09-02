@@ -548,14 +548,23 @@ const HeroSectionCMS = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Color
                 </label>
-                <input
-                  type="text"
-                  name="color"
-                  value={statFormData.color}
-                  onChange={handleStatInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                  placeholder="#9fc22f"
-                />
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    name="color"
+                    value={statFormData.color}
+                    onChange={handleStatInputChange}
+                    className="h-10 w-10 rounded-md cursor-pointer"
+                  />
+                  <input
+                    type="text"
+                    name="color"
+                    value={statFormData.color}
+                    onChange={handleStatInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="#9fc22f"
+                  />
+                </div>
               </div>
               
               <div>

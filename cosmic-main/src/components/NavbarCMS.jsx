@@ -656,25 +656,41 @@ const NavbarCMS = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Background Color
                   </label>
-                  <input
-                    type="text"
-                    value={topBarFormData.backgroundColor}
-                    onChange={(e) => setTopBarFormData({ ...topBarFormData, backgroundColor: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="bg-accent-500"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={topBarFormData.backgroundColor.startsWith('#') ? topBarFormData.backgroundColor : '#aadc2e'}
+                      onChange={(e) => setTopBarFormData({ ...topBarFormData, backgroundColor: e.target.value })}
+                      className="h-10 w-10 rounded-md cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={topBarFormData.backgroundColor}
+                      onChange={(e) => setTopBarFormData({ ...topBarFormData, backgroundColor: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="bg-accent-500"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Text Color
                   </label>
-                  <input
-                    type="text"
-                    value={topBarFormData.textColor}
-                    onChange={(e) => setTopBarFormData({ ...topBarFormData, textColor: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="text-white"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={topBarFormData.textColor.startsWith('#') ? topBarFormData.textColor : '#ffffff'}
+                      onChange={(e) => setTopBarFormData({ ...topBarFormData, textColor: e.target.value })}
+                      className="h-10 w-10 rounded-md cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={topBarFormData.textColor}
+                      onChange={(e) => setTopBarFormData({ ...topBarFormData, textColor: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="text-white"
+                    />
+                  </div>
                 </div>
               </div>
               
@@ -732,25 +748,41 @@ const NavbarCMS = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Background Color (CSS Class)
                   </label>
-                  <input
-                    type="text"
-                    value={ctaFormData.backgroundColor}
-                    onChange={(e) => setCtaFormData({ ...ctaFormData, backgroundColor: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="bg-accent-500"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={ctaFormData.backgroundColor.startsWith('#') ? ctaFormData.backgroundColor : '#aadc2e'}
+                      onChange={(e) => setCtaFormData({ ...ctaFormData, backgroundColor: e.target.value })}
+                      className="h-10 w-10 rounded-md cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={ctaFormData.backgroundColor}
+                      onChange={(e) => setCtaFormData({ ...ctaFormData, backgroundColor: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="bg-accent-500"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Text Color (CSS Class)
                   </label>
-                  <input
-                    type="text"
-                    value={ctaFormData.textColor}
-                    onChange={(e) => setCtaFormData({ ...ctaFormData, textColor: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="text-white"
-                  />
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={ctaFormData.textColor.startsWith('#') ? ctaFormData.textColor : '#ffffff'}
+                      onChange={(e) => setCtaFormData({ ...ctaFormData, textColor: e.target.value })}
+                      className="h-10 w-10 rounded-md cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={ctaFormData.textColor}
+                      onChange={(e) => setCtaFormData({ ...ctaFormData, textColor: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="text-white"
+                    />
+                  </div>
                 </div>
                 <div className="md:col-span-2">
                   <label className="flex items-center">

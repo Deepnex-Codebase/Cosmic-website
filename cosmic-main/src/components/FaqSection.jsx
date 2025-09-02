@@ -55,8 +55,7 @@ export default function FaqSection() {
   const [scale, setScale] = useState(1)
   const [leftImageTranslate, setLeftImageTranslate] = useState(0)
   const [rightImageTranslate, setRightImageTranslate] = useState(0)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [faqsPerPage] = useState(4)
+  // Removed pagination state variables
   const lastScrollY = useRef(0)
   const requestRef = useRef()
   const spinnerRef = useRef(null)
@@ -73,33 +72,17 @@ export default function FaqSection() {
       })
     : fallbackFaqs
     
-  // Get current FAQs for pagination
-  const indexOfLastFaq = currentPage * faqsPerPage
-  const indexOfFirstFaq = indexOfLastFaq - faqsPerPage
-  const currentFaqs = allFaqs.slice(indexOfFirstFaq, indexOfLastFaq)
-  
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber)
-  
-  // Go to next page
-  const nextPage = () => {
-    if (currentPage < Math.ceil(allFaqs.length / faqsPerPage)) {
-      setCurrentPage(currentPage + 1)
-      setExpanded(null) // Reset expanded state when changing page
-    }
-  }
-  
-  // Go to previous page
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1)
-      setExpanded(null) // Reset expanded state when changing page
-    }
-  }
+  // Display only first 4 FAQs
+  const displayFaqs = allFaqs.slice(0, 4)
 
   const fadeUpVariant = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } },
+  }
+  
+  // View All FAQs button handler
+  const viewAllFaqs = () => {
+    window.location.href = '/faq';
   }
 
   const animate = () => {
@@ -158,7 +141,7 @@ export default function FaqSection() {
             <div className="h-[2px] w-10 bg-green-600" />
           </div>
           <div className="space-y-4">
-            {currentFaqs.map((faq, index) => (
+            {displayFaqs.map((faq, index) => (
               <div
                 key={index}
                 onClick={() => setExpanded(index === expanded ? null : index)}
@@ -182,39 +165,17 @@ export default function FaqSection() {
               </div>
             ))}
             
-            {/* Pagination Controls */}
-            <div className="mt-8 flex justify-center items-center space-x-4">
+            {/* Pagination Controls Removed */}
+            
+            {/* View All FAQs Button */}
+            <div className="mt-8 text-center">
               <button
-                onClick={prevPage}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-lg flex items-center ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-green-600 hover:text-green-700'}`}
+                onClick={viewAllFaqs}
+                className="px-6 py-3 bg-accent-500 hover:bg-accent-600 text-white font-medium rounded-full transition-colors duration-300 flex items-center mx-auto"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-                Previous
-              </button>
-              
-              <div className="flex space-x-2">
-                {Array.from({ length: Math.ceil(allFaqs.length / faqsPerPage) }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => paginate(i + 1)}
-                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${currentPage === i + 1 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-              
-              <button
-                onClick={nextPage}
-                disabled={currentPage === Math.ceil(allFaqs.length / faqsPerPage)}
-                className={`px-4 py-2 rounded-lg flex items-center ${currentPage === Math.ceil(allFaqs.length / faqsPerPage) ? 'text-gray-400 cursor-not-allowed' : 'text-green-600 hover:text-green-700'}`}
-              >
-                Next
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                View All FAQs
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
             </div>

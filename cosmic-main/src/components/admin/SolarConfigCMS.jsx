@@ -402,11 +402,7 @@ const SolarConfigCMS = () => {
   }
   
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Solar Configuration CMS
-      </Typography>
-      
+    <>
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="Company Profile" />
@@ -1461,7 +1457,7 @@ const SolarConfigCMS = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </>
   );
 };
 

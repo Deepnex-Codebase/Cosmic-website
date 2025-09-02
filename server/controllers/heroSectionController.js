@@ -54,23 +54,15 @@ const updateHeroSection = async (req, res) => {
     if (req.files) {
       // Handle company video upload
       if (req.files.companyVideo && req.files.companyVideo[0]) {
-        // Delete old file if it exists and is not a default video
-        if (heroSection.companyVideo && !heroSection.companyVideo.startsWith('/') && fs.existsSync(path.join(__dirname, '../', heroSection.companyVideo))) {
-          fs.unlinkSync(path.join(__dirname, '../', heroSection.companyVideo));
-        }
-        
-        // Update with new file path
+        // Don't delete old file to ensure persistence
+        // Just update with new file path
         heroSection.companyVideo = `/uploads/videos/${req.files.companyVideo[0].filename}`;
       }
       
       // Handle background video upload
       if (req.files.backgroundVideo && req.files.backgroundVideo[0]) {
-        // Delete old file if it exists and is not a default video
-        if (heroSection.backgroundVideo && !heroSection.backgroundVideo.startsWith('/') && fs.existsSync(path.join(__dirname, '../', heroSection.backgroundVideo))) {
-          fs.unlinkSync(path.join(__dirname, '../', heroSection.backgroundVideo));
-        }
-        
-        // Update with new file path
+        // Don't delete old file to ensure persistence
+        // Just update with new file path
         heroSection.backgroundVideo = `/uploads/videos/${req.files.backgroundVideo[0].filename}`;
       }
     }

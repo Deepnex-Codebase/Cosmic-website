@@ -226,13 +226,8 @@ exports.deletePanIndiaPresence = async (req, res) => {
       });
     }
 
-    // Delete associated image file
-    if (panIndiaData.mapImage && panIndiaData.mapImage.startsWith('/uploads/')) {
-      const imagePath = path.join(__dirname, '..', panIndiaData.mapImage);
-      if (fs.existsSync(imagePath)) {
-        fs.unlinkSync(imagePath);
-      }
-    }
+    // Keep the image file on the server
+    // No need to delete the image file as we want to keep all uploaded files
 
     await PanIndiaPresence.findByIdAndDelete(id);
 

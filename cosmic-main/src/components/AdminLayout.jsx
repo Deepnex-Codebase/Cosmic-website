@@ -151,18 +151,34 @@ const AdminLayout = ({ children }) => {
         <header className="bg-white shadow-sm sticky top-0 z-10">
           <div className="px-6 py-4 flex justify-between items-center">
             <div>
-              <h1 className="text-xl font-semibold text-gray-800">
-                {location.pathname === '/admin' || location.pathname === '/admin/' ? 'Dashboard' : 
-                 menuCategories.flatMap(cat => cat.items).find(item => isActive(item.path))?.label || 'Admin Panel'}
+              <h1 className="text-2xl font-bold text-gray-800 flex items-center">
+                {location.pathname === '/admin' || location.pathname === '/admin/' ? (
+                  <>
+                    <MdDashboard className="mr-2 text-accent-500" />
+                    Dashboard
+                  </>
+                ) : location.pathname === '/admin/solar-config' ? (
+                  <>
+                    <FaSolarPanel className="mr-2 text-accent-500" />
+                    Solar Configuration
+                  </>
+                ) : (
+                  <>
+                    {menuCategories.flatMap(cat => cat.items).find(item => isActive(item.path))?.icon && 
+                      React.createElement(menuCategories.flatMap(cat => cat.items).find(item => isActive(item.path))?.icon, 
+                      { className: "mr-2 text-accent-500" })}
+                    {menuCategories.flatMap(cat => cat.items).find(item => isActive(item.path))?.label || 'Admin Panel'}
+                  </>
+                )}
               </h1>
-              <p className="text-sm text-gray-500">Welcome to Cosmic Solar Admin</p>
             </div>
             <div className="flex items-center space-x-6">
               <div className="relative">
-                <button className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <button className="p-2 rounded-full hover:bg-gray-100 transition-colors relative">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                   </svg>
+                  <span className="absolute top-0 right-0 h-2 w-2 bg-accent-500 rounded-full"></span>
                 </button>
               </div>
               <div className="flex items-center space-x-3">
@@ -196,9 +212,13 @@ const AdminLayout = ({ children }) => {
                     <svg className="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <span className="ml-1 text-sm font-medium text-gray-700">
-                      {menuCategories.flatMap(cat => cat.items).find(item => isActive(item.path))?.label || 'Page'}
-                    </span>
+                    <Link 
+                      to={location.pathname} 
+                      className="ml-1 text-sm font-medium text-gray-700 hover:text-accent-500 transition-colors"
+                    >
+                      {location.pathname === '/admin/solar-config' ? 'Solar Configuration' : 
+                       menuCategories.flatMap(cat => cat.items).find(item => isActive(item.path))?.label || 'Page'}
+                    </Link>
                   </div>
                 </li>
               )}

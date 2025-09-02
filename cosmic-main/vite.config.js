@@ -9,7 +9,7 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
         //target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
@@ -21,7 +21,7 @@ export default defineConfig({
         }
       },
       '/uploads': {
-        target: 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
         // target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
@@ -33,7 +33,7 @@ export default defineConfig({
         }
       },
       '/placeholder-image': {
-        target: 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
         //target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
@@ -45,7 +45,7 @@ export default defineConfig({
         }
       },
       '/newsimage.pn': {
-        target: 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
         //target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,

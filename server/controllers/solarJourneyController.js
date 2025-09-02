@@ -126,7 +126,7 @@ exports.createMilestone = async (req, res) => {
     }
     
     try {
-      const { title, description, icon, year, order, isActive } = req.body;
+      const { title, description, icon, year, order, isActive, showArrow } = req.body;
       
       // Create milestone object
       const milestoneData = {
@@ -135,7 +135,8 @@ exports.createMilestone = async (req, res) => {
         icon: icon || 'calculator',
         year,
         order: order || 0,
-        isActive: isActive === 'true'
+        isActive: isActive === 'true',
+        showArrow: showArrow === 'true'
       };
       
       // Add image path if file was uploaded
@@ -186,7 +187,7 @@ exports.updateMilestone = async (req, res) => {
       }
       
       // Update fields
-      const { title, description, icon, year, order, isActive } = req.body;
+      const { title, description, icon, year, order, isActive, showArrow } = req.body;
       
       if (title) milestone.title = title;
       if (description) milestone.description = description;
@@ -194,6 +195,7 @@ exports.updateMilestone = async (req, res) => {
       if (year) milestone.year = year;
       if (order !== undefined) milestone.order = order;
       if (isActive !== undefined) milestone.isActive = isActive === 'true';
+      if (showArrow !== undefined) milestone.showArrow = showArrow === 'true';
       
       // Update image if new file was uploaded
       if (req.file) {
