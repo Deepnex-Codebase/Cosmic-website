@@ -126,6 +126,15 @@ exports.createMilestone = async (req, res) => {
     }
     
     try {
+      // Check if maximum limit of 4 milestones has been reached
+      const milestonesCount = await SolarJourney.countDocuments();
+      if (milestonesCount >= 4) {
+        return res.status(400).json({
+          success: false,
+          error: 'Maximum limit of 4 milestones has been reached. Please delete an existing milestone before adding a new one.'
+        });
+      }
+      
       const { title, description, icon, year, order, isActive, showArrow } = req.body;
       
       // Create milestone object

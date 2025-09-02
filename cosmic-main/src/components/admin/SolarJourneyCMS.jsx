@@ -79,6 +79,11 @@ const SolarJourneyCMS = () => {
 
   // Handle add new milestone
   const handleAdd = () => {
+    // Check if maximum limit of 4 milestones has been reached
+    if (milestones.length >= 4) {
+      alert('Maximum limit of 4 milestones has been reached. Please delete an existing milestone before adding a new one.');
+      return;
+    }
     resetForm();
     setShowAddForm(true);
   };
@@ -180,12 +185,19 @@ const SolarJourneyCMS = () => {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800">Solar Journey Management</h2>
-        <button
-          onClick={handleAdd}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
-        >
-          <FaPlus /> Add Milestone
-        </button>
+        {milestones.length < 4 && (
+          <button
+            onClick={handleAdd}
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          >
+            <FaPlus /> Add Milestone
+          </button>
+        )}
+        {milestones.length >= 4 && (
+          <div className="text-red-600 font-medium">
+            Maximum limit of 4 milestones reached
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Form */}

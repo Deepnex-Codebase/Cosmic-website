@@ -40,11 +40,44 @@ export default {
       },
       animation: {
         'fadeIn': 'fadeIn 0.3s ease-in-out',
+        'slide-in': 'slideIn 0.5s ease-out forwards',
+        'fade-up': 'fadeUp 0.5s ease-out forwards',
+        'pulse-in': 'pulseIn 0.5s ease-out forwards',
+        'border-pulse': 'borderPulse 2s infinite',
+        'arrow': 'arrow 1.5s infinite',
+        'color-change': 'colorChange 4s infinite alternate',
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        slideIn: {
+          '0%': { transform: 'translateY(30px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        fadeUp: {
+          '0%': { transform: 'translateY(20px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        pulseIn: {
+          '0%': { transform: 'scale(0)', opacity: '0' },
+          '50%': { transform: 'scale(1.2)', opacity: '0.5' },
+          '100%': { transform: 'scale(1)', opacity: '1' },
+        },
+        borderPulse: {
+          '0%': { boxShadow: '0 0 0 0 rgba(159, 194, 47, 0.4)' },
+          '70%': { boxShadow: '0 0 0 10px rgba(159, 194, 47, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(159, 194, 47, 0)' },
+        },
+        arrow: {
+          '0%': { transform: 'translateX(0)' },
+          '50%': { transform: 'translateX(10px)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        colorChange: {
+          '0%': { filter: 'hue-rotate(0deg)' },
+          '100%': { filter: 'hue-rotate(45deg)' },
         },
       },
       zIndex: {

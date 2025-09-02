@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
-// Hardcoding API URL to ensure correct endpoint is used
-const API_BASE_URL =import.meta.env.VITE_API_BASE_URL;
-console.log('Using hardcoded API_BASE_URL:', API_BASE_URL);
+// Get API URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+console.log('DEBUG: Using API_BASE_URL:', API_BASE_URL);
 
 // Icon mapping for dynamic icon selection
 const ICON_MAP = {
@@ -64,38 +64,61 @@ const SolarJourney = () => {
     const fetchJourneyData = async () => {
       try {
         setLoading(true);
-        console.log('Fetching solar journey data from:', `${API_BASE_URL}/cms/solar-journey/active`);
-        const response = await axios.get(`${API_BASE_URL}/cms/solar-journey/active`);
-        console.log('Solar Journey API Response:', JSON.stringify(response.data, null, 2));
-        console.log('API URL used:', `${API_BASE_URL}/cms/solar-journey/active`);
-        console.log('API_BASE_URL value:', API_BASE_URL);
+        console.log('DEBUG: Fetching solar journey data');
+        console.log('DEBUG: API_BASE_URL value:', API_BASE_URL);
+        console.log('DEBUG: Full API URL:', `${API_BASE_URL}/cms/solar-journey/active`);
         
-        if (response.data && response.data.success && response.data.data && response.data.data.length > 0) {
-          console.log('Setting steps with API data:', JSON.stringify(response.data.data, null, 2));
-          console.log('Number of steps from API:', response.data.data.length);
-          // Check if showArrow field exists in the response
-          const processedData = response.data.data.map((step, index) => {
-            console.log(`Step ${index + 1} (${step.title}) showArrow:`, step.showArrow);
-            // Ensure showArrow is defined (default to true if not specified)
-            if (step.showArrow === undefined) {
-              console.log(`Setting default showArrow=true for step ${index + 1}`);
-              return { ...step, showArrow: true };
-            }
-            return step;
+        // Add a timeout to ensure we don't hang indefinitely
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
+        try {
+          const response = await axios.get(`${API_BASE_URL}/cms/solar-journey/active`, {
+            signal: controller.signal
           });
+          clearTimeout(timeoutId);
           
-          console.log('Final processed data:', JSON.stringify(processedData, null, 2));
-          setSteps(processedData);
-        } else {
-          // Fallback to static data if API returns error or empty data
-          console.log('API returned error or empty data, using fallback steps');
-          console.log('Response data:', response.data);
-          setSteps(FALLBACK_STEPS);
-          setError('Could not load journey data from server');
+          console.log('DEBUG: Solar Journey API Response received');
+          console.log('DEBUG: Response status:', response.status);
+          console.log('DEBUG: Response data:', JSON.stringify(response.data, null, 2));
+          
+          if (response.data && response.data.success && response.data.data && response.data.data.length > 0) {
+            console.log('DEBUG: Valid data received, processing steps');
+            console.log('DEBUG: Number of steps from API:', response.data.data.length);
+            
+            // Check if showArrow field exists in the response
+            const processedData = response.data.data.map((step, index) => {
+              console.log(`DEBUG: Processing step ${index + 1} (${step.title})`);
+              // Ensure showArrow is defined (default to true if not specified)
+              if (step.showArrow === undefined) {
+                console.log(`DEBUG: Setting default showArrow=true for step ${index + 1}`);
+                return { ...step, showArrow: true };
+              }
+              return step;
+            });
+            
+            console.log('DEBUG: Setting steps with processed data');
+            setSteps(processedData);
+          } else {
+            // Fallback to static data if API returns error or empty data
+            console.log('DEBUG: API returned error or empty data, using fallback steps');
+            console.log('DEBUG: Response data:', response.data);
+            setSteps(FALLBACK_STEPS);
+            setError('Could not load journey data from server');
+          }
+        } catch (axiosError) {
+          clearTimeout(timeoutId);
+          console.error('DEBUG: Axios error:', axiosError.message);
+          if (axiosError.response) {
+            console.error('DEBUG: Error response:', axiosError.response.data);
+            console.error('DEBUG: Error status:', axiosError.response.status);
+          }
+          throw axiosError;
         }
       } catch (error) {
-        console.error('Error fetching solar journey data:', error);
+        console.error('DEBUG: Error fetching solar journey data:', error);
         // Fallback to static data if API call fails
+        console.log('DEBUG: Using fallback steps due to error');
         setSteps(FALLBACK_STEPS);
         setError('Could not load journey data from server');
       } finally {
@@ -109,23 +132,30 @@ const SolarJourney = () => {
   // Setup intersection observer for animation
   useEffect(() => {
     if (!loading && steps.length > 0) {
+      // Initialize refs array with the correct length
+      stepsRef.current = new Array(steps.length);
+      
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.classList.add('animate-slide-in');
+              // Instead of adding class, we'll make sure the element is visible
+              entry.target.style.opacity = '1';
               observer.unobserve(entry.target);
             }
           });
         },
-        { threshold: 0.1 }
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
       );
 
-      stepsRef.current.forEach((el) => {
-        if (el) {
-          observer.observe(el);
-        }
-      });
+      // Small delay to ensure refs are populated
+      setTimeout(() => {
+        stepsRef.current.forEach((el) => {
+          if (el) {
+            observer.observe(el);
+          }
+        });
+      }, 100);
 
       return () => {
         stepsRef.current.forEach((el) => {
@@ -167,7 +197,7 @@ const SolarJourney = () => {
             <div
               key={step._id}
               ref={(el) => (stepsRef.current[index] = el)}
-              className="relative flex flex-col items-center text-center opacity-0"
+              className="relative flex flex-col items-center text-center opacity-0 animate-slide-in"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               {/* Display connector arrows between steps based on CMS uploads */}
@@ -176,7 +206,7 @@ const SolarJourney = () => {
                   src="/arrow.svg"
                   alt="Arrow"
                   style={{ animationDelay: `${(index + 1) * 0.2 + 0.1}s` }}
-                  className="absolute left-[87%] top-[20%] z-10 hidden h-[60px] w-[60px] -translate-x-1/2 -translate-y-1/2 transform-gpu animate-arrow animate-color-change sm:block lg:h-[80px] lg:w-[80px]"
+                  className="absolute right-[-100px] top-[30%] z-10 hidden h-[60px] w-[60px] -translate-x-1/2 -translate-y-1/2 transform-gpu animate-arrow animate-color-change sm:block lg:h-[80px] lg:w-[80px]"
                 />
               )}
 
@@ -197,13 +227,13 @@ const SolarJourney = () => {
 
               <h3
                 style={{ animationDelay: `${index * 0.2 + 0.25}s` }}
-                className="mb-2 text-lg font-semibold opacity-0 animate-fade-up font-space-grotesk"
+                className="mb-2 text-lg font-semibold opacity-0 animate-fade-up animate-slide-in font-space-grotesk"
               >
                 {step.title}
               </h3>
               <p
                 style={{ animationDelay: `${index * 0.2 + 0.35}s` }}
-                className="mx-auto max-w-xs text-sm text-gray-600 opacity-0 animate-fade-up"
+                className="mx-auto max-w-xs text-sm text-gray-600 opacity-0 animate-fade-up animate-slide-in"
               >
                 {step.description}
               </p>
