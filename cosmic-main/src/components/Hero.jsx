@@ -124,7 +124,8 @@ export default function Hero() {
         title: Array.isArray(slide.title) ? slide.title : ['Powering A Greener', 'Future With Solar'],
         body: slide.body || 'Clean energy solutions for a sustainable future.',
         img: imgUrl || 'https://zolar.wpengine.com/wp-content/uploads/2024/08/zolar-h1-slider-img-alt.jpg',
-        icon: slide.icon || FALLBACK_SLIDES[index % FALLBACK_SLIDES.length].icon
+        icon: slide.icon || FALLBACK_SLIDES[index % FALLBACK_SLIDES.length].icon,
+        customSvgIcon: slide.customSvgIcon || ''
       };
     });
     
@@ -195,6 +196,18 @@ export default function Hero() {
                   className={`flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center transition ms-5 ${activeItem ? 'bg-transparent' : 'bg-transparent'}`}
                 >
                   {(() => {
+                    // Check for custom SVG icon first
+                    if (s.customSvgIcon) {
+                      return (
+                        <span 
+                          className={`h-12 w-12 ${
+                            activeItem ? 'text-accent-500' : 'text-white'
+                          }`}
+                          dangerouslySetInnerHTML={{ __html: s.customSvgIcon }}
+                        />
+                      );
+                    }
+                    // Then check for predefined icon
                     if (typeof s.icon === 'string') {
                       // Try to get react-icon component first
                       const IconComponent = getIconComponent(s.icon);

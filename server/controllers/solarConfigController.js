@@ -88,6 +88,20 @@ exports.updateConfig = async (req, res) => {
       });
     }
     
+    // Validate data structure based on configType
+    if (configType === 'solarBasic') {
+      // Ensure required fields are present
+      const requiredFields = ['tariff', 'areaPerKW', 'EF', 'genPerKW_day', 'costPerKW'];
+      const missingFields = requiredFields.filter(field => !data[field]);
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Missing required fields: ${missingFields.join(', ')}`
+        });
+      }
+    }
+    
     // Find and update the configuration
     const updatedConfig = await SolarConfig.findOneAndUpdate(
       { configType },

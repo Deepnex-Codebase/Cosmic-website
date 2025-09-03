@@ -85,6 +85,22 @@ const AwardsTimeline = ({
 }) => {
   // Use CMS data if available, otherwise fall back to default
   const awards = achievements.length > 0 ? achievements : defaultAwards;
+  
+  // Group achievements by rowId
+  // Create a map to group awards by rowId
+  const awardsByRow = awards.reduce((acc, award) => {
+    const rowId = award.rowId || 1; // Default to row 1 if no rowId
+    if (!acc[rowId]) {
+      acc[rowId] = [];
+    }
+    acc[rowId].push(award);
+    return acc;
+  }, {});
+  
+  // Get all unique row IDs and sort them
+  const rowIds = Object.keys(awardsByRow).map(Number).sort((a, b) => a - b);
+  
+  // Main section title and subtitle (will be used only once at the top)
   const sectionTitle = sectionData.title || 'Our Award-Winning Solar Solutions';
   const sectionSubtitle = sectionData.subtitle || 'Recognition & Excellence';
 
@@ -111,187 +127,197 @@ const AwardsTimeline = ({
         </h2>
       </div>
 
-      {/* Custom CSS Slider */}
-
-
-      {/* Awards Slider */}
-      <div className="mt-10 md:mt-16 px-4 md:px-8 lg:px-16">
-        <style>
-          {`
-            .awards-slider-container {
-              width: 80%;
-              overflow-x: auto;
-              padding: 20px 0 40px;
-              margin-left:20%;
-              scrollbar-width: none; /* Firefox */
-              padding-left: 20%; /* Adding 20% left padding as requested */
-              position: relative;
-              background-image: radial-gradient(rgba(202, 226, 142, 0.1) 1px, transparent 1px);
-              background-size: 20px 20px;
-              border-radius: 16px;
-            }
-            
-            /* Add a stylish label to the left side */
-            .awards-slider-container::before {
-              content: 'AWARDS';
-              position: absolute;
-              left: 5%;
-              top: 50%;
-              transform: translateY(-50%);
-              writing-mode: vertical-lr;
-              transform: translateY(-50%) rotate(180deg);
-              font-size: 2.5rem;
-              font-weight: 800;
-              color: rgba(202, 226, 142, 0.5);
-              letter-spacing: 0.5rem;
-              pointer-events: none;
-              text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
-            }
-            
-            .awards-slider-container::-webkit-scrollbar {
-              display: none; /* Chrome, Safari, Edge */
-            }
-            
-            .awards-slider {
-              display: flex;
-              gap: 35px;
-              padding: 20px 10px;
-              animation: slideAnimation 30s linear infinite;
-              will-change: transform;
-            }
-            
-            .awards-slider:hover {
-              animation-play-state: paused;
-            }
-            
-            @keyframes slideAnimation {
-              0% {
-                transform: translateX(0);
-              }
-              100% {
-                transform: translateX(calc(-280px * ${awards.length} - 35px * ${awards.length}));
-              }
-            }
-            
-            .award-card {
-              min-width: 280px;
-              flex: 0 0 auto;
-              background: white;
-              border-radius: 12px;
-              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-              overflow: hidden;
-              transition: all 0.4s ease;
-              border: 1px solid rgba(202, 226, 142, 0.2);
-              position: relative;
-              margin-top: 10px;
-              margin-bottom: 10px;
-            }
-            
-            .award-card:hover {
-              transform: translateY(-8px);
-              box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
-              border-color: rgba(202, 226, 142, 0.6);
-            }
-            
-            .award-card::after {
-              content: '';
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              width: 100%;
-              height: 4px;
-              background: linear-gradient(90deg, #cae28e, #a3c267);
-              transform: scaleX(0);
-              transform-origin: right;
-              transition: transform 0.4s ease;
-            }
-            
-            .award-card:hover::after {
-              transform: scaleX(1);
-              transform-origin: left;
-            }
-            
-            /* Badge animation */
-            .award-card:hover .absolute.rounded-full {
-              transform: scale(1.1) rotate(10deg);
-              border-color: #a3c267;
-              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            }
-            
-            .absolute.rounded-full {
-              transition: all 0.4s ease;
-              z-index: 10;
-            }
-            
-            /* Improve image hover effect */
-            .award-card .relative img {
-              transition: transform 0.7s ease;
-            }
-            
-            .award-card:hover .relative img {
-              transform: scale(1.05);
-            }
-          `}
-        </style>
+      {/* Dynamic Awards Sliders - One for each row */}
+      {rowIds.map((rowId, rowIndex) => {
+        // Get row specific title and subtitle if available
+        const rowData = sectionData.rows?.find(r => Number(r.rowId) === Number(rowId));
+        const rowTitle = rowData?.title || `Row ${rowId} Title`;
+        const rowSubtitle = rowData?.subtitle || `Row ${rowId} Subtitle`;
         
-        <div className="awards-slider-container">
-          <div className="awards-slider">
-            {/* Original awards */}
-            {awards.map((award, index) => {
-              const IconComponent = getDefaultIcon(['shield', 'chart', 'building', 'users'][index % 4]);
-              return (
-                <div key={award._id || award.year || index} className="award-card">
-                  <div className="relative">
-                    <img 
-                      src={award.image ? 
-                        (award.image.startsWith('/uploads') ? 
-                          `${SERVER_URL}${award.image}` : 
-                          award.image) : 
-                        (index === 0 ? "/installation.jpg" : 
-                         index === 1 ? "/solar-panels.jpg" : 
-                         index === 2 ? "/quality-assurance.jpg" : 
-                         "/site-assessment.jpg")} 
-                      alt={`${award.year} milestone`}
-                      className="w-full h-52 object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300"></div>
-                    <div className="absolute top-0 left-0 bg-[#cae28e] text-black px-3 py-1 font-medium rounded-br-md shadow-md">
-                      {award.year}
-                    </div>
-                    
-                    {/* Award badge image */}
-                    <div className="absolute -bottom-8 right-4 w-16 h-16 rounded-full bg-white p-1 shadow-lg border-2 border-[#cae28e] overflow-hidden">
+        return (
+        <div key={rowId} className="mt-10 md:mt-16 px-4 md:px-8 lg:px-16">
+          {/* Row specific title and subtitle */}
+          <div className="mb-8 text-center">
+            <p className="text-gray-600 mb-2 inline-block relative before:content-['-'] before:mr-2 after:content-['-'] after:ml-2 font-['Space_Grotesk'] font-[700]">
+              {rowSubtitle}
+            </p>
+            <h3 className="text-3xl font-bold text-gray-800">
+              {rowTitle}
+            </h3>
+          </div>
+          <style>
+            {`
+              .awards-slider-container-${rowId} {
+                width: 80%;
+                overflow-x: auto;
+                padding: 20px 0 40px;
+                margin-left:20%;
+                scrollbar-width: none; /* Firefox */
+                padding-left: 20%; /* Adding 20% left padding as requested */
+                position: relative;
+                background-image: radial-gradient(rgba(${rowId % 2 === 0 ? '142, 226, 202' : '202, 226, 142'}, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+                border-radius: 16px;
+              }
+              
+              /* Add a stylish label to the left side */
+              .awards-slider-container-${rowId}::before {
+                content: 'AWARDS';
+                position: absolute;
+                left: 5%;
+                top: 50%;
+                transform: translateY(-50%);
+                writing-mode: vertical-lr;
+                transform: translateY(-50%) rotate(180deg);
+                font-size: 2.5rem;
+                font-weight: 800;
+                color: rgba(${rowId % 2 === 0 ? '142, 226, 202' : '202, 226, 142'}, 0.5);
+                letter-spacing: 0.5rem;
+                pointer-events: none;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+              }
+              
+              .awards-slider-container-${rowId}::-webkit-scrollbar {
+                display: none; /* Chrome, Safari, Edge */
+              }
+              
+              .awards-slider-${rowId} {
+                display: flex;
+                gap: 35px;
+                padding: 20px 10px;
+                animation: slideAnimation-${rowId} 30s linear infinite;
+                will-change: transform;
+              }
+              
+              .awards-slider-${rowId}:hover {
+                animation-play-state: paused;
+              }
+              
+              @keyframes slideAnimation-${rowId} {
+                0% {
+                  transform: translateX(0);
+                }
+                100% {
+                  transform: translateX(calc(-450px * ${awardsByRow[rowId].length || 1} - 35px * ${awardsByRow[rowId].length || 1}));
+                }
+              }
+              
+              .award-card-${rowId} {
+                min-width: 450px;
+                flex: 0 0 auto;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                overflow: hidden;
+                transition: all 0.4s ease;
+                border: 1px solid rgba(${rowId % 2 === 0 ? '142, 226, 202' : '202, 226, 142'}, 0.2);
+                position: relative;
+              }
+              
+              .award-card-${rowId}:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+              }
+              
+              .award-card-${rowId}::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 4px;
+                background: linear-gradient(90deg, ${rowId % 2 === 0 ? '#8ee2ca, #6ac2aa' : '#cae28e, #a3c267'});
+                transform: scaleX(0);
+                transform-origin: right;
+                transition: transform 0.4s ease;
+              }
+              
+              .award-card-${rowId}:hover::after {
+                transform: scaleX(1);
+                transform-origin: left;
+              }
+              
+              /* Badge animation */
+              .award-card-${rowId}:hover .absolute.rounded-full {
+                transform: scale(1.1) rotate(10deg);
+                border-color: ${rowId % 2 === 0 ? '#8ee2ca' : '#a3c267'};
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+              }
+              
+              .absolute.rounded-full {
+                transition: all 0.4s ease;
+                z-index: 10;
+              }
+              
+              /* Improve image hover effect */
+              .award-card-${rowId} .relative img {
+                transition: transform 0.7s ease;
+              }
+              
+              .award-card-${rowId}:hover .relative img {
+                transform: scale(1.05);
+              }
+            `}
+          </style>
+          
+          <div className={`awards-slider-container-${rowId}`}>
+            <div className={`awards-slider-${rowId}`}>
+              {/* Dynamic awards for current row */}
+              {awardsByRow[rowId].map((award, index) => {
+                const IconComponent = getDefaultIcon(['shield', 'chart', 'building', 'users'][index % 4]);
+                return (
+                  <div key={award._id || award.year || index} className={`award-card-${rowId}`}>
+                    <div className="relative">
                       <img 
-                        src={index === 0 ? "/solar1.png" : 
-                             index === 1 ? "/solar_design.png" : 
-                             index === 2 ? "/co2emission.png" : 
-                             "/logo.png"} 
-                        alt="Award badge"
-                        className="w-full h-full object-contain"
+                        src={award.image ? 
+                          (award.image.startsWith('/uploads') ? 
+                            `${SERVER_URL}${award.image}` : 
+                            award.image) : 
+                          (index === 0 ? "/installation.jpg" : 
+                           index === 1 ? "/solar-panels.jpg" : 
+                           index === 2 ? "/quality-assurance.jpg" : 
+                           "/site-assessment.jpg")} 
+                        alt={`${award.year} milestone`}
+                        className="w-full h-52 object-cover"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300"></div>
+                      <div className={`absolute top-0 left-0 bg-[${rowId % 2 === 0 ? '#8ee2ca' : '#cae28e'}] text-black px-3 py-1 font-medium rounded-br-md shadow-md`}>
+                        {award.year}
+                      </div>
+                      
+                      {/* Award badge image */}
+                      <div className={`absolute -bottom-8 right-4 w-16 h-16 rounded-full bg-white p-1 shadow-lg border-2 border-[${rowId % 2 === 0 ? '#8ee2ca' : '#cae28e'}] overflow-hidden`}>
+                        <img 
+                          src={index === 0 ? "/solar1.png" : 
+                               index === 1 ? "/solar_design.png" : 
+                               index === 2 ? "/co2emission.png" : 
+                               "/logo.png"} 
+                          alt="Award badge"
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                    </div>
+                    <div className="p-5 pt-10">
+                      <div className={`flex justify-center mb-4 text-[${rowId % 2 === 0 ? '#8ee2ca' : '#a3c267'}]`}>
+                        <IconComponent />
+                      </div>
+                      <h3 className="text-xl font-bold text-center mb-3 font-['Space_Grotesk']">
+                        {award.title}
+                      </h3>
+                      <div className="flex justify-center">
+                        <span className="inline-block bg-gray-50 rounded-full px-4 py-1 text-sm font-semibold text-gray-700 border border-gray-100">
+                          {award.organization}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="p-5 pt-10">
-                    <div className="flex justify-center mb-4 text-[#a3c267]">
-                      <IconComponent />
-                    </div>
-                    <h3 className="text-xl font-bold text-center mb-3 font-['Space_Grotesk']">
-                      {award.title}
-                    </h3>
-                    <div className="flex justify-center">
-                      <span className="inline-block bg-gray-50 rounded-full px-4 py-1 text-sm font-semibold text-gray-700 border border-gray-100">
-                        {award.organization}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            
-
+                );
+              })}
+            </div>
           </div>
         </div>
-      </div>
+      );
+      })}
     </div>
   );
 };

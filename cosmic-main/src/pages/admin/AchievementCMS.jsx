@@ -15,7 +15,8 @@ export default function AchievementCMS() {
     awardWinningSolutions: {
       title: '',
       description: '',
-      achievements: []
+      achievements: [],
+      rows: [] // Initialize rows array for row-specific titles and subtitles
     },
     certifications: {
       title: '',
@@ -43,6 +44,8 @@ export default function AchievementCMS() {
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({});
   const [imagePreview, setImagePreview] = useState('');
+  const [availableRows, setAvailableRows] = useState(2); // Track number of available rows
+  const [activeRowId, setActiveRowId] = useState(1); // Track active row ID
 
   // Fetch page data
   const fetchPageData = async () => {
@@ -51,7 +54,7 @@ export default function AchievementCMS() {
       const response = await achievementService.getAchievementPage();
       if (response.success) {
         // Merge with default structure to ensure all fields exist
-        setPageData({
+        const data = {
           hero: {
             title: '',
             subtitle: '',
@@ -62,6 +65,7 @@ export default function AchievementCMS() {
             title: '',
             description: '',
             achievements: [],
+            rows: [],
             ...response.data.awardWinningSolutions
           },
           certifications: {
@@ -84,7 +88,45 @@ export default function AchievementCMS() {
             ...response.data.callToAction
           },
           status: response.data.status || 'published'
-        });
+        };
+        
+        setPageData(data);
+        
+        // Calculate max row ID from achievements
+        if (data.awardWinningSolutions?.achievements?.length > 0) {
+          // Find the maximum rowId in the achievements
+          const maxRowId = Math.max(
+            ...data.awardWinningSolutions.achievements.map(a => parseInt(a.rowId || 1, 10)),
+            1 // Ensure at least 1
+          );
+          
+          console.log('Initial load - Max rowId found:', maxRowId);
+          
+          // Update availableRows if maxRowId is greater, but ensure at least 2 rows
+          setAvailableRows(Math.max(maxRowId, 2));
+          
+          // Initialize rows array with title and subtitle for each row if not already present
+          const existingRows = data.awardWinningSolutions.rows || [];
+          const rowsToCreate = [];
+          
+          // For each row ID, check if a row entry exists, if not create one
+          for (let i = 1; i <= Math.max(maxRowId, 2); i++) {
+            const rowExists = existingRows.some(row => row.rowId === i);
+            if (!rowExists) {
+              rowsToCreate.push({
+                rowId: i,
+                title: `Row ${i} Title`,
+                subtitle: `Row ${i} Subtitle`
+              });
+            }
+          }
+          
+          // If we have new rows to create, update the data
+          if (rowsToCreate.length > 0) {
+            data.awardWinningSolutions.rows = [...existingRows, ...rowsToCreate];
+            console.log('Created missing row entries:', rowsToCreate);
+          }
+        }
       } else {
         toast.error('Failed to fetch page data');
       }
@@ -98,6 +140,25 @@ export default function AchievementCMS() {
   useEffect(() => {
     fetchPageData();
   }, []);
+  
+  // Calculate max row ID from achievements
+  useEffect(() => {
+    if (pageData?.awardWinningSolutions?.achievements?.length > 0) {
+      // Find the maximum rowId in the achievements
+      const maxRowId = Math.max(
+        ...pageData.awardWinningSolutions.achievements.map(a => parseInt(a.rowId || 1, 10)),
+        1 // Ensure at least 1
+      );
+      
+      console.log('Max rowId found:', maxRowId);
+      
+      // Update availableRows if maxRowId is greater
+      if (maxRowId > availableRows) {
+        setAvailableRows(maxRowId);
+        console.log('Updated availableRows to:', maxRowId);
+      }
+    }
+  }, [pageData.awardWinningSolutions?.achievements]);
 
   // Save page data
   const savePageData = async () => {
@@ -167,19 +228,73 @@ export default function AchievementCMS() {
     }
   };
 
+  // Add a new row for achievements
+  const addNewRow = () => {
+    const newRowId = availableRows + 1;
+    setAvailableRows(newRowId);
+    
+    // Create a placeholder achievement for the new row
+    const placeholderAchievement = {
+      title: `Row ${newRowId} Placeholder`,
+      description: 'Click Edit to modify this placeholder',
+      year: new Date().getFullYear().toString(),
+      organization: 'Cosmic Power',
+      image: '',
+      rowId: newRowId
+    };
+    
+    // Create a new row entry with title and subtitle
+    const newRowEntry = {
+      rowId: newRowId,
+      title: `Row ${newRowId} Title`,
+      subtitle: `Row ${newRowId} Subtitle`
+    };
+    
+    // Update the page data to include the new row in the state with a placeholder achievement
+    setPageData(prev => {
+      const updatedData = {
+        ...prev,
+        awardWinningSolutions: {
+          ...prev.awardWinningSolutions,
+          // Add the placeholder achievement to the achievements array
+          achievements: [...(prev.awardWinningSolutions?.achievements || []), placeholderAchievement],
+          // Add the new row entry to the rows array
+          rows: [...(prev.awardWinningSolutions?.rows || []), newRowEntry]
+        }
+      };
+      
+      console.log(`Added new row ${newRowId} with placeholder achievement`);
+      console.log('Updated achievements:', updatedData.awardWinningSolutions.achievements);
+      console.log('Updated rows:', updatedData.awardWinningSolutions.rows);
+      
+      return updatedData;
+    });
+    
+    // Save the updated page data to persist the new row
+    setTimeout(() => {
+      savePageData();
+    }, 500);
+  };
+
   // Open modal for adding items
-  const openModal = (type, item = null) => {
+  const openModal = (type, item = null, rowId = 1) => {
     setModalType(type);
     setEditingItem(item);
     
     if (type === 'achievement') {
+      // Ensure rowId is a number
+      const numericRowId = parseInt(rowId, 10) || 1;
+      
       setFormData({
         title: item?.title || '',
         year: item?.year || new Date().getFullYear().toString(),
         organization: item?.organization || '',
         description: item?.description || '',
-        image: null
+        image: null,
+        rowId: item?.rowId || numericRowId // Use the provided rowId or the one from the item
       });
+      
+      console.log('Setting form data with rowId:', item?.rowId || numericRowId);
     } else if (type === 'certificate') {
       setFormData({
         name: item?.name || '',
@@ -219,16 +334,41 @@ export default function AchievementCMS() {
           toast.error('Please select an image');
           return;
         }
+        
+        // Ensure rowId is a number
+        const updatedFormData = {
+          ...formData,
+          rowId: parseInt(formData.rowId, 10) || 1
+        };
+        
+        console.log('Submitting achievement with rowId:', updatedFormData.rowId);
+        
+        // Update the form data with the validated rowId
+        setFormData(updatedFormData);
+        
+        // Make sure availableRows is updated if this is a new row
+        if (updatedFormData.rowId > availableRows) {
+          setAvailableRows(updatedFormData.rowId);
+          console.log('Updated availableRows to match new achievement rowId:', updatedFormData.rowId);
+        }
       }
       
 
       
       let result;
       if (modalType === 'achievement') {
+        // Create a copy of form data with ensured numeric rowId
+        const achievementData = {
+          ...formData,
+          rowId: parseInt(formData.rowId, 10) || 1
+        };
+        
+        console.log('Sending achievement data to API:', achievementData);
+        
         if (editingItem) {
-          result = await achievementService.updateAchievement(editingItem._id, formData);
+          result = await achievementService.updateAchievement(editingItem._id, achievementData);
         } else {
-          result = await achievementService.addAchievement(formData);
+          result = await achievementService.addAchievement(achievementData);
         }
       } else if (modalType === 'certificate') {
         if (editingItem) {
@@ -250,11 +390,76 @@ export default function AchievementCMS() {
 
   // Handle delete
   const handleDelete = async (type, id) => {
-    if (!window.confirm(`Are you sure you want to delete this ${type}?`)) {
+    // Custom confirmation message based on type
+    const confirmMessage = type === 'row' 
+      ? `Are you sure you want to delete Row ${id}? All achievements in this row will be moved to Row 1.`
+      : `Are you sure you want to delete this ${type}?`;
+      
+    if (!window.confirm(confirmMessage)) {
       return;
     }
     
     try {
+        setLoading(true);
+        
+        if (type === 'row') {
+          // For row deletion, we remove the row from rows array
+          const rowId = parseInt(id, 10);
+          
+          // Don't allow deleting row 1 (default row)
+          if (rowId === 1) {
+            toast.error("Cannot delete the default row");
+            setLoading(false);
+            return;
+          }
+          
+          console.log('Deleting row:', rowId);
+          console.log('Current rows:', pageData.awardWinningSolutions.rows);
+          
+          // Make sure rows is an array
+          if (!Array.isArray(pageData.awardWinningSolutions.rows)) {
+            console.error('Rows is not an array:', pageData.awardWinningSolutions.rows);
+            toast.error("Error deleting row: rows data is invalid");
+            setLoading(false);
+            return;
+          }
+          
+          // Update rows array by filtering out the row to delete
+          const updatedRows = pageData.awardWinningSolutions.rows.filter(row => row.rowId !== rowId);
+          console.log('Updated rows after deletion:', updatedRows);
+          
+          // Reassign achievements from this row to row 1
+          const updatedAchievements = pageData.awardWinningSolutions.achievements.map(achievement => {
+            if (parseInt(achievement.rowId, 10) === rowId) {
+              return { ...achievement, rowId: 1 };
+            }
+            return achievement;
+          });
+          
+          // Update the state
+          setPageData(prev => {
+            const newState = {
+              ...prev,
+              awardWinningSolutions: {
+                ...prev.awardWinningSolutions,
+                rows: updatedRows,
+                achievements: updatedAchievements
+              }
+            };
+            console.log('New state after row deletion:', newState.awardWinningSolutions.rows);
+            return newState;
+          });
+          
+          // If the active row was deleted, set active row to 1
+          if (activeRowId === rowId) {
+            setActiveRowId(1);
+          }
+          
+          toast.success(`Row ${rowId} deleted successfully!`);
+          setLoading(false);
+          return;
+        }
+      
       if (type === 'achievement') {
         await achievementService.deleteAchievement(id);
       } else if (type === 'certificate') {
@@ -406,18 +611,44 @@ export default function AchievementCMS() {
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">Award-Winning Solar Solutions</h2>
-              <button
-                onClick={() => openModal('achievement')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Add Achievement
-              </button>
+              <div className="flex flex-wrap gap-2">
+                {/* Dynamic row buttons */}
+                {[...Array(availableRows)].map((_, index) => (
+                  <div key={index + 1} className="flex items-center">
+                    <button
+                      onClick={() => openModal('achievement', null, index + 1)}
+                      className={`text-white px-4 py-2 rounded-lg hover:opacity-90 transition-colors ${index % 3 === 0 ? 'bg-blue-600' : index % 3 === 1 ? 'bg-green-600' : 'bg-purple-600'}`}
+                    >
+                      Add Achievement (Row {index + 1})
+                    </button>
+                    {index > 0 && (
+                      <button
+                        onClick={() => handleDelete('row', index + 1)}
+                        className="ml-1 p-1 text-red-600 hover:text-red-800 bg-white rounded-full border border-red-200 hover:border-red-400"
+                        title={`Delete Row ${index + 1}`}
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {/* Add new row button */}
+                <button
+                  onClick={addNewRow}
+                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors flex items-center"
+                >
+                  <span className="mr-1">+</span> Add New Row
+                </button>
+              </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Main section title and subtitle are hidden now */}
+            <div className="hidden">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Section Title
+                  Main Section Title (Hidden)
                 </label>
                 <input
                   type="text"
@@ -430,7 +661,7 @@ export default function AchievementCMS() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Section Subtitle
+                  Main Section Subtitle (Hidden)
                 </label>
                 <input
                   type="text"
@@ -442,32 +673,125 @@ export default function AchievementCMS() {
               </div>
             </div>
             
-            {/* Achievements List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {pageData.awardWinningSolutions?.achievements?.map((achievement, index) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-medium text-gray-900">{achievement.title}</h3>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => openModal('achievement', achievement)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete('achievement', achievement._id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Delete
-                      </button>
+            {/* Achievements List - Dynamic Rows */}
+            {[...Array(availableRows)].map((_, rowIndex) => {
+              const rowId = rowIndex + 1;
+              const rowAchievements = pageData.awardWinningSolutions?.achievements
+                ?.filter(achievement => 
+                  rowId === 1 ? (!achievement.rowId || achievement.rowId === 1) : achievement.rowId === rowId
+                );
+                
+              return (
+                <div key={rowId} className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-800 mb-3">Row {rowId}</h3>
+                  
+                  {/* Row specific title and subtitle */}
+                  <div className="mb-4 bg-gray-50 p-4 rounded-lg">
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-md font-medium text-gray-700">Row {rowId} Settings</h4>
+                      {rowId !== 1 && (
+                        <button
+                          onClick={() => handleDelete('row', rowId)}
+                          className="p-1 text-red-600 hover:text-red-800 bg-white rounded-full border border-red-200 hover:border-red-400 flex items-center"
+                          title={`Delete Row ${rowId}`}
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                          <span>Delete Row</span>
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Row {rowId} Title
+                        </label>
+                        <input
+                          type="text"
+                          value={pageData.awardWinningSolutions?.rows?.find(r => r.rowId === rowId)?.title || `Row ${rowId} Title`}
+                          onChange={(e) => {
+                            const updatedRows = [...(pageData.awardWinningSolutions?.rows || [])];
+                            const rowIndex = updatedRows.findIndex(r => r.rowId === rowId);
+                            if (rowIndex >= 0) {
+                              updatedRows[rowIndex] = { ...updatedRows[rowIndex], title: e.target.value };
+                            } else {
+                              updatedRows.push({ rowId, title: e.target.value, subtitle: `Row ${rowId} Subtitle` });
+                            }
+                            handlePageDataChange('awardWinningSolutions', 'rows', updatedRows);
+                          }}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder={`Row ${rowId} Title`}
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Row {rowId} Subtitle
+                        </label>
+                        <input
+                          type="text"
+                          value={pageData.awardWinningSolutions?.rows?.find(r => r.rowId === rowId)?.subtitle || `Row ${rowId} Subtitle`}
+                          onChange={(e) => {
+                            const updatedRows = [...(pageData.awardWinningSolutions?.rows || [])];
+                            const rowIndex = updatedRows.findIndex(r => r.rowId === rowId);
+                            if (rowIndex >= 0) {
+                              updatedRows[rowIndex] = { ...updatedRows[rowIndex], subtitle: e.target.value };
+                            } else {
+                              updatedRows.push({ rowId, title: `Row ${rowId} Title`, subtitle: e.target.value });
+                            }
+                            handlePageDataChange('awardWinningSolutions', 'rows', updatedRows);
+                          }}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder={`Row ${rowId} Subtitle`}
+                        />
+                      </div>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-600">{achievement.organization} - {achievement.year}</p>
-                  <p className="text-sm text-gray-500 mt-1">{achievement.description?.substring(0, 100)}...</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {rowAchievements?.map((achievement, index) => (
+                      <div 
+                        key={index} 
+                        className={`border border-gray-200 rounded-lg p-4 ${rowId % 3 === 0 ? 'bg-blue-50' : rowId % 3 === 1 ? '' : 'bg-green-50'}`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-medium text-gray-900">{achievement.title}</h3>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => openModal('achievement', achievement)}
+                              className="text-blue-600 hover:text-blue-800"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete('achievement', achievement._id)}
+                              className="text-red-600 hover:text-red-800"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-sm text-gray-600">{achievement.organization} - {achievement.year}</p>
+                        <p className="text-sm text-gray-500 mt-1">{achievement.description?.substring(0, 100)}...</p>
+                      </div>
+                    ))}
+                    {rowAchievements?.length === 0 && (
+                      <div className="col-span-3 text-center py-8 border border-dashed border-gray-300 rounded-lg">
+                        <p className="text-gray-500">No achievements added to Row {rowId} yet.</p>
+                        <button
+                          onClick={() => openModal('achievement', null, rowId)}
+                          className="mt-2 text-blue-600 hover:text-blue-800 underline"
+                        >
+                          Add Achievement
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
+
           </div>
         )}
 

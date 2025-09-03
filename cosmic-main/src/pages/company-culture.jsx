@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  FaLeaf, FaSolarPanel, FaHandshake, FaLightbulb, FaUsers, FaHeart, 
-  FaShieldAlt, FaRecycle, FaGlobe, FaStar, FaRocket, FaTree, 
-  FaSun, FaWind, FaBolt, FaEye, 
-  FaCog 
-} from 'react-icons/fa';
+import * as FaIcons from 'react-icons/fa';
 import { getCompanyCulture, formatImageUrl } from '../services/companyCultureService';
 
 const CompanyCulture = () => {
@@ -35,25 +30,16 @@ const CompanyCulture = () => {
     fetchData();
   }, []);
 
-  // Icon mapping for dynamic icons
-  const iconMap = {
-    FaLeaf: <FaLeaf className="h-10 w-10 text-[#9fc22f]" />,
-    FaSolarPanel: <FaSolarPanel className="h-10 w-10 text-[#9fc22f]" />,
-    FaHandshake: <FaHandshake className="h-10 w-10 text-[#9fc22f]" />,
-    FaLightbulb: <FaLightbulb className="h-10 w-10 text-[#9fc22f]" />,
-    FaUsers: <FaUsers className="h-10 w-10 text-[#9fc22f]" />,
-    FaHeart: <FaHeart className="h-10 w-10 text-[#9fc22f]" />,
-    FaShieldAlt: <FaShieldAlt className="h-10 w-10 text-[#9fc22f]" />,
-    FaRecycle: <FaRecycle className="h-10 w-10 text-[#9fc22f]" />,
-    FaGlobe: <FaGlobe className="h-10 w-10 text-[#9fc22f]" />,
-    FaStar: <FaStar className="h-10 w-10 text-[#9fc22f]" />,
-    FaRocket: <FaRocket className="h-10 w-10 text-[#9fc22f]" />,
-    FaTree: <FaTree className="h-10 w-10 text-[#9fc22f]" />,
-    FaSun: <FaSun className="h-10 w-10 text-[#9fc22f]" />,
-    FaWind: <FaWind className="h-10 w-10 text-[#9fc22f]" />,
-    FaBolt: <FaBolt className="h-10 w-10 text-[#9fc22f]" />,
-    FaEye: <FaEye className="h-10 w-10 text-[#9fc22f]" />,
-    FaCog: <FaCog className="h-10 w-10 text-[#9fc22f]" />
+  // Get icon component by name
+  const getIconComponent = (iconName) => {
+    if (!iconName) return FaIcons.FaLeaf; // Default to FaLeaf if not found
+    return FaIcons[iconName] || FaIcons.FaLeaf;
+  };
+  
+  // Dynamic icon rendering
+  const renderIcon = (iconName) => {
+    const IconComponent = getIconComponent(iconName);
+    return <IconComponent className="h-10 w-10 text-[#9fc22f]" />;
   };
 
   // Fallback data if CMS data is not available
@@ -296,7 +282,11 @@ const CompanyCulture = () => {
                 className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow text-center"
               >
                 <div className="flex justify-center mb-4">
-                  {iconMap[principle.icon] || iconMap['FaLeaf']}
+                  {principle.customSvgIcon ? (
+                    <div className="h-10 w-10 text-[#9fc22f]" dangerouslySetInnerHTML={{ __html: principle.customSvgIcon }} />
+                  ) : (
+                    renderIcon(principle.icon)
+                  )}
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-[#003e63]">{principle.title || principle}</h3>
                 <p className="text-gray-600">{principle.description || ''}</p>

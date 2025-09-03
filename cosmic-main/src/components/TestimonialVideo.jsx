@@ -4,21 +4,13 @@ import axios from 'axios';
 
 // Import environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
-import { FaQuoteLeft, FaQuoteRight, FaChevronLeft, FaChevronRight, FaUsers, FaProjectDiagram, FaSolarPanel, FaBolt, FaAward, FaGlobe, FaLeaf, FaIndustry } from 'react-icons/fa';
+import * as FaIcons from 'react-icons/fa';
+import { FaQuoteLeft, FaQuoteRight, FaChevronLeft, FaChevronRight, FaUsers } from 'react-icons/fa';
 
 // This component is now repurposed as a Happy Clients section with company stats
 
-// Icon mapping for dynamic icon rendering
-const iconMap = {
-  FaUsers,
-  FaProjectDiagram,
-  FaSolarPanel,
-  FaBolt,
-  FaAward,
-  FaGlobe,
-  FaLeaf,
-  FaIndustry
-};
+// Default icon if the specified icon doesn't exist
+const DefaultIcon = FaUsers;
 
 // Legacy testimonials data - kept for reference but not used in the new design
 const testimonials = [
@@ -367,7 +359,6 @@ Our expertise blends cutting-edge technology with proven performance, making us 
             {/* Stats Counters */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
               {companyStats.map((stat, index) => {
-                const IconComponent = iconMap[stat.icon] || FaUsers;
                 return (
                 <motion.div
                   key={stat._id || stat.id}
@@ -389,7 +380,13 @@ Our expertise blends cutting-edge technology with proven performance, making us 
                       className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl"
                       style={{ backgroundColor: stat.color }}
                     >
-                      <IconComponent size={22} />
+                      {stat.customSvgIcon ? (
+                        <div dangerouslySetInnerHTML={{ __html: stat.customSvgIcon }} />
+                      ) : (
+                        stat.icon && FaIcons[stat.icon] ? 
+                          React.createElement(FaIcons[stat.icon], { size: 22 }) : 
+                          <DefaultIcon size={22} />
+                      )}
                     </div>
                   </div>
                   

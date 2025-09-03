@@ -6,7 +6,8 @@ const {
   createCompanyStat,
   updateCompanyStat,
   deleteCompanyStat,
-  resetCompanyStats
+  resetCompanyStats,
+  getFontAwesomeIcons
 } = require('../controllers/companyStatsController');
 
 // GET /api/cms/company-stats - Get all company stats
@@ -26,5 +27,8 @@ router.delete('/:id', deleteCompanyStat);
 
 // POST /api/cms/company-stats/reset - Reset to default stats
 router.post('/reset', resetCompanyStats);
+
+// GET /api/cms/company-stats/icons/fontawesome - Get Font Awesome icons list
+router.get('/icons/fontawesome', getFontAwesomeIcons);
 
 module.exports = router;

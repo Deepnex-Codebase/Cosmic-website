@@ -11,8 +11,11 @@ const companyStatsSchema = new mongoose.Schema({
   },
   icon: {
     type: String,
-    required: true,
-    enum: ['FaUsers', 'FaProjectDiagram', 'FaSolarPanel', 'FaBolt', 'FaAward', 'FaGlobe', 'FaLeaf', 'FaIndustry']
+    required: false
+  },
+  customSvgIcon: {
+    type: String, // Custom SVG string
+    required: false
   },
   color: {
     type: String,
@@ -45,5 +48,13 @@ const companyStatsSchema = new mongoose.Schema({
 
 // Add index for ordering
 companyStatsSchema.index({ order: 1 });
+
+// Add validation to ensure only one of icon or customSvgIcon is provided
+companyStatsSchema.pre('validate', function(next) {
+  if (this.icon && this.customSvgIcon) {
+    this.invalidate('icon', 'Only one of icon or customSvgIcon should be provided');
+  }
+  next();
+});
 
 module.exports = mongoose.model('CompanyStats', companyStatsSchema);

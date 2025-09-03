@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { FaSave, FaUpload, FaVideo, FaPlus, FaTrash, FaEdit, FaUsers, FaProjectDiagram, FaSolarPanel, FaBolt, FaAward, FaGlobe, FaLeaf, FaIndustry } from 'react-icons/fa';
+import { FaSave, FaUpload, FaVideo, FaPlus, FaTrash, FaEdit, FaUsers, FaProjectDiagram, FaSolarPanel, FaBolt, FaAward, FaGlobe, FaLeaf, FaIndustry, FaChartBar, FaChartPie, FaClock, FaSortNumericDown, FaSearch, FaTimes } from 'react-icons/fa';
+import * as FaIcons from 'react-icons/fa';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
@@ -12,6 +13,9 @@ const HeroSectionCMS = () => {
   const [statsLoading, setStatsLoading] = useState(false);
   const [editingStat, setEditingStat] = useState(null);
   const [showStatForm, setShowStatForm] = useState(false);
+  const [fontAwesomeIcons, setFontAwesomeIcons] = useState([]);
+  const [showIconSelector, setShowIconSelector] = useState(false);
+  const [iconSearchTerm, setIconSearchTerm] = useState('');
   
   const [formData, setFormData] = useState({
     title: 'At Cosmic Powertech',
@@ -31,6 +35,7 @@ const HeroSectionCMS = () => {
     value: 0,
     label: '',
     icon: 'FaUsers',
+    customSvgIcon: '',
     color: '#9fc22f',
     suffix: '',
     description: '',
@@ -104,10 +109,23 @@ const HeroSectionCMS = () => {
       setStatsLoading(false);
     }
   };
+  
+  // Fetch Font Awesome icons
+  const fetchFontAwesomeIcons = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/cms/company-stats/icons/fontawesome`);
+      if (response.data && response.data.icons) {
+        setFontAwesomeIcons(response.data.icons);
+      }
+    } catch (error) {
+      toast.error('Failed to fetch Font Awesome icons');
+    }
+  };
 
   useEffect(() => {
     fetchHeroSectionData();
     fetchCompanyStats();
+    fetchFontAwesomeIcons();
   }, []);
 
   // Handle form input changes
@@ -119,13 +137,57 @@ const HeroSectionCMS = () => {
     }));
   };
 
+  // Convert RGB color to hex format
+  const rgbToHex = (rgb) => {
+    // Check if already in hex format
+    if (rgb.startsWith('#')) {
+      return rgb;
+    }
+    
+    // Extract RGB values
+    const rgbMatch = rgb.match(/rgb\(\s*(\d+)\s*(\d+)\s*(\d+)\s*\)/);
+    if (rgbMatch) {
+      const r = parseInt(rgbMatch[1], 10);
+      const g = parseInt(rgbMatch[2], 10);
+      const b = parseInt(rgbMatch[3], 10);
+      
+      // Convert to hex
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    }
+    
+    return rgb; // Return original if not RGB format
+  };
+  
   // Handle stat form input changes
   const handleStatInputChange = (e) => {
     const { name, value } = e.target;
-    setStatFormData(prev => ({
-      ...prev,
-      [name]: name === 'value' || name === 'animationDelay' || name === 'order' ? parseFloat(value) || 0 : value
-    }));
+    
+    // Special handling for icon and customSvgIcon to ensure only one is set
+    if (name === 'icon' && value) {
+      setStatFormData(prev => ({
+        ...prev,
+        icon: value,
+        customSvgIcon: '' // Clear customSvgIcon when icon is selected
+      }));
+    } else if (name === 'customSvgIcon' && value.trim() !== '') {
+      setStatFormData(prev => ({
+        ...prev,
+        customSvgIcon: value,
+        icon: '' // Clear icon when customSvgIcon is provided
+      }));
+    } else if (name === 'color') {
+      // Ensure color is in hex format
+      const hexColor = rgbToHex(value);
+      setStatFormData(prev => ({
+        ...prev,
+        color: hexColor
+      }));
+    } else {
+      setStatFormData(prev => ({
+        ...prev,
+        [name]: name === 'value' || name === 'animationDelay' || name === 'order' ? parseFloat(value) || 0 : value
+      }));
+    }
   };
 
   // Save hero section data
@@ -232,6 +294,7 @@ const HeroSectionCMS = () => {
       value: stat.value,
       label: stat.label,
       icon: stat.icon,
+      customSvgIcon: stat.customSvgIcon || '',
       color: stat.color,
       suffix: stat.suffix || '',
       description: stat.description || '',
@@ -248,6 +311,7 @@ const HeroSectionCMS = () => {
       value: 0,
       label: '',
       icon: 'FaUsers',
+      customSvgIcon: '',
       color: '#9fc22f',
       suffix: '',
       description: '',
@@ -475,17 +539,19 @@ const HeroSectionCMS = () => {
 
       {/* Company Stats Section */}
       <div className="bg-white rounded-lg shadow-sm border p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <FaProjectDiagram className="text-green-600" />
-            Company Statistics
-          </h3>
+        <div className="flex justify-between items-center mb-6 border-b pb-4">
+          <div>
+            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <FaProjectDiagram className="text-green-600" />
+              Company Statistics
+            </h3>
+            <p className="text-gray-600 mt-1">Add or edit company statistics that appear in the hero section.</p>
+          </div>
           <button
             onClick={() => setShowStatForm(!showStatForm)}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            className={`px-4 py-2.5 ${showStatForm ? 'bg-gray-600' : 'bg-green-600'} text-white rounded-lg ${showStatForm ? 'hover:bg-gray-700' : 'hover:bg-green-700'} flex items-center gap-2 transition-colors shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2 ${showStatForm ? 'focus:ring-gray-500' : 'focus:ring-green-500'}`}
           >
-            <FaPlus />
-            {showStatForm ? 'Cancel' : 'Add Stat'}
+            {showStatForm ? <><FaEdit className="text-gray-200" /> Cancel</> : <><FaPlus className="text-green-200" /> Add Stat</>}
           </button>
         </div>
 
@@ -497,7 +563,7 @@ const HeroSectionCMS = () => {
             </h4>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-              <div>
+              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Value
                 </label>
@@ -506,13 +572,13 @@ const HeroSectionCMS = () => {
                   name="value"
                   value={statFormData.value}
                   onChange={handleStatInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
                   placeholder="30"
                   step="0.1"
                 />
               </div>
               
-              <div>
+              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Label
                 </label>
@@ -521,49 +587,188 @@ const HeroSectionCMS = () => {
                   name="label"
                   value={statFormData.label}
                   onChange={handleStatInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
                   placeholder="Years of Experience"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Icon
+                  Icon Type
                 </label>
-                <select
-                  name="icon"
-                  value={statFormData.icon}
-                  onChange={handleStatInputChange}
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                >
-                  {iconOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex gap-3 mb-2">
+                  <div 
+                    className={`flex-1 flex items-center cursor-pointer ${!statFormData.customSvgIcon ? 'bg-green-50 border-green-500 shadow-sm' : 'bg-gray-50 border-gray-200'} px-4 py-3 rounded-md transition-all border-2 hover:shadow-md`}
+                    onClick={() => {
+                      setStatFormData(prev => ({ 
+                        ...prev, 
+                        customSvgIcon: '',
+                        icon: prev.icon || 'FaUsers'
+                      }));
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      id="useBuiltInIcon"
+                      name="iconType"
+                      checked={!statFormData.customSvgIcon}
+                      onChange={() => {}}
+                      className="mr-3 h-4 w-4 accent-green-600"
+                    />
+                    <span className={`text-sm font-medium ${!statFormData.customSvgIcon ? 'text-green-700' : 'text-gray-700'}`}>
+                      Built-in Icon
+                    </span>
+                  </div>
+                  <div 
+                    className={`flex-1 flex items-center cursor-pointer ${!!statFormData.customSvgIcon ? 'bg-green-50 border-green-500 shadow-sm' : 'bg-gray-50 border-gray-200'} px-4 py-3 rounded-md transition-all border-2 hover:shadow-md`}
+                    onClick={() => {
+                      setStatFormData(prev => ({ 
+                        ...prev, 
+                        icon: '',
+                        customSvgIcon: prev.customSvgIcon || ' ' // Set a space if empty to activate custom SVG mode
+                      }));
+                    }}
+                  >
+                    <input
+                      type="radio"
+                      id="useCustomSvg"
+                      name="iconType"
+                      checked={!!statFormData.customSvgIcon}
+                      onChange={() => {}}
+                      className="mr-3 h-4 w-4 accent-green-600"
+                    />
+                    <span className={`text-sm font-medium ${!!statFormData.customSvgIcon ? 'text-green-700' : 'text-gray-700'}`}>
+                      Custom SVG
+                    </span>
+                  </div>
+                </div>
               </div>
+              
+              {!statFormData.customSvgIcon && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Built-in Icon
+                  </label>
+                  <div className="relative">
+                    <div 
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 flex items-center justify-between cursor-pointer bg-white"
+                      onClick={() => setShowIconSelector(!showIconSelector)}
+                    >
+                      <div className="flex items-center gap-2">
+                        {statFormData.icon ? (
+                          <>
+                            <div className="text-green-600">
+                              {FaIcons[statFormData.icon] ? React.createElement(FaIcons[statFormData.icon]) : <FaUsers />}
+                            </div>
+                            <span>{statFormData.icon}</span>
+                          </>
+                        ) : (
+                          <span className="text-gray-500">Select an icon</span>
+                        )}
+                      </div>
+                      <FaSearch className="text-gray-400" />
+                    </div>
+                    
+                    {showIconSelector && (
+                      <div className="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-80 overflow-y-auto">
+                        <div className="sticky top-0 bg-white p-2 border-b">
+                          <div className="relative">
+                            <input
+                              type="text"
+                              placeholder="Search icons..."
+                              value={iconSearchTerm}
+                              onChange={(e) => setIconSearchTerm(e.target.value)}
+                              className="w-full p-2 pl-8 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                            />
+                            <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            {iconSearchTerm && (
+                              <FaTimes 
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
+                                onClick={() => setIconSearchTerm('')}
+                              />
+                            )}
+                          </div>
+                        </div>
+                        <div className="p-2 grid grid-cols-4 gap-2">
+                          {fontAwesomeIcons
+                            .filter(icon => icon.toLowerCase().includes(iconSearchTerm.toLowerCase()))
+                            .map(icon => (
+                              <div 
+                                key={icon}
+                                className={`p-2 flex flex-col items-center justify-center rounded-md cursor-pointer hover:bg-green-50 ${statFormData.icon === icon ? 'bg-green-100 border border-green-300' : ''}`}
+                                onClick={() => {
+                                  setStatFormData(prev => ({
+                                    ...prev,
+                                    icon,
+                                    customSvgIcon: ''
+                                  }));
+                                  setShowIconSelector(false);
+                                }}
+                              >
+                                <div className="text-green-600 text-xl">
+                                  {FaIcons[icon] ? React.createElement(FaIcons[icon]) : <FaUsers />}
+                                </div>
+                                <span className="text-xs mt-1 text-center truncate w-full">{icon}</span>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {!!statFormData.customSvgIcon && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Custom SVG Icon
+                  </label>
+                  <textarea
+                    name="customSvgIcon"
+                    value={statFormData.customSvgIcon}
+                    onChange={handleStatInputChange}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    placeholder="<svg>...</svg>"
+                    rows="3"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Paste complete SVG code here.</p>
+                </div>
+              )}
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Color
                 </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    name="color"
-                    value={statFormData.color}
-                    onChange={handleStatInputChange}
-                    className="h-10 w-10 rounded-md cursor-pointer"
-                  />
+                <div className="flex items-center gap-3">
+                  <div className="relative">
+                    <input
+                      type="color"
+                      name="color"
+                      value={statFormData.color}
+                      onChange={handleStatInputChange}
+                      className="h-12 w-12 rounded-md cursor-pointer border-2 border-gray-200 p-1"
+                    />
+                    <div className="absolute inset-0 pointer-events-none rounded-md border border-white" style={{boxShadow: '0 0 0 1px rgba(0,0,0,0.1)'}}></div>
+                  </div>
                   <input
                     type="text"
                     name="color"
                     value={statFormData.color}
                     onChange={handleStatInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-green-500 font-mono"
                     placeholder="#9fc22f"
                   />
+                </div>
+                <div className="mt-2 flex gap-2">
+                  {['#9fc22f', '#3498db', '#e74c3c', '#f39c12', '#8e44ad', '#2ecc71'].map(color => (
+                    <div 
+                      key={color} 
+                      className="h-8 w-8 rounded-full cursor-pointer hover:scale-110 transition-transform border border-gray-200"
+                      style={{backgroundColor: color}}
+                      onClick={() => setStatFormData(prev => ({...prev, color}))}
+                    />
+                  ))}
                 </div>
               </div>
               
@@ -610,85 +815,148 @@ const HeroSectionCMS = () => {
               />
             </div>
             
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={resetStatForm}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveCompanyStat}
-                disabled={statsLoading}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-              >
-                <FaSave />
-                {statsLoading ? 'Saving...' : (editingStat ? 'Update' : 'Save')}
-              </button>
-            </div>
+            {/* Icon Preview */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Icon Preview
+                </label>
+                <div className="p-6 bg-gray-50 rounded-lg border border-gray-200 flex flex-col items-center justify-center shadow-sm hover:shadow-md transition-shadow">
+                  <div 
+                    className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md mb-3"
+                    style={{ backgroundColor: statFormData.color }}
+                  >
+                    {statFormData.customSvgIcon ? (
+                      <div className="w-8 h-8" dangerouslySetInnerHTML={{ __html: statFormData.customSvgIcon }} />
+                    ) : statFormData.icon ? (
+                      React.createElement(iconOptions.find(opt => opt.value === statFormData.icon)?.icon || FaUsers, { size: 24 })
+                    ) : (
+                      <span className="text-gray-400 text-xs">No icon selected</span>
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <div className="font-bold text-xl" style={{ color: statFormData.color }}>
+                      {statFormData.value || '0'}{statFormData.suffix || ''}
+                    </div>
+                    <div className="text-gray-600 font-medium">
+                      {statFormData.label || 'Label'}
+                    </div>
+                    {statFormData.description && (
+                      <div className="text-gray-500 text-sm mt-1">{statFormData.description}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={resetStatForm}
+                  className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-all border border-gray-300 font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveCompanyStat}
+                  disabled={statsLoading}
+                  className="px-5 py-2.5 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-sm hover:shadow-md font-medium"
+                >
+                  {statsLoading ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FaSave className="text-green-200" />
+                      {editingStat ? 'Update Statistic' : 'Save Statistic'}
+                    </>
+                  )}
+                </button>
+              </div>
           </div>
         )}
 
         {/* Stats List */}
-        <div className="space-y-4">
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 border-b pb-2 flex items-center gap-2">
+            <FaChartBar className="text-green-600" />
+            Company Statistics
+          </h3>
+          
           {statsLoading ? (
-            <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
-              <p className="text-gray-600 mt-2">Loading statistics...</p>
+            <div className="text-center py-10 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-col items-center justify-center">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              <p className="text-gray-600 mt-4 font-medium">Loading statistics...</p>
             </div>
           ) : companyStats.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p>No company statistics found. Add your first statistic above.</p>
+            <div className="text-center py-16 bg-white rounded-lg shadow-sm border border-dashed border-gray-300 flex flex-col items-center justify-center">
+              <div className="text-gray-400 mb-4"><FaChartPie size={48} /></div>
+              <p className="text-gray-600 mb-3 text-lg font-medium">No company statistics found.</p>
+              <button 
+                onClick={() => setShowStatForm(true)}
+                className="mt-2 inline-flex items-center px-5 py-2.5 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors shadow-sm hover:shadow-md"
+              >
+                <FaPlus className="mr-2 text-green-200" /> Add Your First Statistic
+              </button>
             </div>
           ) : (
-            companyStats.map((stat) => {
-              const IconComponent = iconOptions.find(opt => opt.value === stat.icon)?.icon || FaUsers;
-              return (
-                <div key={stat._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div 
-                        className="w-12 h-12 rounded-full flex items-center justify-center text-white"
-                        style={{ backgroundColor: stat.color }}
-                      >
-                        <IconComponent size={20} />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-lg" style={{ color: stat.color }}>
-                            {stat.value}{stat.suffix}
-                          </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {companyStats.map((stat) => {
+                const IconComponent = iconOptions.find(opt => opt.value === stat.icon)?.icon || FaUsers;
+                return (
+                  <div key={stat._id} className="bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md transition-all">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <div 
+                          className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-md"
+                          style={{ backgroundColor: stat.color }}
+                        >
+                          {stat.customSvgIcon ? (
+                            <div className="w-8 h-8" dangerouslySetInnerHTML={{ __html: stat.customSvgIcon }} />
+                          ) : (
+                            FaIcons[stat.icon] ? React.createElement(FaIcons[stat.icon], { size: 28 }) : <IconComponent size={28} />
+                          )}
                         </div>
-                        <p className="text-gray-700 font-medium">{stat.label}</p>
-                        {stat.description && (
-                          <p className="text-sm text-gray-500">{stat.description}</p>
-                        )}
-                        <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
-                          <span>Order: {stat.order}</span>
-                          <span>Delay: {stat.animationDelay}s</span>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-2xl" style={{ color: stat.color }}>
+                              {stat.value}{stat.suffix}
+                            </h4>
+                          </div>
+                          <p className="text-gray-700 font-medium text-lg">{stat.label}</p>
+                          {stat.description && (
+                            <p className="text-sm text-gray-500 mt-2">{stat.description}</p>
+                          )}
+                          <div className="flex items-center gap-4 text-xs text-gray-400 mt-3 border-t pt-2">
+                            <span className="bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                              <FaSortNumericDown className="text-gray-500" /> Order: {stat.order}
+                            </span>
+                            <span className="bg-gray-100 px-2 py-1 rounded flex items-center gap-1">
+                              <FaClock className="text-gray-500" /> Delay: {stat.animationDelay}s
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => editCompanyStat(stat)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                        title="Edit"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={() => deleteCompanyStat(stat._id)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                        title="Delete"
-                      >
-                        <FaTrash />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => editCompanyStat(stat)}
+                          className="p-2.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors shadow-sm hover:shadow"
+                          title="Edit Statistic"
+                        >
+                          <FaEdit size={20} />
+                        </button>
+                        <button
+                          onClick={() => deleteCompanyStat(stat._id)}
+                          className="p-2.5 text-red-600 hover:bg-red-50 rounded-md transition-colors shadow-sm hover:shadow"
+                          title="Delete Statistic"
+                        >
+                          <FaTrash size={20} />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })
+                );
+              })}
+            </div>
           )}
         </div>
       </div>

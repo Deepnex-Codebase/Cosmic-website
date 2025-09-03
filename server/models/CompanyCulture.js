@@ -23,6 +23,7 @@ const CompanyCultureSchema = new mongoose.Schema({
     subtitle: { type: String, default: 'Our Core Values' },
     principles: [{
       icon: { type: String, default: 'FaLeaf' },
+      customSvgIcon: { type: String }, // Custom SVG string
       title: { type: String },
       description: { type: String }
     }]

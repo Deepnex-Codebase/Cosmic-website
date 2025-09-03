@@ -7,13 +7,15 @@
       "Maharashtra": 7,
       "Rajasthan": 6.2,
       "Delhi": 4.5,
-      "Default": 6.5
+      "Default": 6.5,
+      "varachha": 9
     },
     "yield": {
       "Rajasthan": 1750,
       "Gujarat": 1650,
       "Maharashtra": 1550,
-      "Default": 1500
+      "Default": 1500,
+      "varachha": 1500
     },
     "costPerKW": {
       "≤3": 45000,
@@ -32,6 +34,9 @@
     "loan": {
       "interestRate": 0.11,
       "maxTenureYears": 7
+    },
+    "categories": {
+      "hg": "fd"
     }
   }
 }

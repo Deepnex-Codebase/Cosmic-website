@@ -52,6 +52,18 @@ exports.getAchievementPage = async (req, res) => {
         awardWinningSolutions: {
           title: 'Our Award-Winning Solar Solutions',
           description: 'We take pride in our accomplishments and the recognition we\'ve received for our dedication to excellence in the solar energy industry.',
+          rows: [
+            {
+              rowId: 1,
+              title: 'Row 1 Title',
+              subtitle: 'Row 1 Subtitle'
+            },
+            {
+              rowId: 2,
+              title: 'Row 2 Title',
+              subtitle: 'Row 2 Subtitle'
+            }
+          ],
           achievements: [
             {
               title: "Excellence in Solar Innovation",
@@ -233,7 +245,8 @@ exports.addAchievement = async (req, res) => {
       organization: req.body.organization,
       description: req.body.description,
       image: req.file ? `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}` : req.body.image,
-      order: req.body.order || achievementData.awardWinningSolutions.achievements.length + 1
+      order: req.body.order || achievementData.awardWinningSolutions.achievements.length + 1,
+      rowId: req.body.rowId || 1
     };
     
     console.log('New achievement object:', newAchievement);
@@ -284,6 +297,7 @@ exports.updateAchievement = async (req, res) => {
     achievement.organization = req.body.organization || achievement.organization;
     achievement.description = req.body.description || achievement.description;
     achievement.order = req.body.order || achievement.order;
+    achievement.rowId = req.body.rowId || achievement.rowId || 1;
     
     if (req.file) {
       achievement.image = `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}`;

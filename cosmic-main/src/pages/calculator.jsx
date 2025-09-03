@@ -3,6 +3,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
+import solarConfigService from '../services/solarConfigService';
+import { calculateSolarSystem } from '../utils/solarCalc';
 
 const Calculator = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +20,31 @@ const Calculator = () => {
   const [showResult, setShowResult] = useState(false);
   const [step, setStep] = useState(1);
   const [animationComplete, setAnimationComplete] = useState(false);
+  const [solarConfig, setSolarConfig] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Fetch solar configuration from CMS
+  useEffect(() => {
+    const fetchSolarConfig = async () => {
+      try {
+        setLoading(true);
+        const response = await solarConfigService.getConfigByType('solarConfig');
+        if (response.success && response.data) {
+          setSolarConfig(response.data.data);
+        } else {
+          throw new Error('Failed to fetch solar configuration');
+        }
+      } catch (err) {
+        console.error('Error fetching solar configuration:', err);
+        setError('Failed to load solar calculator configuration. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchSolarConfig();
+  }, []);
 
   // Fixed years value instead of user input
   const years = 10;
@@ -33,6 +60,38 @@ const Calculator = () => {
       setAnimationComplete(false);
     }
   }, [showResult]);
+  
+  // Populate state dropdown from configuration
+  useEffect(() => {
+    if (solarConfig && solarConfig.configuration && solarConfig.configuration.tariff) {
+      // Set default state if none selected
+      if (!formData.state) {
+        const states = Object.keys(solarConfig.configuration.tariff);
+        if (states.length > 0 && states.includes('Default')) {
+          setFormData(prev => ({
+            ...prev,
+            state: 'Default'
+          }));
+        } else if (states.length > 0) {
+          setFormData(prev => ({
+            ...prev,
+            state: states[0]
+          }));
+        }
+      }
+      
+      // Set sunlight hours based on state if available
+      if (formData.state && solarConfig.configuration.yield && 
+          solarConfig.configuration.yield[formData.state]) {
+        // Convert annual yield to daily hours (divide by 365)
+        const dailyYield = solarConfig.configuration.yield[formData.state] / 365;
+        setFormData(prev => ({
+          ...prev,
+          sunlightHours: dailyYield.toFixed(1)
+        }));
+      }
+    }
+  }, [solarConfig, formData.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +99,10 @@ const Calculator = () => {
   };
 
   const handleCalculate = () => {
+    if (!solarConfig) {
+      setError('Solar configuration not loaded. Please try again later.');
+      return;
+    }
     setShowResult(true);
   };
 
@@ -47,56 +110,73 @@ const Calculator = () => {
     setStep(2);
   };
 
+  // Parse form data values
   const monthlyBill = parseFloat(formData.electricityBill) || 0;
   const roofArea = parseFloat(formData.roofArea) || 0;
   const sunlightHours = parseFloat(formData.sunlightHours) || 5;
 
-  const costPerWatt = 70;
+  // Get shading efficiency from form data
   const shadingEfficiency = {
     'none': 1,
     'partial': 0.8,
     'significant': 0.6,
   }[formData.shadingLevel];
 
-  // Simplified calculation for system size based on monthly bill
-  // Calculate a range by dividing the bill by 1100 and 1000
-  const systemSizeKw_lower = monthlyBill / 1100;
-  const systemSizeKw_upper = monthlyBill / 1000;
-
-  // Round to 1 decimal place for cleaner display
+  // Calculate solar system details using configuration from CMS
+  const calculateResults = () => {
+    if (!solarConfig || !formData.state) return null;
+    
+    const config = solarConfig.configuration;
+    const tariff = config.tariff[formData.state] || config.tariff.Default || 8.7;
+    const yield_value = config.yield[formData.state] || config.yield.Default || 1500;
+    
+    // Calculate using the utility function that uses CMS configuration
+    return calculateSolarSystem({
+      monthlyBill,
+      roofArea,
+      state: formData.state,
+      sunlightHours,
+      shadingLevel: formData.shadingLevel,
+      panelsType: formData.panelsType,
+      config: solarConfig.configuration
+    });
+  };
+  
+  // Get calculated results
+  const results = solarConfig ? calculateResults() : null;
+  
+  // Extract values from results or use fallback calculations
+  const systemSizeKw_lower = results ? results.systemSizeKw_lower : (monthlyBill / 1100);
+  const systemSizeKw_upper = results ? results.systemSizeKw_upper : (monthlyBill / 1000);
   const roundedSystemSizeKw_lower = Math.round(systemSizeKw_lower * 10) / 10;
   const roundedSystemSizeKw_upper = Math.round(systemSizeKw_upper * 10) / 10;
-
-  // Use the average of the range for subsequent calculations
-  const averageSystemSizeKw = (roundedSystemSizeKw_lower + roundedSystemSizeKw_upper) / 2;
-
-  // For backward compatibility, still calculate monthlyKwh
-  const monthlyKwh = monthlyBill / 8.7;
-  const panels = Math.floor((averageSystemSizeKw * 1000) / 350);
-  const areaNeeded = averageSystemSizeKw * 10;
+  const averageSystemSizeKw = results ? results.systemSizeKw : ((roundedSystemSizeKw_lower + roundedSystemSizeKw_upper) / 2);
   
-  // Calculate investment range based on system size range
-  const investment_lower = systemSizeKw_lower * 55000;
-  const investment_upper = systemSizeKw_upper * 55000;
-  // Use average investment for calculations that need a single value
-  const investment = (investment_lower + investment_upper) / 2;
+  // Extract other values from results
+  const monthlyKwh = results ? results.monthlyKwh : (monthlyBill / 8.7);
+  const panels = results ? results.panels : Math.floor((averageSystemSizeKw * 1000) / 350);
+  const areaNeeded = results ? results.areaNeeded : (averageSystemSizeKw * 10);
   
-  const annualReturn = monthlyBill * 12 * 0.9;
-  const totalReturns = annualReturn * years;
-  const totalValue = investment + totalReturns;
-  const paybackPeriod = investment / annualReturn;
-  const feasible = roofArea >= areaNeeded;
+  const investment_lower = results ? results.investment_lower : (systemSizeKw_lower * 55000);
+  const investment_upper = results ? results.investment_upper : (systemSizeKw_upper * 55000);
+  const investment = results ? results.investment : ((investment_lower + investment_upper) / 2);
+  
+  const annualReturn = results ? results.annualSavings : (monthlyBill * 12 * 0.9);
+  const totalReturns = results ? results.totalReturns : (annualReturn * years);
+  const totalValue = results ? results.totalValue : (investment + totalReturns);
+  const paybackPeriod = results ? results.paybackPeriod : (investment / annualReturn);
+  const feasible = results ? results.feasible : (roofArea >= areaNeeded);
 
-  // Calculate CO2 savings
+  // CO2 calculations
+  const co2FactorKgPerKWh = solarConfig?.configuration?.co2FactorKgPerKWh || 0.82;
   const annualKwh = monthlyKwh * 12;
-  const co2PerKwh = 0.82; // kg of CO2 per kWh for coal-based electricity
-  const annualCo2Savings = annualKwh * co2PerKwh;
-  const totalCo2Savings = annualCo2Savings * years;
+  const annualCo2Savings = results ? results.annualCo2Savings : (annualKwh * co2FactorKgPerKWh);
+  const totalCo2Savings = results ? results.totalCo2Savings : (annualCo2Savings * years);
   
-  // Calculate tree equivalent
+  // Tree equivalent calculations
   const co2PerTree = 22; // kg of CO2 absorbed by one tree per year
-  const treesEquivalentPerYear = Math.round(annualCo2Savings / co2PerTree);
-  const totalTreesEquivalent = treesEquivalentPerYear * years;
+  const treesEquivalentPerYear = results ? results.treesEquivalentPerYear : Math.round(annualCo2Savings / co2PerTree);
+  const totalTreesEquivalent = results ? results.totalTreesEquivalent : (treesEquivalentPerYear * years);
 
   // Define the environmentalImpactData and COLORS arrays after all calculations
   const environmentalImpactData = [
@@ -124,16 +204,93 @@ const Calculator = () => {
     };
   });
 
-  // List of Indian states
-  const indianStates = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", 
-    "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", 
-    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
-    "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
-    "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir", "Ladakh", "Puducherry", 
-    "Chandigarh"
-  ];
+  // Get states from CMS configuration
+  const getStatesFromConfig = () => {
+    if (!solarConfig || !solarConfig.configuration || !solarConfig.configuration.tariff) {
+      // Fallback list if CMS data is not available
+      return ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Default"];
+    }
+    
+    // Get states from tariff configuration
+    return Object.keys(solarConfig.configuration.tariff);
+  };
+  
+  // Get categories from CMS configuration
+  const getCategoriesFromConfig = () => {
+    if (!solarConfig || !solarConfig.configuration || !solarConfig.configuration.categories) {
+      // Fallback list if CMS data is not available
+      return [
+        { value: "residential", label: "Residential" },
+        { value: "commercial", label: "Commercial" },
+        { value: "industrial", label: "Industrial" }
+      ];
+    }
+    
+    // Get categories from configuration
+    return Object.entries(solarConfig.configuration.categories).map(([value, label]) => ({
+      value,
+      label
+    }));
+  };
+  
+  // Get panel types from CMS configuration
+  const getPanelTypesFromConfig = () => {
+    if (!solarConfig || !solarConfig.configuration || !solarConfig.configuration.panelTypes) {
+      // Fallback list if CMS data is not available
+      return [
+        { value: "standard", label: "Standard Panels" },
+        { value: "premium", label: "Premium Panels" },
+        { value: "highEfficiency", label: "High Efficiency Panels" },
+        { value: "bifacial", label: "Bifacial Panels" }
+      ];
+    }
+    
+    // Get panel types from configuration
+    return Object.entries(solarConfig.configuration.panelTypes).map(([value, label]) => ({
+      value,
+      label
+    }));
+  };
+  
+  const indianStates = getStatesFromConfig();
+  const categories = getCategoriesFromConfig();
+  const panelTypes = getPanelTypesFromConfig();
 
+  // Show loading state while fetching configuration
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-accent-50 to-white p-4 md:p-8 font-sans flex flex-col items-center justify-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-2 text-accent-950 font-space-grotesk">Solar Calculator</h1>
+        <div className="mt-8 flex flex-col items-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-500 mb-4"></div>
+          <p className="text-gray-600">Loading solar calculator configuration...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // Show error state if configuration failed to load
+  if (error && !solarConfig) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-accent-50 to-white p-4 md:p-8 font-sans flex flex-col items-center justify-center">
+        <h1 className="text-3xl md:text-4xl font-bold text-center mb-2 text-accent-950 font-space-grotesk">Solar Calculator</h1>
+        <div className="mt-8 max-w-md mx-auto bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-red-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <p className="text-red-700 font-medium mb-2">Error Loading Calculator</p>
+          <p className="text-red-600 text-sm">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 bg-red-100 hover:bg-red-200 text-red-700 font-medium py-2 px-4 rounded-lg transition-all"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent-50 to-white p-4 md:p-8 font-sans">
       <h1 className="text-3xl md:text-4xl font-bold text-center mb-2 text-accent-950 font-space-grotesk">Solar Calculator</h1>
@@ -156,12 +313,19 @@ const Calculator = () => {
                     onChange={handleChange} 
                     className="w-full border border-gray-300 px-3 md:px-4 py-2 md:py-3 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all text-sm md:text-base"
                     required
+                    disabled={loading}
                   >
                     <option value="">Select Your State</option>
                     {indianStates.map((state) => (
                       <option key={state} value={state}>{state}</option>
                     ))}
                   </select>
+                  {loading && (
+                    <div className="mt-1 text-xs text-gray-500">Loading states...</div>
+                  )}
+                  {error && (
+                    <div className="mt-1 text-xs text-red-500">{error}</div>
+                  )}
                 </div>
 
                 <div>
@@ -171,11 +335,16 @@ const Calculator = () => {
                     value={formData.category} 
                     onChange={handleChange} 
                     className="w-full border border-gray-300 px-3 md:px-4 py-2 md:py-3 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all text-sm md:text-base"
+                    disabled={loading}
                   >
-                    <option value="residential">Residential</option>
-                    <option value="commercial">Commercial</option>
-                    <option value="industrial">Industrial</option>
+                    <option value="">Select Your Category</option>
+                    {categories.map((category) => (
+                      <option key={category.value} value={category.value}>{category.label}</option>
+                    ))}
                   </select>
+                  {loading && (
+                    <div className="mt-1 text-xs text-gray-500">Loading categories...</div>
+                  )}
                 </div>
 
                 <div>
@@ -197,12 +366,16 @@ const Calculator = () => {
                     value={formData.panelsType} 
                     onChange={handleChange} 
                     className="w-full border border-gray-300 px-3 md:px-4 py-2 md:py-3 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-accent-500 transition-all text-sm md:text-base"
+                    disabled={loading}
                   >
-                    <option value="standard">Standard Panels</option>
-                    <option value="premium">Premium Panels</option>
-                    <option value="highEfficiency">High Efficiency Panels</option>
-                    <option value="bifacial">Bifacial Panels</option>
+                    <option value="">Select Panel Type</option>
+                    {panelTypes.map((panel) => (
+                      <option key={panel.value} value={panel.value}>{panel.label}</option>
+                    ))}
                   </select>
+                  {loading && (
+                    <div className="mt-1 text-xs text-gray-500">Loading panel types...</div>
+                  )}
                 </div>
               </div>
 

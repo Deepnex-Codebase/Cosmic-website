@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaPlus, FaEdit, FaTrash, FaEye, FaEyeSlash, FaArrowUp, FaArrowDown, FaSave, FaTimes, FaHome, FaUser, FaCog, FaHeart, FaStar, FaShoppingCart, FaPhone, FaEnvelope, FaMapMarkerAlt, FaCalendar, FaClock, FaCamera, FaVideo, FaMusic, FaGamepad, FaBook, FaCar, FaPlane, FaShip, FaBicycle, FaTree, FaSun, FaMoon, FaCloud, FaSnowflake, FaBolt, FaFire, FaLeaf, FaGift, FaTrophy, FaFlag, FaBell, FaLock, FaKey, FaSearch, FaDownload, FaUpload, FaShare, FaPrint, FaQuestion } from 'react-icons/fa';
+import * as FaIcons from 'react-icons/fa';
 import CompanyIntro from '../../components/admin/CompanyIntro';
 import VideoHeroCMS from '../../components/admin/VideoHeroCMS';
 import TimelineCMS from '../../components/admin/TimelineCMS';
@@ -12,6 +13,108 @@ import FaqCMS from '../../components/admin/FaqCMS';
 // Define API_BASE_URL using environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
+
+// Font Awesome Icon Selector Modal Component
+const FontAwesomeIconSelector = ({ isOpen, onClose, onSelectIcon }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  
+  // Get all Font Awesome icons from FaIcons
+  const allIcons = Object.keys(FaIcons).filter(key => typeof FaIcons[key] === 'function' && key.startsWith('Fa'));
+  
+  // Define icon categories
+  const categories = [
+    { id: 'all', name: 'All Icons' },
+    { id: 'common', name: 'Common', icons: ['FaHome', 'FaUser', 'FaCog', 'FaHeart', 'FaStar', 'FaShoppingCart', 'FaPhone', 'FaEnvelope'] },
+    { id: 'arrows', name: 'Arrows', filter: icon => icon.includes('Arrow') || icon.includes('Chevron') || icon.includes('Caret') },
+    { id: 'business', name: 'Business', icons: ['FaBriefcase', 'FaBuilding', 'FaChartBar', 'FaChartLine', 'FaChartPie', 'FaFileInvoice', 'FaHandshake'] },
+    { id: 'communication', name: 'Communication', icons: ['FaComment', 'FaComments', 'FaEnvelope', 'FaPhone', 'FaMobile', 'FaVideo', 'FaMicrophone'] },
+    { id: 'devices', name: 'Devices', icons: ['FaLaptop', 'FaMobile', 'FaTablet', 'FaDesktop', 'FaServer', 'FaPrint', 'FaCamera'] },
+    { id: 'nature', name: 'Nature', icons: ['FaLeaf', 'FaTree', 'FaSun', 'FaMoon', 'FaSnowflake', 'FaWater', 'FaMountain', 'FaCloudSun'] },
+    { id: 'energy', name: 'Energy', icons: ['FaSolarPanel', 'FaBolt', 'FaFire', 'FaLightbulb', 'FaBatteryFull', 'FaBatteryHalf', 'FaBatteryEmpty'] },
+  ];
+  
+  // Filter icons based on search term and category
+  const filteredIcons = allIcons.filter(icon => {
+    const matchesSearch = searchTerm === '' || icon.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    if (selectedCategory === 'all') {
+      return matchesSearch;
+    } else {
+      const category = categories.find(cat => cat.id === selectedCategory);
+      if (category.icons) {
+        return matchesSearch && category.icons.includes(icon);
+      } else if (category.filter) {
+        return matchesSearch && category.filter(icon);
+      }
+      return false;
+    }
+  });
+  
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] overflow-hidden">
+        <div className="p-4 border-b flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Select Font Awesome Icon</h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+            <FaTimes />
+          </button>
+        </div>
+        
+        <div className="p-4 border-b">
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search icons..."
+                className="w-full p-2 border border-gray-300 rounded-md"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <div className="flex-1">
+              <select
+                className="w-full p-2 border border-gray-300 rounded-md"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                {categories.map(category => (
+                  <option key={category.id} value={category.id}>{category.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 150px)' }}>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            {filteredIcons.length > 0 ? (
+              filteredIcons.map(iconName => {
+                const IconComponent = FaIcons[iconName];
+                return (
+                  <div
+                    key={iconName}
+                    className="flex flex-col items-center justify-center p-3 border rounded-md hover:bg-gray-100 cursor-pointer transition-colors"
+                    onClick={() => onSelectIcon(iconName)}
+                  >
+                    <IconComponent className="text-2xl mb-2" />
+                    <span className="text-xs text-center truncate w-full">{iconName}</span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-500">
+                No icons found matching your search.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const HomeCMS = () => {
   // Icon mapping for safe component rendering
@@ -29,6 +132,7 @@ const HomeCMS = () => {
   const [editingHero, setEditingHero] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [panIndiaLoading, setPanIndiaLoading] = useState(false);
+  const [showIconSelector, setShowIconSelector] = useState(false);
   const [formData, setFormData] = useState({
     key: '',
     num: '',
@@ -38,9 +142,20 @@ const HomeCMS = () => {
     body: '',
     img: null,
     icon: '',
+    customSvgIcon: '',
     order: 0,
     isActive: true
   });
+  
+  // Handle icon selection from Font Awesome Icon Selector
+  const handleSelectIcon = (iconName) => {
+    setFormData(prev => ({
+      ...prev,
+      icon: iconName,
+      customSvgIcon: '' // Clear custom SVG when selecting Font Awesome icon
+    }));
+    setShowIconSelector(false);
+  };
 
   const [panIndiaFormData, setPanIndiaFormData] = useState({
     title: 'Pan India Presence',
@@ -272,6 +387,7 @@ const HomeCMS = () => {
       body: '',
       img: null,
       icon: '',
+      customSvgIcon: '',
       order: 0,
       isActive: true
     });
@@ -296,6 +412,17 @@ const HomeCMS = () => {
           submitData.append(key, formData[key]);
         }
       });
+      
+      // Make sure both icon types are properly handled
+      if (formData.customSvgIcon) {
+        submitData.set('customSvgIcon', formData.customSvgIcon);
+        if (!formData.icon) {
+          submitData.set('icon', 'custom'); // Set a placeholder value for icon
+        }
+      } 
+      if (formData.icon) {
+        submitData.set('icon', formData.icon);
+      }
 
       let response;
       if (editingHero) {
@@ -345,6 +472,7 @@ const HomeCMS = () => {
       body: hero.body || '',
       img: null,
       icon: hero.icon || '',
+      customSvgIcon: hero.customSvgIcon || '',
       order: hero.order || 0,
       isActive: hero.isActive !== undefined ? hero.isActive : true
     });
@@ -563,65 +691,62 @@ const HomeCMS = () => {
               )}
             </div>
 
-            <div>
+          
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Icon
               </label>
-              <select
-                name="icon"
-                value={formData.icon}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                required
-              >
-                <option value="">Select an icon</option>
-                <option value="FaHome">🏠 Home</option>
-                <option value="FaUser">👤 User</option>
-                <option value="FaCog">⚙️ Settings</option>
-                <option value="FaHeart">❤️ Heart</option>
-                <option value="FaStar">⭐ Star</option>
-                <option value="FaShoppingCart">🛒 Shopping Cart</option>
-                <option value="FaPhone">📞 Phone</option>
-                <option value="FaEnvelope">✉️ Email</option>
-                <option value="FaMapMarkerAlt">📍 Location</option>
-                <option value="FaCalendar">📅 Calendar</option>
-                <option value="FaClock">🕐 Clock</option>
-                <option value="FaCamera">📷 Camera</option>
-                <option value="FaVideo">🎥 Video</option>
-                <option value="FaMusic">🎵 Music</option>
-                <option value="FaGamepad">🎮 Gaming</option>
-                <option value="FaBook">📚 Book</option>
-                <option value="FaCar">🚗 Car</option>
-                <option value="FaPlane">✈️ Plane</option>
-                <option value="FaShip">🚢 Ship</option>
-                <option value="FaBicycle">🚲 Bicycle</option>
-                <option value="FaTree">🌳 Tree</option>
-                <option value="FaSun">☀️ Sun</option>
-                <option value="FaMoon">🌙 Moon</option>
-                <option value="FaCloud">☁️ Cloud</option>
-                <option value="FaCloud">🌧️ Rain</option>
-                <option value="FaSnowflake">❄️ Snow</option>
-                <option value="FaBolt">⚡ Lightning</option>
-                <option value="FaFire">🔥 Fire</option>
-                <option value="FaLeaf">🍃 Leaf</option>
-                <option value="FaGift">🎁 Gift</option>
-                <option value="FaTrophy">🏆 Trophy</option>
-                <option value="FaFlag">🚩 Flag</option>
-                <option value="FaBell">🔔 Bell</option>
-                <option value="FaLock">🔒 Lock</option>
-                <option value="FaKey">🔑 Key</option>
-                <option value="FaSearch">🔍 Search</option>
-                <option value="FaDownload">⬇️ Download</option>
-                <option value="FaUpload">⬆️ Upload</option>
-                <option value="FaShare">📤 Share</option>
-                <option value="FaPrint">🖨️ Print</option>
-              </select>
-              {formData.icon && iconMap[formData.icon] && (
+              <div className="flex gap-4 mb-2">
+                <div className="flex-1">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="icon"
+                      value={formData.icon}
+                      onChange={handleInputChange}
+                      placeholder="Selected Font Awesome icon"
+                      className="flex-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                      readOnly
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowIconSelector(true)}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center gap-2"
+                    >
+                      <FaSearch /> Browse Icons
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Click 'Browse Icons' to select from Font Awesome library</p>
+                </div>
+                <div className="flex-1">
+                  <textarea
+                    name="customSvgIcon"
+                    value={formData.customSvgIcon}
+                    onChange={(e) => {
+                      handleInputChange(e);
+                      if (e.target.value) {
+                        setFormData(prev => ({ ...prev, icon: '' }));
+                      }
+                    }}
+                    placeholder="Paste your custom SVG code here"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 h-24 font-mono text-sm"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Paste SVG code directly. Either select a Font Awesome icon or use custom SVG.</p>
+                </div>
+              {(formData.icon || formData.customSvgIcon) ? (
                 <div className="mt-2 p-2 bg-gray-50 rounded border">
                   <span className="text-sm text-gray-600">Preview: </span>
-                  {React.createElement(iconMap[formData.icon], { className: "inline text-lg" })}
+                  {formData.icon ? 
+                    React.createElement(FaIcons[formData.icon] || (() => <span>Icon not found</span>), { className: "inline text-lg text-[#9fc22f]" }) : 
+                    <div className="inline text-[#9fc22f]" dangerouslySetInnerHTML={{ __html: formData.customSvgIcon }} />}
                 </div>
-              )}
+              ) : null}
+              
+              {/* Font Awesome Icon Selector Modal */}
+              <FontAwesomeIconSelector 
+                isOpen={showIconSelector} 
+                onClose={() => setShowIconSelector(false)} 
+                onSelectIcon={handleSelectIcon} 
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -698,6 +823,16 @@ const HomeCMS = () => {
                         }`}>
                           {hero.isActive ? 'Active' : 'Inactive'}
                         </span>
+                        {hero.icon && iconMap[hero.icon] && (
+                          <span className="text-gray-700">
+                            {React.createElement(iconMap[hero.icon], { className: "inline text-lg" })}
+                          </span>
+                        )}
+                        {hero.customSvgIcon && (
+                          <span className="text-gray-700">
+                            <div className="inline" style={{ width: '20px', height: '20px' }} dangerouslySetInnerHTML={{ __html: hero.customSvgIcon }} />
+                          </span>
+                        )}
                       </div>
                       <h4 className="font-semibold text-lg mb-1">{hero.subtitle}</h4>
                       <div className="text-gray-600 mb-2">

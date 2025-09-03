@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
-import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream } from 'react-icons/fa';
+import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaCalculator } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { IoSettingsSharp } from 'react-icons/io5';
 import { BiSolidNavigation } from 'react-icons/bi';
@@ -78,6 +78,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/navbar', icon: BiSolidNavigation, label: 'Navigation Bar' },
         { path: '/admin/footer', icon: FaStream, label: 'Footer Management' },
         { path: '/admin/solar-config', icon: FaSolarPanel, label: 'Solar Configuration' },
+        { path: '/admin/solar-calculator', icon: FaCalculator, label: 'Solar Calculator' },
         { path: '/admin/settings', icon: FaCog, label: 'Settings' },
       ]
     }

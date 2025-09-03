@@ -220,6 +220,12 @@ const SolarConfigCMS = () => {
             if (key.includes('loan.')) {
               const loanKey = key.split('.')[1];
               updatedConfig.configuration.loan[loanKey] = newValue;
+            } else if (key.includes('categories.')) {
+              const categoryKey = key.split('.')[1];
+              updatedConfig.configuration.categories[categoryKey] = newValue;
+            } else if (key.includes('panelTypes.')) {
+              const panelTypeKey = key.split('.')[1];
+              updatedConfig.configuration.panelTypes[panelTypeKey] = newValue;
             } else {
               updatedConfig.configuration[key] = newValue;
             }
@@ -482,6 +488,270 @@ const SolarConfigCMS = () => {
                     </TableBody>
                   </Table>
                 </TableContainer>
+                
+                {/* Categories Configuration */}
+                <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
+                  Categories Configuration
+                </Typography>
+                <TableContainer component={Paper} sx={{ mb: 2 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Category Key</TableCell>
+                        <TableCell>Display Name</TableCell>
+                        <TableCell align="right">Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {solarConfig.data?.configuration?.categories && Object.entries(solarConfig.data.configuration.categories).map(([key, value]) => (
+                        <TableRow key={key}>
+                          <TableCell>{key}</TableCell>
+                          <TableCell>
+                            {editingOtherConfig === `categories.${key}` ? (
+                              <TextField
+                                fullWidth
+                                size="small"
+                                value={tempValue}
+                                onChange={(e) => setTempValue(e.target.value)}
+                              />
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            {editingOtherConfig === `categories.${key}` ? (
+                              <>
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => handleEditSave('otherConfig', `categories.${key}`, tempValue)}
+                                >
+                                  <SaveIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  color="secondary"
+                                  onClick={() => handleEditCancel()}
+                                >
+                                  <CancelIcon fontSize="small" />
+                                </IconButton>
+                              </>
+                            ) : (
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleEditStart('otherConfig', `categories.${key}`, value)}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                
+                {/* Add New Category */}
+                <Box sx={{ mt: 2, mb: 4 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Add New Category
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={5}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Category Key (e.g. newCategory)"
+                        id="new-category-key"
+                        name="newCategoryKey"
+                        onChange={(e) => setTempValue(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={5}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Display Name (e.g. New Category)"
+                        id="new-category-value"
+                        name="newCategoryValue"
+                        onChange={(e) => setTempNestedValue(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          if (tempValue && tempNestedValue) {
+                            const updatedConfig = JSON.parse(JSON.stringify(solarConfig.data));
+                            if (!updatedConfig.configuration.categories) {
+                              updatedConfig.configuration.categories = {};
+                            }
+                            updatedConfig.configuration.categories[tempValue] = tempNestedValue;
+                            solarConfigService.updateConfig('solarConfig', updatedConfig)
+                              .then(() => {
+                                setSolarConfig({ ...solarConfig, data: updatedConfig });
+                                setTempValue('');
+                                setTempNestedValue('');
+                                setSnackbar({
+                                  open: true,
+                                  message: 'New category added successfully',
+                                  severity: 'success'
+                                });
+                              })
+                              .catch(error => {
+                                console.error('Error adding new category:', error);
+                                setSnackbar({
+                                  open: true,
+                                  message: 'Failed to add new category',
+                                  severity: 'error'
+                                });
+                              });
+                          } else {
+                            setSnackbar({
+                              open: true,
+                              message: 'Please provide both key and display name',
+                              severity: 'warning'
+                            });
+                          }
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
+                
+                {/* Panel Types Configuration */}
+                <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
+                  Panel Types Configuration
+                </Typography>
+                <TableContainer component={Paper} sx={{ mb: 2 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Panel Type Key</TableCell>
+                        <TableCell>Display Name</TableCell>
+                        <TableCell align="right">Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {solarConfig.data?.configuration?.panelTypes && Object.entries(solarConfig.data.configuration.panelTypes).map(([key, value]) => (
+                        <TableRow key={key}>
+                          <TableCell>{key}</TableCell>
+                          <TableCell>
+                            {editingOtherConfig === `panelTypes.${key}` ? (
+                              <TextField
+                                fullWidth
+                                size="small"
+                                value={tempValue}
+                                onChange={(e) => setTempValue(e.target.value)}
+                              />
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            {editingOtherConfig === `panelTypes.${key}` ? (
+                              <>
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => handleEditSave('otherConfig', `panelTypes.${key}`, tempValue)}
+                                >
+                                  <SaveIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton
+                                  color="secondary"
+                                  onClick={() => handleEditCancel()}
+                                >
+                                  <CancelIcon fontSize="small" />
+                                </IconButton>
+                              </>
+                            ) : (
+                              <IconButton
+                                color="primary"
+                                onClick={() => handleEditStart('otherConfig', `panelTypes.${key}`, value)}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                
+                {/* Add New Panel Type */}
+                <Box sx={{ mt: 2, mb: 4 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Add New Panel Type
+                  </Typography>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={5}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Panel Type Key (e.g. newPanelType)"
+                        id="new-panel-type-key"
+                        name="newPanelTypeKey"
+                        onChange={(e) => setTempValue(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={5}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        label="Display Name (e.g. New Panel Type)"
+                        id="new-panel-type-value"
+                        name="newPanelTypeValue"
+                        onChange={(e) => setTempNestedValue(e.target.value)}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={2}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={() => {
+                          if (tempValue && tempNestedValue) {
+                            const updatedConfig = JSON.parse(JSON.stringify(solarConfig.data));
+                            if (!updatedConfig.configuration.panelTypes) {
+                              updatedConfig.configuration.panelTypes = {};
+                            }
+                            updatedConfig.configuration.panelTypes[tempValue] = tempNestedValue;
+                            solarConfigService.updateConfig('solarConfig', updatedConfig)
+                              .then(() => {
+                                setSolarConfig({ ...solarConfig, data: updatedConfig });
+                                setTempValue('');
+                                setTempNestedValue('');
+                                setSnackbar({
+                                  open: true,
+                                  message: 'New panel type added successfully',
+                                  severity: 'success'
+                                });
+                              })
+                              .catch(error => {
+                                console.error('Error adding new panel type:', error);
+                                setSnackbar({
+                                  open: true,
+                                  message: 'Failed to add new panel type',
+                                  severity: 'error'
+                                });
+                              });
+                          } else {
+                            setSnackbar({
+                              open: true,
+                              message: 'Please provide both key and display name',
+                              severity: 'warning'
+                            });
+                          }
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </Box>
                 
                 {/* Company Contact Information */}
                 <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
@@ -1040,6 +1310,66 @@ const SolarConfigCMS = () => {
             
             {solarConfig && (
               <Box sx={{ mt: 3 }}>
+                {/* States Management */}
+                <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+                  States Management
+                </Typography>
+                <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <TextField
+                      label="New State Name"
+                      size="small"
+                      value={tempNestedValue}
+                      onChange={(e) => setTempNestedValue(e.target.value)}
+                      variant="outlined"
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        if (tempNestedValue.trim()) {
+                          // Create a copy of the current configuration
+                          const updatedConfig = { ...solarConfig.data };
+                          
+                          // Add the new state to tariff and yield with default values
+                          updatedConfig.configuration.tariff[tempNestedValue] = updatedConfig.configuration.tariff['Default'];
+                          updatedConfig.configuration.yield[tempNestedValue] = updatedConfig.configuration.yield['Default'];
+                          
+                          // Update the state
+                          setSolarConfig({ ...solarConfig, data: updatedConfig });
+                          
+                          // Save the changes
+                          solarConfigService.updateConfig('solarConfig', updatedConfig)
+                            .then(() => {
+                              setSnackbar({
+                                open: true,
+                                message: `State '${tempNestedValue}' added successfully`,
+                                severity: 'success'
+                              });
+                              setTempNestedValue('');
+                            })
+                            .catch((err) => {
+                              console.error('Error adding state:', err);
+                              setSnackbar({
+                                open: true,
+                                message: 'Error adding state',
+                                severity: 'error'
+                              });
+                            });
+                        } else {
+                          setSnackbar({
+                            open: true,
+                            message: 'State name cannot be empty',
+                            severity: 'error'
+                          });
+                        }
+                      }}
+                    >
+                      Add State
+                    </Button>
+                  </Box>
+                </Box>
+                
                 {/* Tariff Table */}
                 <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
                   Tariff Configuration (₹/kWh)
@@ -1085,9 +1415,47 @@ const SolarConfigCMS = () => {
                                 </IconButton>
                               </>
                             ) : (
-                              <IconButton color="primary" onClick={() => handleEditStart('tariff', state, value)}>
-                                <EditIcon fontSize="small" />
-                              </IconButton>
+                              <>
+                                <IconButton color="primary" onClick={() => handleEditStart('tariff', state, value)}>
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                                {state !== 'Default' && (
+                                  <IconButton 
+                                    color="error" 
+                                    onClick={() => {
+                                      // Create a copy of the current configuration
+                                      const updatedConfig = { ...solarConfig.data };
+                                      
+                                      // Remove the state from tariff and yield
+                                      delete updatedConfig.configuration.tariff[state];
+                                      delete updatedConfig.configuration.yield[state];
+                                      
+                                      // Update the state
+                                      setSolarConfig({ ...solarConfig, data: updatedConfig });
+                                      
+                                      // Save the changes
+                                      solarConfigService.updateConfig('solarConfig', updatedConfig)
+                                        .then(() => {
+                                          setSnackbar({
+                                            open: true,
+                                            message: `State '${state}' removed successfully`,
+                                            severity: 'success'
+                                          });
+                                        })
+                                        .catch((err) => {
+                                          console.error('Error removing state:', err);
+                                          setSnackbar({
+                                            open: true,
+                                            message: 'Error removing state',
+                                            severity: 'error'
+                                          });
+                                        });
+                                    }}
+                                  >
+                                    <CancelIcon fontSize="small" />
+                                  </IconButton>
+                                )}
+                              </>
                             )}
                           </TableCell>
                         </TableRow>
@@ -1140,9 +1508,47 @@ const SolarConfigCMS = () => {
                                 </IconButton>
                               </>
                             ) : (
-                              <IconButton color="primary" onClick={() => handleEditStart('yield', state, value)}>
-                                <EditIcon fontSize="small" />
-                              </IconButton>
+                              <>
+                                <IconButton color="primary" onClick={() => handleEditStart('yield', state, value)}>
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                                {state !== 'Default' && (
+                                  <IconButton 
+                                    color="error" 
+                                    onClick={() => {
+                                      // Create a copy of the current configuration
+                                      const updatedConfig = { ...solarConfig.data };
+                                      
+                                      // Remove the state from tariff and yield
+                                      delete updatedConfig.configuration.tariff[state];
+                                      delete updatedConfig.configuration.yield[state];
+                                      
+                                      // Update the state
+                                      setSolarConfig({ ...solarConfig, data: updatedConfig });
+                                      
+                                      // Save the changes
+                                      solarConfigService.updateConfig('solarConfig', updatedConfig)
+                                        .then(() => {
+                                          setSnackbar({
+                                            open: true,
+                                            message: `State '${state}' removed successfully`,
+                                            severity: 'success'
+                                          });
+                                        })
+                                        .catch((err) => {
+                                          console.error('Error removing state:', err);
+                                          setSnackbar({
+                                            open: true,
+                                            message: 'Error removing state',
+                                            severity: 'error'
+                                          });
+                                        });
+                                    }}
+                                  >
+                                    <CancelIcon fontSize="small" />
+                                  </IconButton>
+                                )}
+                              </>
                             )}
                           </TableCell>
                         </TableRow>
@@ -1261,6 +1667,112 @@ const SolarConfigCMS = () => {
                   </Table>
                 </TableContainer>
                 
+                {/* Categories Configuration */}
+                <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+                  Categories Configuration
+                </Typography>
+                <TableContainer component={Paper} sx={{ mb: 4 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Key</TableCell>
+                        <TableCell align="right">Display Name</TableCell>
+                        <TableCell align="center">Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {solarConfig.data.configuration.categories && Object.entries(solarConfig.data.configuration.categories).map(([key, value]) => (
+                        <TableRow key={`category-${key}`}>
+                          <TableCell>{key}</TableCell>
+                          <TableCell align="right">
+                            {editingOtherConfig === `categories.${key}` ? (
+                              <TextField
+                                size="small"
+                                value={tempValue}
+                                onChange={(e) => setTempValue(e.target.value)}
+                                variant="outlined"
+                                fullWidth
+                              />
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {editingOtherConfig === `categories.${key}` ? (
+                              <>
+                                <IconButton color="primary" onClick={() => handleEditSave('otherConfig', `categories.${key}`)}
+                                >
+                                  <SaveIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton color="error" onClick={() => handleEditCancel('otherConfig')}>
+                                  <CancelIcon fontSize="small" />
+                                </IconButton>
+                              </>
+                            ) : (
+                              <IconButton color="primary" onClick={() => handleEditStart('otherConfig', `categories.${key}`, value)}>
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
+                {/* Panel Types Configuration */}
+                <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
+                  Panel Types Configuration
+                </Typography>
+                <TableContainer component={Paper} sx={{ mb: 4 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Key</TableCell>
+                        <TableCell align="right">Display Name</TableCell>
+                        <TableCell align="center">Actions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {solarConfig.data.configuration.panelTypes && Object.entries(solarConfig.data.configuration.panelTypes).map(([key, value]) => (
+                        <TableRow key={`panelType-${key}`}>
+                          <TableCell>{key}</TableCell>
+                          <TableCell align="right">
+                            {editingOtherConfig === `panelTypes.${key}` ? (
+                              <TextField
+                                size="small"
+                                value={tempValue}
+                                onChange={(e) => setTempValue(e.target.value)}
+                                variant="outlined"
+                                fullWidth
+                              />
+                            ) : (
+                              value
+                            )}
+                          </TableCell>
+                          <TableCell align="center">
+                            {editingOtherConfig === `panelTypes.${key}` ? (
+                              <>
+                                <IconButton color="primary" onClick={() => handleEditSave('otherConfig', `panelTypes.${key}`)}
+                                >
+                                  <SaveIcon fontSize="small" />
+                                </IconButton>
+                                <IconButton color="error" onClick={() => handleEditCancel('otherConfig')}>
+                                  <CancelIcon fontSize="small" />
+                                </IconButton>
+                              </>
+                            ) : (
+                              <IconButton color="primary" onClick={() => handleEditStart('otherConfig', `panelTypes.${key}`, value)}>
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+
                 {/* Other Configuration */}
                 <Typography variant="subtitle1" gutterBottom sx={{ mt: 2 }}>
                   Other Configuration Parameters
@@ -1276,7 +1788,7 @@ const SolarConfigCMS = () => {
                     </TableHead>
                     <TableBody>
                       {Object.entries(solarConfig.data.configuration)
-                        .filter(([key]) => !['tariff', 'yield', 'costPerKW', 'subsidy', 'loan'].includes(key))
+                        .filter(([key]) => !['tariff', 'yield', 'costPerKW', 'subsidy', 'loan', 'categories', 'panelTypes'].includes(key))
                         .map(([key, value]) => (
                           <TableRow key={`other-${key}`}>
                             <TableCell>{key}</TableCell>

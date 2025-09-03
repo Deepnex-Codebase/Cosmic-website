@@ -19,6 +19,7 @@ const achievementSchema = new mongoose.Schema({
   
   // Our Award-Winning Solar Solutions Section
   awardWinningSolutions: {
+    // Main section title and description (will be hidden in UI)
     title: {
       type: String,
       default: 'Our Award-Winning Solar Solutions'
@@ -27,6 +28,21 @@ const achievementSchema = new mongoose.Schema({
       type: String,
       default: 'We take pride in our accomplishments and the recognition we\'ve received for our dedication to excellence in the solar energy industry.'
     },
+    // Row specific titles and subtitles
+    rows: [{
+      rowId: {
+        type: Number,
+        required: true
+      },
+      title: {
+        type: String,
+        default: ''
+      },
+      subtitle: {
+        type: String,
+        default: ''
+      }
+    }],
     achievements: [{
       title: {
         type: String,
@@ -51,6 +67,10 @@ const achievementSchema = new mongoose.Schema({
       order: {
         type: Number,
         default: 0
+      },
+      rowId: {
+        type: Number,
+        default: 1
       }
     }]
   },

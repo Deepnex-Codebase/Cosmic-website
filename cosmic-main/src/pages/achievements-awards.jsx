@@ -284,7 +284,8 @@ export default function AchievementsAwardsPage() {
         <AwardsTimeline 
           sectionData={{
             title: awardWinningSolutions.title || 'Our Award-Winning Solar Solutions',
-            subtitle: 'Recognition & Excellence'
+            subtitle: 'Recognition & Excellence',
+            rows: awardWinningSolutions.rows || []
           }}
           achievements={awardWinningSolutions.achievements || []}
         />

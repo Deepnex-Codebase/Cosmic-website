@@ -31,8 +31,16 @@ const heroSchema = new mongoose.Schema({
     required: true
   },
   icon: {
-    type: String, // SVG string or icon identifier
-    required: true
+    type: String, // Icon identifier for predefined icons
+    required: false
+  },
+  customSvgIcon: {
+    type: String, // Custom SVG string
+    required: false
+  },
+  imageFile: {
+    type: String, // Path to uploaded image file
+    required: false
   },
   order: {
     type: Number,

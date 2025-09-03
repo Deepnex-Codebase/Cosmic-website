@@ -45,7 +45,9 @@ exports.getActiveHeroes = async (req, res) => {
     // Process heroes to include full image URLs
     const processedHeroes = heroes.map(hero => {
       const heroObj = hero.toObject();
-      if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
+      if (heroObj.imageFile) {
+        heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.imageFile}`;
+      } else if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
         heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.img}`;
       }
       return heroObj;
@@ -75,7 +77,9 @@ exports.getAllHeroes = async (req, res) => {
     // Process heroes to include full image URLs
     const processedHeroes = heroes.map(hero => {
       const heroObj = hero.toObject();
-      if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
+      if (heroObj.imageFile) {
+        heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.imageFile}`;
+      } else if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
         heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.img}`;
       }
       return heroObj;
@@ -109,7 +113,9 @@ exports.getHeroById = async (req, res) => {
     }
     
     const heroObj = hero.toObject();
-    if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
+    if (heroObj.imageFile) {
+      heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.imageFile}`;
+    } else if (heroObj.img && heroObj.img.startsWith('/uploads/')) {
       heroObj.fullUrl = `${req.protocol}://${req.get('host')}${heroObj.img}`;
     }
     
@@ -144,6 +150,7 @@ exports.createHero = async (req, res) => {
     // Handle image upload
     if (req.file) {
       heroData.img = `${process.env.BASE_URL}/uploads/heroes/${req.file.filename}`;
+      heroData.imageFile = `/uploads/heroes/${req.file.filename}`;
     }
     
     // Set order if not provided
@@ -187,6 +194,7 @@ exports.updateHero = async (req, res) => {
     // Handle image upload
     if (req.file) {
       updateData.img = `${process.env.BASE_URL}/uploads/heroes/${req.file.filename}`;
+      updateData.imageFile = `/uploads/heroes/${req.file.filename}`;
       
       // Don't delete old image to ensure persistence
       // Just update with new file path
@@ -335,6 +343,7 @@ exports.initializeDefaultHeroes = async () => {
           title: ['Powering A Greener', 'Future With Solar'],
           body: 'Elit himenaeos risus blandit; sociosqu nulla suspendisse. Dignissim urna dapibus mollis efficitur pharetra varius congue.',
           img: `${process.env.BASE_URL}/solar-panels.jpg`,
+          imageFile: '/solar-panels.jpg',
           icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><g><path d="M34,62.1h-6.9c-0.4,0-0.7-0.3-0.7-0.7v-6.9c0-0.4,0.3-0.7,0.7-0.7H34c0.4,0,0.7,0.3,0.7,0.7v6.9   C34.7,61.8,34.4,62.1,34,62.1z M27.9,60.7h5.4v-5.4h-5.4V60.7z"></path></g></svg>',
           order: 1,
           isActive: true
@@ -347,6 +356,7 @@ exports.initializeDefaultHeroes = async () => {
           title: ['Next-Gen Solar', 'For Your Home!'],
           body: 'Ante orci diam semper cursus magna sem scelerisque. Amet ligula maximus nam ad class vulputate felis enim.',
           img: `${process.env.BASE_URL}/installation.jpg`,
+          imageFile: '/installation.jpg',
           icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><g><g><path d="M73.2,96c-0.7,0-1.3-0.6-1.3-1.3V83.8c0-0.4,0.1-0.7,0.4-0.9l16.4-16.4c0.1-0.1,2.3-2.5,2.3-7.3V31.9   c0-0.7-0.2-4.1-4.1-4.1c-3.9,0-4.1,3.5-4.1,4.1v19.8c0,0.7-0.6,1.3-1.3,1.3c-0.7,0-1.3-0.6-1.3-1.3V31.9c0-2.3,1.4-6.8,6.8-6.8   c5.4,0,6.8,4.4,6.8,6.8v27.3c0,5.9-3,9-3.1,9.1l-16,16v10.4C74.5,95.4,73.9,96,73.2,96z"></path></g></svg>',
           order: 2,
           isActive: true
