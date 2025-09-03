@@ -56,6 +56,7 @@ import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
 import AdminTeamCelebration from './pages/admin/team-celebration';
 import SolarConfigPage from './pages/admin/solar-config';
+import CareersAdmin from './pages/admin/careers';
 
 import NavbarCMS from './components/NavbarCMS';
 
@@ -156,6 +157,7 @@ const AdminRoutes = () => {
               <Route path="/products" element={<ProductCMS />} />
               <Route path="/blogs" element={<BlogCMS />} />
               <Route path="/press-releases" element={<PressReleaseCMS />} />
+              <Route path="/careers" element={<CareersAdmin />} />
               <Route path="/forms" element={<FormCMS />} />
               <Route path="/footer" element={<FooterCMS />} />
               <Route path="/navbar" element={<NavbarCMS />} />
