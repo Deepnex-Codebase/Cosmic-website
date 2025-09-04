@@ -296,8 +296,8 @@ const ProductCMS = () => {
        }
     } catch (error) {
       toast.error('An error occurred while saving the product');
-      console.error('Error saving product:', error);
-      console.error('Error details:', error.response?.data);
+      // Removed console.error for saving product
+      // Removed console.error for error details
     } finally {
       setLoading(false);
     }
@@ -403,7 +403,7 @@ const ProductCMS = () => {
         }
       } catch (error) {
         toast.error('An error occurred while deleting the product');
-        console.error('Error deleting product:', error);
+        // Removed console.error for deleting product
       } finally {
         setLoading(false);
       }

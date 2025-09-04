@@ -6,8 +6,7 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline';
 // Get API URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'https://api.cosmicpowertech.com';
-console.log('DEBUG: Using API_BASE_URL:', API_BASE_URL);
-console.log('DEBUG: Using IMAGE_BASE_URL:', IMAGE_BASE_URL);
+// Removed debug logs for API URLs
 
 // Icon mapping for dynamic icon selection
 const ICON_MAP = {
@@ -66,10 +65,6 @@ const SolarJourney = () => {
     const fetchJourneyData = async () => {
       try {
         setLoading(true);
-        console.log('DEBUG: Fetching solar journey data');
-        console.log('DEBUG: API_BASE_URL value:', API_BASE_URL);
-        console.log('DEBUG: Full API URL:', `${API_BASE_URL}/cms/solar-journey/active`);
-        
         // Add a timeout to ensure we don't hang indefinitely
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -80,47 +75,29 @@ const SolarJourney = () => {
           });
           clearTimeout(timeoutId);
           
-          console.log('DEBUG: Solar Journey API Response received');
-          console.log('DEBUG: Response status:', response.status);
-          console.log('DEBUG: Response data:', JSON.stringify(response.data, null, 2));
-          
           if (response.data && response.data.success && response.data.data && response.data.data.length > 0) {
-            console.log('DEBUG: Valid data received, processing steps');
-            console.log('DEBUG: Number of steps from API:', response.data.data.length);
             
             // Check if showArrow field exists in the response
             const processedData = response.data.data.map((step, index) => {
-              console.log(`DEBUG: Processing step ${index + 1} (${step.title})`);
               // Ensure showArrow is defined (default to true if not specified)
               if (step.showArrow === undefined) {
-                console.log(`DEBUG: Setting default showArrow=true for step ${index + 1}`);
                 return { ...step, showArrow: true };
               }
               return step;
             });
             
-            console.log('DEBUG: Setting steps with processed data');
             setSteps(processedData);
           } else {
             // Fallback to static data if API returns error or empty data
-            console.log('DEBUG: API returned error or empty data, using fallback steps');
-            console.log('DEBUG: Response data:', response.data);
             setSteps(FALLBACK_STEPS);
             setError('Could not load journey data from server');
           }
         } catch (axiosError) {
           clearTimeout(timeoutId);
-          console.error('DEBUG: Axios error:', axiosError.message);
-          if (axiosError.response) {
-            console.error('DEBUG: Error response:', axiosError.response.data);
-            console.error('DEBUG: Error status:', axiosError.response.status);
-          }
           throw axiosError;
         }
       } catch (error) {
-        console.error('DEBUG: Error fetching solar journey data:', error);
         // Fallback to static data if API call fails
-        console.log('DEBUG: Using fallback steps due to error');
         setSteps(FALLBACK_STEPS);
         setError('Could not load journey data from server');
       } finally {

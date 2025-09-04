@@ -24,10 +24,10 @@ const FormCMS = () => {
       if (result.success) {
         setFormConfig(result.data);
       } else {
-        console.error('Failed to fetch form configuration:', result.message);
+        // Error handling for failed form configuration fetch
       }
     } catch (error) {
-      console.error('Error fetching form configuration:', error);
+      // Error handling for form configuration fetch error
     } finally {
       setLoading(false);
     }

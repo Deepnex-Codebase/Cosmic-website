@@ -20,7 +20,6 @@ const HeroSectionCMS = () => {
   const [formData, setFormData] = useState({
     title: 'At Cosmic Powertech',
     description: '',
-    backgroundVideo: `${API_BASE_URL}/videos/solar-installation.mp4`,
     companyVideo: `${API_BASE_URL}/videos/enn.mp4`,
     sectionTitle: 'About Cosmic Powertech',
     sectionSubtitle: 'Happy Clients',
@@ -28,7 +27,6 @@ const HeroSectionCMS = () => {
     ctaLink: '/about'
   });
   
-  const [backgroundVideoFile, setBackgroundVideoFile] = useState(null);
   const [companyVideoFile, setCompanyVideoFile] = useState(null);
 
   const [statFormData, setStatFormData] = useState({
@@ -63,14 +61,9 @@ const HeroSectionCMS = () => {
         setHeroSectionData(response.data);
         
         // Format video URLs to ensure they use the API domain
-        let backgroundVideo = response.data.backgroundVideo || '/videos/solar-installation.mp4';
         let companyVideo = response.data.companyVideo || '/videos/enn.mp4';
         
         // If URLs are relative paths, prepend the API base URL
-        if (backgroundVideo && !backgroundVideo.startsWith('http')) {
-          backgroundVideo = `${API_BASE_URL}${backgroundVideo.startsWith('/') ? '' : '/'}${backgroundVideo}`;
-        }
-        
         if (companyVideo && !companyVideo.startsWith('http')) {
           companyVideo = `${API_BASE_URL}${companyVideo.startsWith('/') ? '' : '/'}${companyVideo}`;
         }
@@ -78,7 +71,6 @@ const HeroSectionCMS = () => {
         setFormData({
           title: response.data.title || 'At Cosmic Powertech',
           description: response.data.description || '',
-          backgroundVideo: backgroundVideo,
           companyVideo: companyVideo,
           sectionTitle: response.data.sectionTitle || 'About Cosmic Powertech',
           sectionSubtitle: response.data.sectionSubtitle || 'Happy Clients',
@@ -201,7 +193,7 @@ const HeroSectionCMS = () => {
       // Add text fields to FormData, handling video URLs properly
       Object.keys(formData).forEach(key => {
         // For video URLs, ensure they're properly formatted for storage
-        if ((key === 'backgroundVideo' || key === 'companyVideo') && formData[key].startsWith(API_BASE_URL)) {
+        if (key === 'companyVideo' && formData[key].startsWith(API_BASE_URL)) {
           // Strip the API base URL to store relative paths
           const relativePath = formData[key].replace(API_BASE_URL, '');
           formDataToSend.append(key, relativePath);
@@ -213,10 +205,6 @@ const HeroSectionCMS = () => {
       // Add video files if selected
       if (companyVideoFile) {
         formDataToSend.append('companyVideo', companyVideoFile);
-      }
-      
-      if (backgroundVideoFile) {
-        formDataToSend.append('backgroundVideo', backgroundVideoFile);
       }
       
       const response = await axios.put(`${API_BASE_URL}/cms/hero-section`, formDataToSend, {
@@ -334,7 +322,7 @@ const HeroSectionCMS = () => {
       await fetchCompanyStats();
     } catch (error) {
       // Error handling without console.error
-      toast.error('Failed to reset to default');
+      toast.error('Failed to reset to default settings');
     } finally {
       setLoading(false);
     }
@@ -423,42 +411,7 @@ const HeroSectionCMS = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Background Video
-            </label>
-            <div className="flex flex-col space-y-2">
-              <input
-                type="text"
-                name="backgroundVideo"
-                value={formData.backgroundVideo}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="/videos/solar-installation.mp4"
-              />
-              <div className="flex items-center space-x-2">
-                <input
-                  type="file"
-                  accept="video/*"
-                  id="backgroundVideoUpload"
-                  onChange={(e) => setBackgroundVideoFile(e.target.files[0])}
-                  className="hidden"
-                />
-                <label
-                  htmlFor="backgroundVideoUpload"
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center"
-                >
-                  <FaUpload className="mr-2" />
-                  {backgroundVideoFile ? 'Change Video' : 'Upload Video'}
-                </label>
-                {backgroundVideoFile && (
-                  <span className="text-sm text-green-600">{backgroundVideoFile.name}</span>
-                )}
-              </div>
-            </div>
-          </div>
-          
+        <div className="mb-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Company Video (Happy Clients)

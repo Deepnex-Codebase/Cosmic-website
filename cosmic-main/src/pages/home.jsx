@@ -38,8 +38,7 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
   const openPopup = () => setIsOpen(true);
   const closePopup = () => setIsOpen(false);
   
-  // Debug image URL
-  console.log(`NewsCard rendering with image URL: ${image}`);
+  // Debug image URL removed
   
   // API_BASE_URL is no longer needed as we use formatImageUrl
   
@@ -58,8 +57,6 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
   // Get processed URLs
   const processedImageUrl = getImageUrl(image);
   const processedLogoUrl = getLogoUrl(logo);
-  
-  console.log(`Processed image URL: ${processedImageUrl}`);
   
   return (
     <>
@@ -116,7 +113,6 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
                 onError={(e) => {
                   // Prevent infinite error loop by checking if already using fallback
                   if (e.target.src !== window.location.origin + "/newsimage.png") {
-                    console.log('News image error, using fallback');
                     e.target.src = "/newsimage.png";
                   }
                 }}
@@ -142,7 +138,6 @@ const NewsCard = ({ title, image, logo, date, excerpt, content }) => {
                       onError={(e) => {
                         // Prevent infinite error loop by checking if already using fallback
                         if (e.target.src !== window.location.origin + "/logo.png") {
-                          console.log('Logo image error, using fallback');
                           e.target.src = "/logo.png";
                         }
                       }}
@@ -231,30 +226,28 @@ const Home = () => {
   const fetchGreenFutureData = async () => {
     try {
       setGreenFutureLoading(true);
-      console.log('Starting to fetch Green Future data...');
+      // Fetch Green Future data
       
       // Use the service to fetch both green future and news cards data
       const result = await getGreenFutureAndNewsCards();
-      console.log('Result from getGreenFutureAndNewsCards:', result);
+      // Process result from getGreenFutureAndNewsCards
       
       const { greenFutureData: greenFutureResult, newsCardsData: newsCardsResult } = result;
       
-      console.log('Green Future Result:', greenFutureResult);
-      console.log('News Cards Result:', newsCardsResult);
-      console.log('News Cards Result Length:', newsCardsResult ? newsCardsResult.length : 0);
+      // Process Green Future and News Cards results
       
       if (greenFutureResult) {
-        console.log('Setting Green Future Data:', greenFutureResult);
+        // Set Green Future Data
         setGreenFutureData(greenFutureResult);
       } else {
-        console.log('No Green Future Data received');
+        // No Green Future Data received
       }
       
       if (newsCardsResult && Array.isArray(newsCardsResult) && newsCardsResult.length > 0) {
-        console.log('Setting News Cards:', newsCardsResult);
+        // Set News Cards data
         setNewsCards(newsCardsResult);
       } else {
-        console.log('No News Cards received or empty array');
+        // No News Cards received or empty array
         // Set default news cards for testing
         setNewsCards([
           {
@@ -278,7 +271,7 @@ const Home = () => {
         ]);
       }
     } catch (error) {
-      console.log('Error in fetchGreenFutureData:', error);
+      // Error handling without console.log
     } finally {
       setGreenFutureLoading(false);
     }
@@ -287,17 +280,13 @@ const Home = () => {
   // Fetch Industry Recognition data
   const fetchIndustryRecognitionData = async () => {
     try {
-      console.log('Starting to fetch Industry Recognition data...');
       setIndustryRecognitionLoading(true);
       const data = await getIndustryRecognition();
-      console.log('Industry Recognition data received:', data);
       setIndustryRecognition(data);
-      console.log('Industry Recognition state after setting data:', data);
     } catch (error) {
-      console.error('Error in fetchIndustryRecognitionData:', error);
+      // Error handling without console.error
     } finally {
       setIndustryRecognitionLoading(false);
-      console.log('Industry Recognition loading set to false');
     }
   };
 
@@ -634,7 +623,7 @@ const Home = () => {
               ) : (
                 <div className="flex flex-wrap justify-center">
                   <div className="w-full overflow-hidden">
-                    {console.log('Rendering Industry Recognition section with data:', industryRecognition)}
+                    {/* Industry Recognition section */}
                     {industryRecognition && industryRecognition.length > 0 ? (
                       <Marquee className="py-6" pauseOnHover={true}>
                         {industryRecognition.map((recognition, index) => {
@@ -649,7 +638,7 @@ const Home = () => {
                             logo: processedLogoUrl
                           };
                           
-                          console.log('Processing recognition item:', recognition, 'to:', processedRecognition);
+                          // Process recognition item
                           
                           return (
                             <div 
@@ -664,7 +653,6 @@ const Home = () => {
                                   onError={(e) => {
                                     // Prevent infinite error loop by checking if already using fallback
                                     if (e.target.src !== window.location.origin + "/award-icon.svg") {
-                                      console.log('Image error, using fallback');
                                       e.target.src = "/award-icon.svg";
                                     }
                                   }}

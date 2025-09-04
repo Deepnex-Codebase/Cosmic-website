@@ -34,11 +34,19 @@ const CompanyIntro = () => {
         
         // Format video URL if it exists
         let videoUrl = result.data.backgroundVideo || '';
-        if (videoUrl && !videoUrl.startsWith('https://api.cosmicpowertech.com/')) {
-          // Extract the filename if it exists in the path
-          const filename = videoUrl.split('/').pop();
-          if (filename) {
-            videoUrl = `https://api.cosmicpowertech.com/uploads/company-intro/${filename}`;
+        if (videoUrl) {
+          if (videoUrl.startsWith('http')) {
+            // Already a full URL, keep as is
+            videoUrl = videoUrl;
+          } else if (videoUrl.startsWith('/uploads/')) {
+            // Path starts with /uploads/, append to API base
+            videoUrl = `${API_BASE_URL.replace(/\/api$/, '')}${videoUrl}`;
+          } else if (videoUrl.startsWith('/videos/')) {
+            // Path starts with /videos/, append to API base
+            videoUrl = `${API_BASE_URL.replace(/\/api$/, '')}${videoUrl}`;
+          } else {
+            // Assume it's a filename or relative path
+            videoUrl = `${API_BASE_URL.replace(/\/api$/, '')}/uploads/company-intro/${videoUrl.replace(/^\//, '')}`;
           }
         }
         
@@ -59,26 +67,64 @@ const CompanyIntro = () => {
     }));
   };
 
-  const handleVideoChange = (e) => {
+  const handleVideoChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      // Check file size (200MB limit)
-      if (file.size > 200 * 1024 * 1024) {
-        toast.error('Video size exceeds 200MB limit. Please upload a smaller file.');
-        return;
-      }
+    if (!file) return;
+
+    // Check file size (200MB limit)
+    if (file.size > 200 * 1024 * 1024) {
+      toast.error('Video size exceeds 200MB limit. Please upload a smaller file.');
+      return;
+    }
+    
+    // Check file type
+    const validTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please upload a valid video file (MP4, AVI, MOV, WMV, FLV, WEBM)');
+      return;
+    }
+
+    try {
+      setLoading(true);
       
-      // Check file type
-      if (!file.type.startsWith('video/')) {
-        toast.error('Only video files are allowed.');
-        return;
+      // Create form data
+      const formData = new FormData();
+      formData.append('backgroundVideo', file);
+
+      // Upload video directly
+      const response = await fetch(`${API_BASE_URL}/company-intro/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Use the videoPath directly from the server response
+        const { relativePath } = result.data;
+        
+        // Update local state with the new video source
+        setCompanyIntroData(prev => ({
+          ...prev,
+          backgroundVideo: relativePath
+        }));
+        
+        // Set video preview URL
+        const videoUrl = `${API_BASE_URL.replace(/\/api$/, '')}${relativePath}`;
+        setVideoPreview(videoUrl);
+        
+        toast.success('Video uploaded successfully');
+        
+        // Refresh data to ensure we have the latest from the server
+        fetchCompanyIntroData();
+      } else {
+        toast.error(result.message || 'Failed to upload video');
       }
-      
-      setCompanyIntroData(prev => ({ ...prev, backgroundVideo: file }));
-      const videoUrl = URL.createObjectURL(file);
-      setVideoPreview(videoUrl);
-      console.log('Local video preview URL created:', videoUrl);
-      console.log('Selected video file:', file.name, file.type, file.size);
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      toast.error('Failed to upload video');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,15 +133,17 @@ const CompanyIntro = () => {
     setLoading(true);
 
     try {
-      const formData = new FormData();
-      formData.append('subtitle', companyIntroData.subtitle);
-      formData.append('title', companyIntroData.title);
-      formData.append('description', companyIntroData.description);
-      formData.append('isActive', companyIntroData.isActive);
+      // Create data object instead of FormData since video is uploaded separately
+      const data = {
+        subtitle: companyIntroData.subtitle,
+        title: companyIntroData.title,
+        description: companyIntroData.description,
+        isActive: companyIntroData.isActive
+      };
       
-      if (companyIntroData.backgroundVideo) {
-        formData.append('backgroundVideo', companyIntroData.backgroundVideo);
-        console.log('Uploading video file:', companyIntroData.backgroundVideo.name);
+      // If we have a backgroundVideo path from the server, include it
+      if (companyIntroData.backgroundVideo && typeof companyIntroData.backgroundVideo === 'string') {
+        data.backgroundVideo = companyIntroData.backgroundVideo;
       }
 
       const url = existingData 
@@ -108,11 +156,10 @@ const CompanyIntro = () => {
 
       const response = await fetch(url, {
         method: method,
-        body: formData,
         headers: {
-          // Don't set Content-Type header when using FormData with files
-          // Browser will automatically set the correct Content-Type with boundary
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(data),
         credentials: 'include' // Include cookies if needed
       });
 

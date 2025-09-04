@@ -97,6 +97,75 @@ export const getFeaturedServices = async () => {
 };
 
 /**
+ * Get service page section titles and subtitles
+ * @returns {Promise} - Promise with page section data
+ */
+export const getPageSections = async () => {
+  try {
+    const response = await api.get(`${API_BASE_URL}/page-sections`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching page sections:', error);
+    
+    // Try direct API as fallback
+    if (error.response && error.response.status >= 500) {
+      try {
+        const fallbackResponse = await directApi.get(`/services/page-sections`);
+        return fallbackResponse.data;
+      } catch (fallbackError) {
+        console.error('Fallback API also failed:', fallbackError);
+        throw fallbackError;
+      }
+    }
+    
+    throw error;
+  }
+};
+
+/**
+ * Update service page section titles and subtitles
+ * @param {Object} sectionData - The section data to update
+ * @returns {Promise} - Promise with updated page section data
+ */
+export const updatePageSections = async (sectionData) => {
+  try {
+    // Validate input data
+    if (!sectionData || Object.keys(sectionData).length === 0) {
+      throw new Error('No section data provided');
+    }
+    
+    // Log the request for debugging
+    console.log('Sending update request with data:', JSON.stringify(sectionData));
+    
+    // Make the API request - use the correct endpoint without API_BASE_URL
+    const response = await api.put('/services/page-sections', sectionData);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating page sections:', error);
+    
+    // Try direct API as fallback for server errors
+    if (error.response && error.response.status >= 500) {
+      try {
+        console.log('Trying fallback API for page sections update');
+        const fallbackResponse = await directApi.put(`/services/page-sections`, sectionData);
+        return fallbackResponse.data;
+      } catch (fallbackError) {
+        console.error('Fallback API also failed:', fallbackError);
+        throw fallbackError;
+      }
+    }
+    
+    // For client errors (4xx), provide more specific error information
+    if (error.response && error.response.status >= 400 && error.response.status < 500) {
+      console.error('Client error:', error.response.data);
+      throw new Error(`Request error: ${error.response.data?.message || error.message}`);
+    }
+    
+    throw error;
+  }
+};
+
+/**
  * Get single service by ID
  * @param {string} id - Service ID
  * @returns {Promise} - Promise with service data

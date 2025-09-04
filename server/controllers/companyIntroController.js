@@ -161,9 +161,13 @@ exports.createOrUpdateCompanyIntro = async (req, res) => {
       order: order || 1
     };
 
-    // Handle video upload
-    if (req.file) {
-      updateData.backgroundVideo = `${process.env.BASE_URL}/uploads/company-intro/${req.file.filename}`;
+    // Handle video path from request body (when uploaded separately)
+    if (req.body.backgroundVideo) {
+      updateData.backgroundVideo = req.body.backgroundVideo;
+    }
+    // Handle video upload (if file is uploaded directly with this request)
+    else if (req.file) {
+      updateData.backgroundVideo = `/uploads/company-intro/${req.file.filename}`;
     }
 
     let companyIntroData;
@@ -279,6 +283,56 @@ exports.toggleCompanyIntroStatus = async (req, res) => {
 
 // Upload video middleware
 exports.uploadVideo = upload.single('backgroundVideo');
+
+// Handle video upload
+exports.handleVideoUpload = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No video file uploaded'
+      });
+    }
+    
+    // Create a proper path that will work with the frontend
+    // Store the path in the database as a relative path starting with /uploads
+    const relativePath = `/uploads/company-intro/${req.file.filename}`;
+    // Create the full URL for the response
+    const fullUrl = `${process.env.BASE_URL}${relativePath}`;
+    
+    console.log('Video uploaded, relative path:', relativePath);
+    console.log('Video uploaded, full URL:', fullUrl);
+    console.log('BASE_URL:', process.env.BASE_URL);
+    
+    // Update the video source in the database
+    let companyIntroData = await CompanyIntro.findOne({ isActive: true });
+    
+    if (!companyIntroData) {
+      companyIntroData = await CompanyIntro.create({ backgroundVideo: relativePath });
+    } else {
+      companyIntroData.backgroundVideo = relativePath;
+      companyIntroData.updatedAt = new Date();
+      await companyIntroData.save();
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Video uploaded successfully',
+      data: {
+        relativePath: relativePath,
+        fullUrl: fullUrl,
+        filename: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading video:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading video',
+      error: error.message
+    });
+  }
+};
 
 // Initialize default Company Intro data
 exports.initializeDefaultCompanyIntro = async () => {

@@ -98,7 +98,7 @@ const GreenFutureCMS = () => {
         });
       }
     } catch (error) {
-      console.error('Error fetching green future data:', error);
+      // Removed console.error for fetching green future data
       toast.error('Failed to fetch green future data');
     } finally {
       setLoading(false);
@@ -411,7 +411,7 @@ const GreenFutureCMS = () => {
           fetchNewsCards();
         }
       } catch (error) {
-        console.error('Error deleting news card:', error);
+        // Removed console.error for deleting news card
         toast.error('Failed to delete news card');
       }
     }
@@ -507,7 +507,7 @@ const GreenFutureCMS = () => {
           fetchNewsCards();
         }
       } catch (error) {
-        console.error('Error resetting to default:', error);
+        // Removed console.error for resetting to default
         toast.error('Failed to reset to default');
       } finally {
         setLoading(false);

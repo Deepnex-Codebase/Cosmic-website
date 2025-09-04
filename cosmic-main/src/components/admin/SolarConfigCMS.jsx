@@ -47,7 +47,7 @@ const SolarConfigCMS = () => {
         setSolarConfig(solarConfigRes.data);
         setSolarBasic(solarBasicRes.data);
       } catch (err) {
-        console.error('Error fetching configurations:', err);
+        // Removed console.error for fetching configurations
         setError('Failed to load configurations. Please try again.');
         
         // If configurations don't exist, try to initialize them
@@ -59,7 +59,7 @@ const SolarConfigCMS = () => {
             severity: 'info'
           });
         } catch (initError) {
-          console.error('Error initializing configurations:', initError);
+          // Removed console.error for initializing configurations
         }
       } finally {
         setLoading(false);
@@ -245,7 +245,7 @@ const SolarConfigCMS = () => {
         });
       }
     } catch (error) {
-      console.error('Error updating configuration:', error);
+      // Removed console.error for updating configuration
       setSnackbar({
         open: true,
         message: 'Failed to update configuration',
@@ -337,7 +337,7 @@ const SolarConfigCMS = () => {
           severity: 'success'
         });
       } catch (error) {
-        console.error('Error updating solar configuration:', error);
+        // Removed console.error for updating solar configuration
         setSnackbar({
           open: true,
           message: 'Failed to update solar configuration',
@@ -1443,7 +1443,7 @@ const SolarConfigCMS = () => {
                                           });
                                         })
                                         .catch((err) => {
-                                          console.error('Error removing state:', err);
+                                          // Removed console.error for removing state
                                           setSnackbar({
                                             open: true,
                                             message: 'Error removing state',
@@ -1536,7 +1536,7 @@ const SolarConfigCMS = () => {
                                           });
                                         })
                                         .catch((err) => {
-                                          console.error('Error removing state:', err);
+                                          // Removed console.error for removing state
                                           setSnackbar({
                                             open: true,
                                             message: 'Error removing state',

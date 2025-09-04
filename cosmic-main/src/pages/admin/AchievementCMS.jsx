@@ -363,7 +363,7 @@ export default function AchievementCMS() {
           rowId: parseInt(formData.rowId, 10) || 1
         };
         
-        console.log('Sending achievement data to API:', achievementData);
+        // Removed console.log for achievement data
         
         if (editingItem) {
           result = await achievementService.updateAchievement(editingItem._id, achievementData);

@@ -108,16 +108,22 @@ exports.uploadVideo = async (req, res) => {
     }
     
     // Create a proper path that will work with the frontend
-    const videoPath = `${process.env.BASE_URL}/uploads/videos/${req.file.filename}`;
-    console.log('Video uploaded, path:', videoPath);
+    // Store the path in the database as a relative path starting with /uploads
+    const relativePath = `/uploads/videos/${req.file.filename}`;
+    // Create the full URL for the response
+    const fullUrl = `${process.env.BASE_URL}${relativePath}`;
+    
+    console.log('Video uploaded, relative path:', relativePath);
+    console.log('Video uploaded, full URL:', fullUrl);
+    console.log('BASE_URL:', process.env.BASE_URL);
     
     // Update the video source in the database
     let videoHeroData = await VideoHero.findOne({ isActive: true });
     
     if (!videoHeroData) {
-      videoHeroData = await VideoHero.create({ videoSource: videoPath });
+      videoHeroData = await VideoHero.create({ videoSource: relativePath });
     } else {
-      videoHeroData.videoSource = videoPath;
+      videoHeroData.videoSource = relativePath;
       videoHeroData.updatedAt = new Date();
       await videoHeroData.save();
     }
@@ -126,7 +132,8 @@ exports.uploadVideo = async (req, res) => {
       success: true,
       message: 'Video uploaded successfully',
       data: {
-        videoPath: videoPath,
+        videoPath: relativePath,
+        fullUrl: fullUrl,
         filename: req.file.filename
       }
     });

@@ -5,6 +5,44 @@ const mongoose = require('mongoose');
  * Defines the structure for service documents in MongoDB
  */
 const ServiceSchema = new mongoose.Schema({
+  // Page Section Titles and Subtitles (for CMS editing)
+  pageSections: {
+    coreServicesTitle: {
+      type: String,
+      default: 'Our Core Services',
+      trim: true
+    },
+    coreServicesSubtitle: {
+      type: String,
+      default: 'We provide comprehensive solar solutions to meet your energy needs',
+      trim: true
+    },
+    specializedSolutionsTitle: {
+      type: String,
+      default: 'Specialized Solutions',
+      trim: true
+    },
+    specializedSolutionsSubtitle: {
+      type: String,
+      default: 'Enhance your solar experience with our additional specialized services',
+      trim: true
+    },
+    processTitle: {
+      type: String,
+      default: 'Our Streamlined Process',
+      trim: true
+    },
+    processSubtitle: {
+      type: String,
+      default: 'We\'ve perfected our approach to deliver exceptional solar solutions with efficiency and precision',
+      trim: true
+    },
+    heroTitle: {
+      type: String,
+      default: 'Service',
+      trim: true
+    }
+  },
   title: {
     type: String,
     required: [true, 'Service title is required'],

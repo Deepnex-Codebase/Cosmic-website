@@ -31,6 +31,15 @@ const Services = () => {
   const [mainServices, setMainServices] = useState([]);
   const [additionalServices, setAdditionalServices] = useState([]);
   const [processSteps, setProcessSteps] = useState([]);
+  const [pageSections, setPageSections] = useState({
+    coreServicesTitle: 'Our Core Services',
+    coreServicesSubtitle: 'We provide comprehensive solar solutions to meet your energy needs',
+    specializedSolutionsTitle: 'Specialized Solutions',
+    specializedSolutionsSubtitle: 'Enhance your solar experience with our additional specialized services',
+    processTitle: 'Our Streamlined Process',
+    processSubtitle: 'We\'ve perfected our approach to deliver exceptional solar solutions with efficiency and precision',
+    heroTitle: 'Service'
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   // const [activeService, setActiveService] = useState(null); // Removed unused state
@@ -71,6 +80,19 @@ const Services = () => {
         setMainServices(coreServices);
         setAdditionalServices(specializedServices);
         setProcessSteps(processServices);
+        
+        // Fetch page section titles and subtitles
+        try {
+          const response = await fetch('/api/services/page-sections');
+          const data = await response.json();
+          
+          if (data.success && data.data) {
+            setPageSections(data.data);
+          }
+        } catch (sectionErr) {
+          console.error('Error fetching page sections:', sectionErr);
+          // Continue with default values if page sections fetch fails
+        }
         
       } catch (err) {
         console.error('Error fetching services:', err);
@@ -124,13 +146,13 @@ const Services = () => {
       >
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">Service</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">{pageSections.heroTitle || 'Service'}</h1>
           <nav className="flex items-center justify-center space-x-2 text-sm">
             <Link to="/" className="hover:text-accent-500 transition">
               Home
             </Link>
             <span>—</span>
-            <span className="text-accent-500">Service</span>
+            <span className="text-accent-500">{pageSections.heroTitle || 'Service'}</span>
           </nav>
         </div>
       </header>
@@ -140,10 +162,10 @@ const Services = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Our Core Services
+              {pageSections.coreServicesTitle || 'Our Core Services'}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We provide comprehensive solar solutions to meet your energy needs
+              {pageSections.coreServicesSubtitle || 'We provide comprehensive solar solutions to meet your energy needs'}
             </p>
           </div>
           
@@ -194,10 +216,10 @@ const Services = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Specialized Solutions
+              {pageSections.specializedSolutionsTitle || 'Specialized Solutions'}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Enhance your solar experience with our additional specialized services
+              {pageSections.specializedSolutionsSubtitle || 'Enhance your solar experience with our additional specialized services'}
             </p>
           </div>
           
@@ -249,10 +271,10 @@ const Services = () => {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Our Streamlined Process
+              {pageSections.processTitle || 'Our Streamlined Process'}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              We've perfected our approach to deliver exceptional solar solutions with efficiency and precision
+              {pageSections.processSubtitle || 'We\'ve perfected our approach to deliver exceptional solar solutions with efficiency and precision'}
             </p>
           </div>
           

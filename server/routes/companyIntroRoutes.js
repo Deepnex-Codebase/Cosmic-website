@@ -8,6 +8,7 @@ const {
   deleteCompanyIntro,
   toggleCompanyIntroStatus,
   uploadVideo,
+  handleVideoUpload,
   initializeDefaultCompanyIntro
 } = require('../controllers/companyIntroController');
 
@@ -24,5 +25,6 @@ router.post('/', uploadVideo, createOrUpdateCompanyIntro);
 router.put('/:id', uploadVideo, createOrUpdateCompanyIntro);
 router.delete('/:id', deleteCompanyIntro);
 router.patch('/:id/toggle-status', toggleCompanyIntroStatus);
+router.post('/upload', uploadVideo, handleVideoUpload);
 
 module.exports = router;

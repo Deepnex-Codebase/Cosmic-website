@@ -18,7 +18,9 @@ import {
   createService, 
   updateService, 
   deleteService,
-  getServiceStats
+  getServiceStats,
+  getPageSections,
+  updatePageSections
 } from '../../services/serviceService';
 
 // Define image base URL
@@ -54,6 +56,18 @@ const AdminServices = () => {
     featured: 0,
     byCategory: []
   });
+  
+  // State for page sections
+  const [pageSections, setPageSections] = useState({
+    coreServicesTitle: 'Our Core Services',
+    coreServicesSubtitle: 'We provide comprehensive solar solutions to meet your energy needs',
+    specializedSolutionsTitle: 'Specialized Solutions',
+    specializedSolutionsSubtitle: 'Enhance your solar experience with our additional specialized services',
+    processTitle: 'Our Streamlined Process',
+    processSubtitle: 'We\'ve perfected our approach to deliver exceptional solar solutions with efficiency and precision',
+    heroTitle: 'Service'
+  });
+  const [savingSections, setSavingSections] = useState(false);
   
   // State for filtering and pagination
   const [searchTerm, setSearchTerm] = useState('');
@@ -156,7 +170,61 @@ const AdminServices = () => {
   // Initial data fetch
   useEffect(() => {
     fetchServices(1);
+    fetchPageSections();
   }, [fetchServices]);
+  
+  // Fetch page sections
+  const fetchPageSections = async () => {
+    try {
+      const response = await getPageSections();
+      if (response.success && response.data) {
+        setPageSections(response.data);
+      }
+    } catch (err) {
+      console.error('Error fetching page sections:', err);
+      toast.error('Failed to load page section settings');
+    }
+  };
+  
+  // Handle page sections update
+  const handleUpdatePageSections = async () => {
+    try {
+      setSavingSections(true);
+      
+      // Extract the specific fields expected by the server
+      const sectionData = {
+        coreServicesTitle: pageSections.coreServicesTitle || '',
+        coreServicesSubtitle: pageSections.coreServicesSubtitle || '',
+        specializedSolutionsTitle: pageSections.specializedSolutionsTitle || '',
+        specializedSolutionsSubtitle: pageSections.specializedSolutionsSubtitle || '',
+        processTitle: pageSections.processTitle || '',
+        processSubtitle: pageSections.processSubtitle || '',
+        heroTitle: pageSections.heroTitle || ''
+      };
+      
+      console.log('Sending page section data:', sectionData);
+      
+      // Make sure we're sending a non-empty object
+      if (Object.values(sectionData).some(value => value !== '')) {
+        const response = await updatePageSections(sectionData);
+        
+        if (response && response.success) {
+          toast.success('Page section settings updated successfully');
+        } else if (response) {
+          throw new Error(response.message || 'Failed to update page sections');
+        } else {
+          throw new Error('No response received from server');
+        }
+      } else {
+        throw new Error('No data to update');
+      }
+    } catch (err) {
+      console.error('Error updating page sections:', err);
+      toast.error(`Failed to update page section settings: ${err.message}`);
+    } finally {
+      setSavingSections(false);
+    }
+  };
 
   // Handle search and filter changes
   useEffect(() => {
@@ -432,6 +500,123 @@ const AdminServices = () => {
         <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-sm font-medium text-gray-500">Categories</h3>
           <p className="text-2xl font-bold text-accent-500">{stats.byCategory?.length || 0}</p>
+        </div>
+      </div>
+
+      {/* Page Section Settings */}
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Page Section Settings</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Hero Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Hero Title
+            </label>
+            <input
+              type="text"
+              value={pageSections.heroTitle || ''}
+              onChange={(e) => setPageSections({...pageSections, heroTitle: e.target.value})}
+              placeholder="Hero Title"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+          
+          {/* Core Services Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Core Services Title
+            </label>
+            <input
+              type="text"
+              value={pageSections.coreServicesTitle || ''}
+              onChange={(e) => setPageSections({...pageSections, coreServicesTitle: e.target.value})}
+              placeholder="Core Services Title"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Core Services Subtitle
+            </label>
+            <input
+              type="text"
+              value={pageSections.coreServicesSubtitle || ''}
+              onChange={(e) => setPageSections({...pageSections, coreServicesSubtitle: e.target.value})}
+              placeholder="Core Services Subtitle"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+          
+          {/* Specialized Solutions Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Specialized Solutions Title
+            </label>
+            <input
+              type="text"
+              value={pageSections.specializedSolutionsTitle || ''}
+              onChange={(e) => setPageSections({...pageSections, specializedSolutionsTitle: e.target.value})}
+              placeholder="Specialized Solutions Title"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Specialized Solutions Subtitle
+            </label>
+            <input
+              type="text"
+              value={pageSections.specializedSolutionsSubtitle || ''}
+              onChange={(e) => setPageSections({...pageSections, specializedSolutionsSubtitle: e.target.value})}
+              placeholder="Specialized Solutions Subtitle"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+          
+          {/* Process Section */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Process Title
+            </label>
+            <input
+              type="text"
+              value={pageSections.processTitle || ''}
+              onChange={(e) => setPageSections({...pageSections, processTitle: e.target.value})}
+              placeholder="Process Title"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Process Subtitle
+            </label>
+            <input
+              type="text"
+              value={pageSections.processSubtitle || ''}
+              onChange={(e) => setPageSections({...pageSections, processSubtitle: e.target.value})}
+              placeholder="Process Subtitle"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleUpdatePageSections}
+            disabled={savingSections}
+            className="px-4 py-2 bg-accent-500 text-white rounded-lg hover:bg-accent-600 transition-colors disabled:opacity-50 flex items-center"
+          >
+            {savingSections ? (
+              <>
+                <FiLoader className="w-5 h-5 animate-spin mr-2" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <FiSave className="mr-2" />
+                Save Section Settings
+              </>
+            )}
+          </button>
         </div>
       </div>
 

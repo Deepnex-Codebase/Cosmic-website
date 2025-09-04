@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
-console.log('API_BASE_URL for industry recognition:', API_BASE_URL);
 
 // Format image URLs to ensure they use the production API URL
 export const formatImageUrl = (url) => {
@@ -39,13 +38,10 @@ export const formatImageUrl = (url) => {
 export const getIndustryRecognition = async () => {
   try {
     // Try with achievements endpoint first (based on AchievementController)
-    console.log('Fetching industry recognition from API:', `${API_BASE_URL}/achievements`);
     let response;
     
     try {
       response = await axios.get(`${API_BASE_URL}/achievements`);
-      console.log('API Response for achievements:', response);
-      
       // Check if we have data in response
       if (response && response.data && response.data.success && response.data.data) {
         // Extract industry recognition partners from the achievement data
@@ -55,8 +51,6 @@ export const getIndustryRecognition = async () => {
             achievementData.industryRecognition.partners && 
             Array.isArray(achievementData.industryRecognition.partners) && 
             achievementData.industryRecognition.partners.length > 0) {
-          
-          console.log('Found industry recognition partners:', achievementData.industryRecognition.partners);
           
           // Format image URLs in the partners data
           const formattedData = achievementData.industryRecognition.partners.map(partner => ({
@@ -68,21 +62,16 @@ export const getIndustryRecognition = async () => {
             image: partner.logo ? formatImageUrl(partner.logo) : '/award-icon.svg'
           }));
           
-          console.log('Formatted industry recognition data:', formattedData);
           return formattedData;
         }
       }
       
       // If we didn't find partners in the achievements endpoint, try the old endpoints
-      console.log('No partners found in achievements data, trying old endpoints');
       
       // Try with plural endpoint
       response = await axios.get(`${API_BASE_URL}/industry-recognitions`);
-      console.log('API Response for industry-recognitions:', response);
-      
       // Check if data is directly an array
       if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
-        console.log('Using API data (array) for industry recognition:', response.data);
         // Format image URLs in the data
         const formattedData = response.data.map(item => ({
           ...item,
@@ -95,7 +84,6 @@ export const getIndustryRecognition = async () => {
       // Check if data is in response.data.data format
       if (response && response.data && response.data.data && 
           Array.isArray(response.data.data) && response.data.data.length > 0) {
-        console.log('Using API data (nested data) for industry recognition:', response.data.data);
         // Format image URLs in the nested data
         const formattedData = response.data.data.map(item => ({
           ...item,
@@ -106,11 +94,10 @@ export const getIndustryRecognition = async () => {
       }
       
     } catch (error) {
-      console.log('Error with achievements endpoint, trying singular endpoint');
       // If achievements endpoint fails, try with singular endpoint
       try {
         response = await axios.get(`${API_BASE_URL}/industry-recognition`);
-        console.log('API Response for industry-recognition:', response);
+
         
         // Process response data if available
         if (response && response.data) {
@@ -133,15 +120,13 @@ export const getIndustryRecognition = async () => {
           }
         }
       } catch (singularError) {
-        console.log('Error with singular endpoint:', singularError);
+  
       }
     }
     
-    console.log('API returned empty or invalid data, using fallback data');
     return getFallbackIndustryRecognition();
   } catch (error) {
     console.error('Error fetching industry recognition:', error);
-    console.log('Using fallback data due to error');
     return getFallbackIndustryRecognition();
   }
 };

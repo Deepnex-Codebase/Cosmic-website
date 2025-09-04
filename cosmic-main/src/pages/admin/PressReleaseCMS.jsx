@@ -96,7 +96,8 @@ const PressReleaseCMS = () => {
         setStats(data.data);
       }
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      // Removed console.error for fetching stats
+      toast.error('Failed to fetch stats');
     }
   };
 
@@ -209,7 +210,7 @@ const PressReleaseCMS = () => {
         alert('Error: ' + data.message);
       }
     } catch (error) {
-      console.error('Error saving press release:', error);
+      // Removed console.error for saving press release
       alert('Error saving press release: ' + error.message);
     } finally {
       setLoading(false);

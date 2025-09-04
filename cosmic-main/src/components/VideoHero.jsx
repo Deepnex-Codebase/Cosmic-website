@@ -153,19 +153,24 @@ const VideoHero = () => {
     if (!videoHeroData.videoSource) return '';
     
     let videoSrc = '';
-    // If it's already a full URL with our API domain, use it directly
-    if (videoHeroData.videoSource.startsWith('https://api.cosmicpowertech.com/uploads/videos/')) {
+    
+    // If it's already a full URL with http/https, use it directly
+    if (videoHeroData.videoSource.startsWith('http')) {
       videoSrc = videoHeroData.videoSource;
-    } else if (videoHeroData.videoSource.startsWith('/uploads')) {
-      // Format to match the desired pattern
-      const filename = videoHeroData.videoSource.split('/').pop();
-      videoSrc = `https://api.cosmicpowertech.com/uploads/videos/${filename}`;
-    } else if (videoHeroData.videoSource.startsWith('/videos')) {
+    } 
+    // If it starts with /uploads, it's from the server uploads directory
+    else if (videoHeroData.videoSource.startsWith('/uploads')) {
+      // Format to match the server URL pattern
+      const cleanPath = videoHeroData.videoSource.replace(/^\/+/, '');
+      videoSrc = `${SERVER_URL}/${cleanPath}`;
+    } 
+    // If it starts with /videos, it's from the public directory
+    else if (videoHeroData.videoSource.startsWith('/videos')) {
       videoSrc = `${window.location.origin}${videoHeroData.videoSource}`;
-    } else if (videoHeroData.videoSource.startsWith('http')) {
-      videoSrc = videoHeroData.videoSource;
-    } else {
-      videoSrc = `${window.location.origin}${videoHeroData.videoSource}`;
+    } 
+    // For any other relative path
+    else {
+      videoSrc = `${window.location.origin}/${videoHeroData.videoSource.replace(/^\/+/, '')}`;
     }
     
     return videoSrc;

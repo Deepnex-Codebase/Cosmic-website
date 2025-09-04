@@ -27,7 +27,7 @@ const FaqCMS = () => {
         setFaqs(response.data || []);
       }
     } catch (error) {
-      console.error('Error fetching FAQs:', error);
+      // Removed console.error for fetching FAQs
       toast.error('Failed to load FAQs');
     } finally {
       setLoading(false);
@@ -42,7 +42,7 @@ const FaqCMS = () => {
       toast.success('FAQs updated successfully');
       fetchFaqs(); // Refresh the data
     } catch (error) {
-      console.error('Error updating FAQs:', error);
+      // Removed console.error for updating FAQs
       toast.error('Failed to update FAQs');
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ const FaqCMS = () => {
       setNewFaq({ question: '', answer: '' });
       setShowAddForm(false);
     } catch (error) {
-      console.error('Error adding FAQ:', error);
+      // Removed console.error for adding FAQ
     }
   };
 
@@ -80,7 +80,7 @@ const FaqCMS = () => {
       await updateFaqs(updatedFaqs);
       setEditingId(null);
     } catch (error) {
-      console.error('Error updating FAQ:', error);
+      // Removed console.error for updating FAQ
     }
   };
 

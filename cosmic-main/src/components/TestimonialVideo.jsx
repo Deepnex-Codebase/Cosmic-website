@@ -124,7 +124,6 @@ const TestimonialVideo = () => {
   const [hasAnimated, setHasAnimated] = useState(false);
   const [loading, setLoading] = useState(true);
   const sectionRef = useRef(null);
-  const videoRef = useRef(null);
   const companyVideoRef = useRef(null);
   
   // Fetch hero section data from API
@@ -224,27 +223,7 @@ const TestimonialVideo = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [hasAnimated, companyStats]);
   
-  // Ensure background video is always playing
-  useEffect(() => {
-    const video = videoRef.current;
-    
-    if (video) {
-      video.play().catch(error => {
-        console.error("Background video play failed:", error);
-      });
-      
-      // Add event listener for when video ends
-      const handleVideoEnded = () => {
-        video.play();
-      };
-      
-      video.addEventListener('ended', handleVideoEnded);
-      
-      return () => {
-        video.removeEventListener('ended', handleVideoEnded);
-      };
-    }
-  }, []);
+  // Background video has been removed
   
   // Ensure company video is always playing
   useEffect(() => {
@@ -293,22 +272,7 @@ const TestimonialVideo = () => {
         </div>
         
         <div className="relative">
-          {/* Background Video */}
-          <div className="absolute inset-0 w-full h-full overflow-hidden z-0 opacity-20">
-            <video
-              ref={videoRef}
-              className="w-full h-full object-cover"
-              autoPlay
-              loop
-              muted
-              playsInline
-            >
-              <source src={heroSectionData?.backgroundVideo || '/videos/solar-installation.mp4'} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-          
-          <div className="relative z-10">
+          <div className="relative">
             {/* Company Introduction */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-12">
               <div className="lg:col-span-5">
@@ -320,14 +284,29 @@ const TestimonialVideo = () => {
                 >
                   <video 
                     ref={companyVideoRef}
-                    src={heroSectionData?.companyVideo || '/enn.mp4'} 
                     alt="Company Introduction" 
                     className="w-full h-auto rounded-lg shadow-md"
                     autoPlay
                     loop
                     muted
                     playsInline
-                  />
+                  >
+                    <source 
+                      src={
+                        heroSectionData?.companyVideo
+                          ? heroSectionData.companyVideo.startsWith('http')
+                            ? heroSectionData.companyVideo
+                            : heroSectionData.companyVideo.startsWith('/uploads/')
+                              ? `${API_BASE_URL}${heroSectionData.companyVideo.startsWith('/') ? '' : '/'}${heroSectionData.companyVideo}`
+                              : heroSectionData.companyVideo.startsWith('/videos/')
+                                ? `${window.location.origin}${heroSectionData.companyVideo}`
+                                : `${API_BASE_URL}/uploads/videos/${heroSectionData.companyVideo}`
+                          : '/enn.mp4'
+                      } 
+                      type="video/mp4" 
+                    />
+                    Your browser does not support the video tag.
+                  </video>
                 </motion.div>
               </div>
               

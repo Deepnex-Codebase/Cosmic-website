@@ -79,7 +79,6 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/navbar', icon: BiSolidNavigation, label: 'Navigation Bar' },
         { path: '/admin/footer', icon: FaStream, label: 'Footer Management' },
         { path: '/admin/solar-config', icon: FaSolarPanel, label: 'Solar Configuration' },
-        { path: '/admin/solar-calculator', icon: FaCalculator, label: 'Solar Calculator' },
         { path: '/admin/settings', icon: FaCog, label: 'Settings' },
       ]
     }

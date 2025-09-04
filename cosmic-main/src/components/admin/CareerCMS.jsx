@@ -135,7 +135,7 @@ const CareerCMS = () => {
     }
 
     // Show file info for debugging
-    console.log('File selected:', file.name, 'size:', file.size, 'type:', file.type);
+    // Removed console.log for file info
     toast.info(`Uploading ${file.name}...`);
 
     const formData = new FormData();
@@ -143,7 +143,7 @@ const CareerCMS = () => {
     formData.append('section', section);
 
     try {
-      console.log('Sending request to:', `${API_URL}/cms/careers/upload`);
+      // Removed console.log for request URL
       
       const response = await axios.post(`${API_URL}/cms/careers/upload`, formData, {
         headers: {
@@ -151,7 +151,7 @@ const CareerCMS = () => {
         }
       });
 
-      console.log('Upload response:', response.data);
+      // Removed console.log for upload response
 
       // Update the state with the new image URL using formatImageUrl
       setCareerData(prev => ({
@@ -167,12 +167,12 @@ const CareerCMS = () => {
       // Save the updated data to ensure persistence
       await saveCareerData();
     } catch (err) {
-      console.error('Error uploading image:', err);
+      // Removed console.error for upload error
       toast.error(`Upload failed: ${err.message || 'Unknown error'}`);
       
       // Show more detailed error if available
       if (err.response) {
-        console.error('Error response:', err.response.data);
+        // Removed console.error for error response
         toast.error(`Server error: ${err.response.data.message || err.response.statusText}`);
       }
     }
@@ -275,7 +275,7 @@ const CareerCMS = () => {
         
         toast.success('Benefit deleted successfully');
       } catch (error) {
-        console.error('Error deleting benefit:', error);
+        // Removed console.error for benefit deletion
         toast.error('Failed to delete benefit');
         // Refresh data in case of error
         fetchCareerData();
@@ -458,7 +458,7 @@ const CareerCMS = () => {
         
         toast.success('Job deleted successfully');
       } catch (error) {
-        console.error('Error deleting job:', error);
+        // Removed console.error for job deletion
         toast.error('Failed to delete job');
         // Refresh data in case of error
         fetchCareerData();
@@ -540,7 +540,7 @@ const CareerCMS = () => {
         
         toast.success('Department deleted successfully');
       } catch (error) {
-        console.error('Error deleting department:', error);
+        // Removed console.error for department deletion
         toast.error('Failed to delete department');
         // Refresh data in case of error
         fetchCareerData();

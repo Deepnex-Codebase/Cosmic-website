@@ -1,7 +1,6 @@
 import axios from 'axios';
 // Define API_BASE_URL using environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
-console.log('API_BASE_URL for blog service:', API_BASE_URL);
 
 // Create axios instance for blog API with cache-busting headers
 const blogApi = axios.create({
@@ -41,9 +40,6 @@ export const blogService = {
   // Create new blog
   createBlog: async (blogData) => {
     try {
-      console.log('blogService.createBlog called with:', blogData);
-      console.log('API Base URL:', blogApi.defaults.baseURL);
-      
       // Create FormData for multipart/form-data
       const formData = new FormData();
       
@@ -67,11 +63,9 @@ export const blogService = {
           'Content-Type': 'multipart/form-data'
         }
       });
-      console.log('blogService.createBlog response:', response.data);
       return response.data;
     } catch (error) {
       console.error('Error creating blog in service:', error);
-      console.error('Error response:', error.response?.data);
       throw error;
     }
   },

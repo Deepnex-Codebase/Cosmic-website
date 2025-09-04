@@ -232,7 +232,7 @@ const AdminProcesses = () => {
         setProcesses(response.data);
       }
     } catch (error) {
-      console.error('Error fetching processes:', error);
+      // Removed console.error for fetching processes
       toast.error('Failed to fetch processes');
     } finally {
       setLoading(false);

@@ -3,9 +3,6 @@ import axios from 'axios';
 // Define API_URL using environment variable
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
 
-// Log the API URL for debugging
-console.log('Company Culture API URL:', API_URL);
-
 const api = axios.create({
   baseURL: `${API_URL}/cms/company-culture`,
   headers: {
@@ -29,9 +26,6 @@ export const getCompanyCulture = async () => {
 // Update company culture data
 export const updateCompanyCulture = async (data) => {
   try {
-    // Log the data being sent to the API for debugging
-    console.log('Sending data to API:', JSON.stringify(data));
-    
     // Make sure we're sending valid JSON data
     const cleanData = JSON.parse(JSON.stringify(data));
     
@@ -46,7 +40,6 @@ export const updateCompanyCulture = async (data) => {
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Server responded with error:', response.status, errorText);
       throw new Error(`Server error: ${response.status}`);
     }
     
@@ -54,7 +47,6 @@ export const updateCompanyCulture = async (data) => {
     return responseData;
   } catch (error) {
     console.error('Error updating company culture data:', error);
-    console.error('Error details:', error.response?.data || 'No response data');
     throw error;
   }
 };

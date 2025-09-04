@@ -61,7 +61,20 @@ const About = () => {
           loop 
           playsInline
         >
-          <source src={formatImageUrl(aboutData?.hero?.videoUrl) || "/aboutvideo.mp4"} type="video/mp4" />
+          <source 
+            src={
+              aboutData?.hero?.videoUrl
+                ? aboutData.hero.videoUrl.startsWith('http')
+                  ? aboutData.hero.videoUrl
+                  : aboutData.hero.videoUrl.startsWith('/uploads/')
+                    ? `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}${aboutData.hero.videoUrl.startsWith('/') ? '' : '/'}${aboutData.hero.videoUrl}`
+                    : aboutData.hero.videoUrl.startsWith('/videos/')
+                      ? `${window.location.origin}${aboutData.hero.videoUrl}`
+                      : `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}/uploads/about/${aboutData.hero.videoUrl}`
+                : "/aboutvideo.mp4"
+            } 
+            type="video/mp4" 
+          />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/30" />

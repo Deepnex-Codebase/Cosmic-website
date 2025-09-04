@@ -50,7 +50,9 @@ export default function CompanyIntro() {
                 ? companyIntroData.backgroundVideo 
                 : companyIntroData.backgroundVideo.startsWith('/uploads/') 
                   ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
-                  : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/${companyIntroData.backgroundVideo.replace(/^\//, '')}`
+                  : companyIntroData.backgroundVideo.startsWith('/videos/') 
+                    ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
+                    : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/company-intro/${companyIntroData.backgroundVideo.replace(/^\//,'')}` 
                 )
               : "/videos/about.mp4"
           } 

@@ -31,7 +31,7 @@ const TimelineCMS = () => {
         setTimelineItems(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching timeline items:', error);
+      // Removed console.error for fetching timeline items
       alert('Error fetching timeline items');
     } finally {
       setLoading(false);
@@ -186,7 +186,7 @@ const TimelineCMS = () => {
         fetchTimelineItems();
       }
     } catch (error) {
-      console.error('Error saving timeline item:', error);
+      // Removed console.error for saving timeline item
       alert('Error saving timeline item');
     } finally {
       setSubmitting(false);
@@ -203,7 +203,7 @@ const TimelineCMS = () => {
           fetchTimelineItems();
         }
       } catch (error) {
-        console.error('Error deleting timeline item:', error);
+        // Removed console.error for deleting timeline item
         alert('Error deleting timeline item');
       }
     }

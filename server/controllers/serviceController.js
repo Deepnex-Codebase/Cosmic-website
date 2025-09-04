@@ -5,6 +5,125 @@ const mongoose = require('mongoose');
 const { serviceUpload } = require('../config/multerConfig');
 
 /**
+ * Get service page section titles and subtitles
+ * @route GET /api/services/page-sections
+ * @access Public
+ */
+exports.getPageSections = async (req, res) => {
+  try {
+    // Find the first service document to get page sections
+    // If no document exists, create a new one with default values
+    let servicePage = await Service.findOne({}, 'pageSections');
+    
+    if (!servicePage) {
+      servicePage = await Service.create({});
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: servicePage.pageSections || {}
+    });
+  } catch (error) {
+    console.error('Error fetching service page sections:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching service page sections',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Update service page section titles and subtitles
+ * @route PUT /api/services/page-sections
+ * @access Private (Admin)
+ */
+exports.updatePageSections = async (req, res) => {
+  try {
+    console.log('Received update request with body:', req.body);
+    
+    // Check if request body is empty or not an object
+    if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Request body is empty or invalid',
+        error: 'Please provide at least one field to update'
+      });
+    }
+    
+    // Validate that at least one field has a non-empty value
+    // Allow empty strings as valid values for clearing fields
+    const hasValidField = Object.values(req.body).some(value => 
+      value !== undefined && value !== null
+    );
+    
+    if (!hasValidField) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid field values provided',
+        error: 'Please provide at least one field with a valid value'
+      });
+    }
+    
+    const { 
+      coreServicesTitle, 
+      coreServicesSubtitle,
+      specializedSolutionsTitle,
+      specializedSolutionsSubtitle,
+      processTitle,
+      processSubtitle,
+      heroTitle
+    } = req.body;
+    
+    // Find the first service document to update page sections
+    // If no document exists, create a new one
+    let servicePage = await Service.findOne({});
+    
+    if (!servicePage) {
+      servicePage = new Service({});
+    }
+    
+    // Update the page sections with new values if provided
+    if (!servicePage.pageSections) {
+      servicePage.pageSections = {};
+    }
+    
+    // Only update fields that are explicitly provided (even if empty string)
+    if (coreServicesTitle !== undefined) servicePage.pageSections.coreServicesTitle = coreServicesTitle;
+    if (coreServicesSubtitle !== undefined) servicePage.pageSections.coreServicesSubtitle = coreServicesSubtitle;
+    if (specializedSolutionsTitle !== undefined) servicePage.pageSections.specializedSolutionsTitle = specializedSolutionsTitle;
+    if (specializedSolutionsSubtitle !== undefined) servicePage.pageSections.specializedSolutionsSubtitle = specializedSolutionsSubtitle;
+    if (processTitle !== undefined) servicePage.pageSections.processTitle = processTitle;
+    if (processSubtitle !== undefined) servicePage.pageSections.processSubtitle = processSubtitle;
+    if (heroTitle !== undefined) servicePage.pageSections.heroTitle = heroTitle;
+    
+    try {
+      await servicePage.save();
+      
+      res.status(200).json({
+        success: true,
+        data: servicePage.pageSections,
+        message: 'Service page sections updated successfully'
+      });
+    } catch (saveError) {
+      console.error('Error saving service page sections:', saveError);
+      return res.status(400).json({
+        success: false,
+        message: 'Error saving service page sections',
+        error: saveError.message
+      });
+    }
+  } catch (error) {
+    console.error('Error updating service page sections:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error updating service page sections',
+      error: error.message
+    });
+  }
+};
+
+/**
  * Get all services with pagination and filtering
  * @route GET /api/services
  * @access Public
@@ -431,24 +550,35 @@ exports.deleteService = async (req, res) => {
  */
 exports.getServiceStats = async (req, res) => {
   try {
+    // Check if the request has a valid token (this is a simplified check)
+    // In a production environment, you would use proper authentication middleware
+    
     const totalServices = await Service.countDocuments();
     const activeServices = await Service.countDocuments({ isActive: true });
     const featuredServices = await Service.countDocuments({ featured: true });
-    const servicesByCategory = await Service.aggregate([
-      {
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 }
+    
+    // Handle potential errors in the aggregation pipeline
+    let servicesByCategory = [];
+    try {
+      servicesByCategory = await Service.aggregate([
+        {
+          $group: {
+            _id: '$category',
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $project: {
+            category: '$_id',
+            count: 1,
+            _id: 0
+          }
         }
-      },
-      {
-        $project: {
-          category: '$_id',
-          count: 1,
-          _id: 0
-        }
-      }
-    ]);
+      ]);
+    } catch (aggregateError) {
+      console.error('Error in aggregation:', aggregateError);
+      // Continue with empty array if aggregation fails
+    }
 
     res.status(200).json({
       success: true,

@@ -46,7 +46,7 @@ const FooterCMS = () => {
       const data = await response.json();
       setFooterConfig(data);
     } catch (err) {
-      console.error('Error fetching footer configuration:', err);
+      // Removed console.error for fetching footer configuration
       setError(err.message);
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ const FooterCMS = () => {
       const data = await response.json();
       setFooterConfig(data);
     } catch (err) {
-      console.error('Error updating footer configuration:', err);
+      // Removed console.error for updating footer configuration
       setError(err.message);
     } finally {
       setSaving(false);
@@ -99,7 +99,7 @@ const FooterCMS = () => {
       const data = await response.json();
       setFooterConfig(data);
     } catch (err) {
-      console.error('Error uploading logo:', err);
+      // Removed console.error for uploading logo
       setError(err.message);
     } finally {
       setUploadingLogo(false);
@@ -126,7 +126,7 @@ const FooterCMS = () => {
       setShowSectionModal(false);
       setEditingSection(null);
     } catch (err) {
-      console.error('Error adding section:', err);
+      // Removed console.error for adding section
       setError(err.message);
     } finally {
       setSaving(false);
@@ -153,7 +153,7 @@ const FooterCMS = () => {
       setShowSectionModal(false);
       setEditingSection(null);
     } catch (err) {
-      console.error('Error updating section:', err);
+      // Removed console.error for updating section
       setError(err.message);
     } finally {
       setSaving(false);
@@ -176,7 +176,7 @@ const FooterCMS = () => {
       const data = await response.json();
       setFooterConfig(data);
     } catch (err) {
-      console.error('Error deleting section:', err);
+      // Removed console.error for deleting section
       setError(err.message);
     } finally {
       setSaving(false);
@@ -232,7 +232,7 @@ const FooterCMS = () => {
       setEditingLink(null);
       setSelectedSectionId(null);
     } catch (err) {
-      console.error('Error updating link:', err);
+      // Removed console.error for updating link
       setError(err.message);
     } finally {
       setSaving(false);
@@ -255,7 +255,7 @@ const FooterCMS = () => {
       const data = await response.json();
       setFooterConfig(data);
     } catch (err) {
-      console.error('Error deleting link:', err);
+      // Removed console.error for deleting link
       setError(err.message);
     } finally {
       setSaving(false);
@@ -309,7 +309,7 @@ const FooterCMS = () => {
       setShowSocialModal(false);
       setEditingSocial(null);
     } catch (err) {
-      console.error('Error updating social link:', err);
+      // Removed console.error for updating social link
       setError(err.message);
     } finally {
       setSaving(false);
@@ -332,7 +332,7 @@ const FooterCMS = () => {
       const data = await response.json();
       setFooterConfig(data);
     } catch (err) {
-      console.error('Error deleting social link:', err);
+      // Removed console.error for deleting social link
       setError(err.message);
     } finally {
       setSaving(false);

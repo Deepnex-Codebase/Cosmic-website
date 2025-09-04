@@ -30,7 +30,7 @@ const SolarJourneyCMS = () => {
         setMilestones(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching solar journey milestones:', error);
+      // Error handling without console logging
       alert('Error fetching solar journey milestones');
     } finally {
       setLoading(false);
@@ -155,7 +155,7 @@ const SolarJourneyCMS = () => {
           fetchMilestones();
         }
       } catch (error) {
-        console.error('Error deleting solar journey milestone:', error);
+        // Removed console.error for deleting solar journey milestone
         alert('Error deleting solar journey milestone');
       }
     }
@@ -169,7 +169,7 @@ const SolarJourneyCMS = () => {
         fetchMilestones();
       }
     } catch (error) {
-      console.error('Error reordering milestones:', error);
+      // Removed console.error for reordering milestones
       alert('Error reordering milestones');
     }
   };
