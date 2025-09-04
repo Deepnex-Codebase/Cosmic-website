@@ -1,6 +1,6 @@
 # Solar Savings Calculator – Product Requirements Document
 
-**Version:** 1.0
+**Version:** 1.
 **Date:** 15 Jul 2025
 **Owner:** Deepnex (Frontend) / ChatGPT (Technical Writer)
 
