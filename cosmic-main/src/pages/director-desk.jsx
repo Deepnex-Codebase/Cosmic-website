@@ -190,7 +190,7 @@ const DirectorDesk = () => {
           loop
           playsInline
         >
-          <source src="/directordesk.mp4" type="video/mp4" />
+          <source src="../dist/directordesk_new.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/50" />
