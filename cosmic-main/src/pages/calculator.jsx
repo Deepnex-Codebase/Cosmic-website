@@ -486,29 +486,56 @@ const Calculator = () => {
             </div>
             
             <div className="bg-white p-3 md:p-6 rounded-xl border border-accent-500/30 mb-6 md:mb-8">
-              <h3 className="text-lg md:text-xl font-semibold text-accent-950 mb-3 md:mb-4">How Our Calculator Works</h3>
-              <div className="space-y-3 md:space-y-4">
+              <h3 className="text-lg md:text-xl font-semibold text-accent-950 mb-3 md:mb-4">Key Insights</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                <div className="bg-accent-50 p-3 md:p-5 rounded-xl border border-accent-500/30">
+                  <div className="flex items-center mb-2 md:mb-3">
+                    <div className="bg-accent-500 p-1.5 md:p-2 rounded-full mr-2 md:mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 text-accent-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-base md:text-lg font-medium text-accent-950">Recommended System</h4>
+                  </div>
+                  <p className="text-xs md:text-sm text-gray-700 mb-2">Based on your electricity bill:</p>
+                  <p className="text-lg md:text-xl font-bold text-accent-950">{roundedSystemSizeKw_lower} - {roundedSystemSizeKw_upper} kW <span className="text-xs md:text-sm font-normal text-gray-600">system size</span></p>
+                </div>
+                
+                <div className="bg-accent-50 p-3 md:p-5 rounded-xl border border-accent-500/30">
+                  <div className="flex items-center mb-2 md:mb-3">
+                    <div className="bg-accent-500 p-1.5 md:p-2 rounded-full mr-2 md:mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 text-accent-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-base md:text-lg font-medium text-accent-950">Space Requirement</h4>
+                  </div>
+                  <p className="text-xs md:text-sm text-gray-700 mb-2">Space needed per kW:</p>
+                  <p className="text-lg md:text-xl font-bold text-accent-950">100 sq.ft <span className="text-xs md:text-sm font-normal text-gray-600">per kW</span></p>
+                </div>
+                
+                <div className="bg-accent-50 p-3 md:p-5 rounded-xl border border-accent-500/30">
+                  <div className="flex items-center mb-2 md:mb-3">
+                    <div className="bg-accent-500 p-1.5 md:p-2 rounded-full mr-2 md:mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 text-accent-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <h4 className="text-base md:text-lg font-medium text-accent-950">Total Area Required</h4>
+                  </div>
+                  <p className="text-xs md:text-sm text-gray-700 mb-2">For your recommended system:</p>
+                  <p className="text-lg md:text-xl font-bold text-accent-950">{Math.round(areaNeeded)} <span className="text-xs md:text-sm font-normal text-gray-600">sq.ft total</span></p>
+                </div>
+              </div>
+              
+              <div className="mt-6 space-y-3 md:space-y-4">
+                <h3 className="text-lg md:text-xl font-semibold text-accent-950 mb-3 md:mb-4">How Our Calculator Works</h3>
                 <div className="flex">
                   <div className="flex-shrink-0 h-6 w-6 md:h-8 md:w-8 bg-accent-500 rounded-full flex items-center justify-center text-accent-950 font-bold mr-3 md:mr-4 text-xs md:text-base">1</div>
                   <div>
                     <h4 className="text-base md:text-lg font-medium text-accent-950 mb-0.5 md:mb-1">Input Your Details</h4>
                     <p className="text-xs md:text-sm text-gray-700">Enter your location, electricity consumption, and property details to get started.</p>
-                  </div>
-                </div>
-                
-                <div className="flex">
-                  <div className="flex-shrink-0 h-6 w-6 md:h-8 md:w-8 bg-accent-500 rounded-full flex items-center justify-center text-accent-950 font-bold mr-3 md:mr-4 text-xs md:text-base">2</div>
-                  <div>
-                    <h4 className="text-base md:text-lg font-medium text-accent-950 mb-0.5 md:mb-1">Advanced Calculations</h4>
-                    <p className="text-xs md:text-sm text-gray-700">Our algorithm considers sunlight hours, shading, roof area, and local electricity rates to provide accurate estimates.</p>
-                  </div>
-                </div>
-                
-                <div className="flex">
-                  <div className="flex-shrink-0 h-6 w-6 md:h-8 md:w-8 bg-accent-500 rounded-full flex items-center justify-center text-accent-950 font-bold mr-3 md:mr-4 text-xs md:text-base">3</div>
-                  <div>
-                    <h4 className="text-base md:text-lg font-medium text-accent-950 mb-0.5 md:mb-1">Comprehensive Results</h4>
-                    <p className="text-xs md:text-sm text-gray-700">Receive detailed information about system size, costs, savings, payback period, and environmental impact.</p>
                   </div>
                 </div>
               </div>
@@ -639,7 +666,17 @@ const Calculator = () => {
                   <div className="space-y-2 md:space-y-4 mb-4 md:mb-6">
                     <div className="flex justify-between p-2 md:p-3 bg-accent-50 rounded-lg border border-accent-500/20">
                       <span className="text-xs md:text-base text-gray-600">Required Roof Area</span>
-                      <span className="text-xs md:text-base font-semibold text-accent-950">{areaNeeded.toFixed(2)} sq meters</span>
+                      <span className="text-xs md:text-base font-semibold text-accent-950">{Math.round(areaNeeded)} sq.ft</span>
+                    </div>
+                    
+                    <div className="flex justify-between p-2 md:p-3 bg-accent-50 rounded-lg border border-accent-500/20">
+                      <span className="text-xs md:text-base text-gray-600">Space Required per kW</span>
+                      <span className="text-xs md:text-base font-semibold text-accent-950">100 sq.ft</span>
+                    </div>
+                    
+                    <div className="flex justify-between p-2 md:p-3 bg-accent-50 rounded-lg border border-accent-500/20">
+                      <span className="text-xs md:text-base text-gray-600">System Size Based on Bill</span>
+                      <span className="text-xs md:text-base font-semibold text-accent-950">{roundedSystemSizeKw_lower} - {roundedSystemSizeKw_upper} kW</span>
                     </div>
                     
                     <div className="flex justify-between p-2 md:p-3 bg-accent-50 rounded-lg border border-accent-500/20">

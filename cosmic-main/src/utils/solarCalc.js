@@ -91,7 +91,7 @@ export const calculateSolarSystem = (params) => {
   const systemSizeKw = (systemSizeKw_lower + systemSizeKw_upper) / 2;
   
   // Calculate area needed
-  const roofAreaPerKW = cfg.roofAreaPerKW || 100;
+  const roofAreaPerKW = 100; // Fixed value as per requirement: 1 kW requires 100 sq ft
   const areaNeeded = systemSizeKw * roofAreaPerKW;
   
   // Check if roof area is sufficient
