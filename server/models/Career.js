@@ -48,8 +48,8 @@ const CareerSchema = new mongoose.Schema({
     title: { type: String, default: "Don't see the right position?" },
     description: { type: String, default: "Send us your resume and we'll keep you in mind for future opportunities at Cosmic Power Tech" },
     buttonText: { type: String, default: 'Send Your Resume' },
-    buttonLink: { type: String, default: 'mailto:careers@cosmicpowertech.com' },
-    backgroundImage: { type: String, default: '/solar-panels.jpg' }
+    buttonLink: { type: String, default: 'mailto:careers@cosmicpowertech.com' }
+    // backgroundImage field removed
   },
   updatedAt: { type: Date, default: Date.now }
 }, { timestamps: true });

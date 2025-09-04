@@ -348,38 +348,6 @@ const DirectorDesk = () => {
       >
         <TeamSection />
       </motion.div>
-
-      {/* CTA SECTION */}
-      <motion.section
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={fadeUpVariant}
-        className="py-16 px-4 sm:px-6 lg:px-8 bg-primary-600 text-white"
-      >
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Join Us in Our Solar Mission</h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Whether you're looking to power your home, business, or join our team, we invite you to be part of our journey towards a sustainable future.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link
-              to="/contact"
-              className="group relative overflow-hidden inline-flex items-center px-8 py-4 rounded-full bg-accent-500 text-black font-semibold shadow-lg border-2 border-transparent hover:border-accent-500 transition-all duration-300"
-            >
-              <span className="relative z-10 transition-colors duration-300 group-hover:text-white">Contact Us</span>
-              <span className="absolute inset-0 bg-black transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-            </Link>
-            <Link
-              to="/careers"
-              className="group relative overflow-hidden inline-flex items-center px-8 py-4 rounded-full bg-transparent border-2 border-white text-white font-semibold hover:border-accent-500 transition-all duration-300"
-            >
-              <span className="relative z-10 transition-colors duration-300">Join Our Team</span>
-              <span className="absolute inset-0 bg-accent-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-            </Link>
-          </div>
-        </div>
-      </motion.section>
     </div>
   );
 };

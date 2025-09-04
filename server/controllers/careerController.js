@@ -40,7 +40,9 @@ const getCareer = async (req, res) => {
     res.setHeader('Expires', '0');
     res.setHeader('Surrogate-Control', 'no-store');
     
-    let career = await Career.findOne();
+    // Use lean() to get a plain JavaScript object instead of a Mongoose document
+    // This ensures we get fresh data from the database
+    let career = await Career.findOne().lean();
     
     if (!career) {
       // Create default career data if none exists
@@ -222,43 +224,66 @@ const updateCareer = async (req, res) => {
     if (!career) {
       career = new Career(updatedData);
     } else {
-      // Deep merge for nested objects
+      // Complete replacement approach for better reliability
+      // This ensures arrays and nested objects are properly updated
+      
+      // Hero section
       if (updatedData.hero) {
-        career.hero = updatedData.hero;
+        career.hero = {
+          ...career.hero,
+          ...updatedData.hero
+        };
       }
       
+      // Culture section
       if (updatedData.culture) {
-        // Handle culture section with special care for values array
-        if (updatedData.culture.values) {
-          career.culture.values = updatedData.culture.values;
+        // For arrays, always use complete replacement to avoid partial updates
+        if (updatedData.culture.values !== undefined) {
+          career.culture.values = [...updatedData.culture.values];
         }
-        career.culture.title = updatedData.culture.title || career.culture.title;
-        career.culture.subtitle = updatedData.culture.subtitle || career.culture.subtitle;
+        
+        career.culture.title = updatedData.culture.title !== undefined ? 
+          updatedData.culture.title : career.culture.title;
+        career.culture.subtitle = updatedData.culture.subtitle !== undefined ? 
+          updatedData.culture.subtitle : career.culture.subtitle;
       }
       
+      // Benefits section
       if (updatedData.benefits) {
-        // Handle benefits section with special care for categories array
-        if (updatedData.benefits.categories) {
-          career.benefits.categories = updatedData.benefits.categories;
+        // For arrays, always use complete replacement
+        if (updatedData.benefits.categories !== undefined) {
+          career.benefits.categories = [...updatedData.benefits.categories];
         }
-        career.benefits.title = updatedData.benefits.title || career.benefits.title;
-        career.benefits.subtitle = updatedData.benefits.subtitle || career.benefits.subtitle;
+        
+        career.benefits.title = updatedData.benefits.title !== undefined ? 
+          updatedData.benefits.title : career.benefits.title;
+        career.benefits.subtitle = updatedData.benefits.subtitle !== undefined ? 
+          updatedData.benefits.subtitle : career.benefits.subtitle;
       }
       
+      // Open Positions section
       if (updatedData.openPositions) {
-        // Handle openPositions section with special care for departments and jobs arrays
-        if (updatedData.openPositions.departments) {
-          career.openPositions.departments = updatedData.openPositions.departments;
+        // For arrays, always use complete replacement
+        if (updatedData.openPositions.departments !== undefined) {
+          career.openPositions.departments = [...updatedData.openPositions.departments];
         }
-        if (updatedData.openPositions.jobs) {
-          career.openPositions.jobs = updatedData.openPositions.jobs;
+        
+        if (updatedData.openPositions.jobs !== undefined) {
+          career.openPositions.jobs = [...updatedData.openPositions.jobs];
         }
-        career.openPositions.title = updatedData.openPositions.title || career.openPositions.title;
-        career.openPositions.subtitle = updatedData.openPositions.subtitle || career.openPositions.subtitle;
+        
+        career.openPositions.title = updatedData.openPositions.title !== undefined ? 
+          updatedData.openPositions.title : career.openPositions.title;
+        career.openPositions.subtitle = updatedData.openPositions.subtitle !== undefined ? 
+          updatedData.openPositions.subtitle : career.openPositions.subtitle;
       }
       
+      // CTA section
       if (updatedData.cta) {
-        career.cta = updatedData.cta;
+        career.cta = {
+          ...career.cta,
+          ...updatedData.cta
+        };
       }
     }
     
@@ -279,7 +304,14 @@ const uploadImage = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
     
-    const imageUrl = `/${req.file.path.replace(/\\/g, '/')}`;
+    // Check if the upload is for CTA section
+    const section = req.body.section;
+    if (section === 'cta') {
+      return res.status(400).json({ message: 'CTA image upload has been disabled' });
+    }
+    
+    // Create the image URL with BASE_URL
+    const imageUrl = `${process.env.BASE_URL}/${req.file.path.replace(/\\/g, '/')}`;    
     res.status(200).json({ imageUrl });
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -287,9 +319,874 @@ const uploadImage = async (req, res) => {
   }
 };
 
+// Get all culture values
+const getCultureValues = async (req, res) => {
+  try {
+    const career = await Career.findOne();
+    
+    if (!career || !career.culture || !career.culture.values) {
+      return res.status(404).json({ message: 'Culture values not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: career.culture.values
+    });
+  } catch (error) {
+    console.error('Error fetching culture values:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching culture values', 
+      error: error.message 
+    });
+  }
+};
+
+// Get culture value by ID
+const getCultureValueById = async (req, res) => {
+  try {
+    const { valueId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.culture || !career.culture.values) {
+      return res.status(404).json({ message: 'Culture values not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let cultureValue;
+    
+    try {
+      // Try to convert valueId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(valueId);
+      cultureValue = career.culture.values.find(value => 
+        value._id && value._id.equals(objectId)
+      );
+    } catch (err) {
+      // If valueId is not a valid ObjectId, try string comparison as fallback
+      cultureValue = career.culture.values.find(value => 
+        value._id && value._id.toString() === valueId
+      );
+    }
+    
+    if (!cultureValue) {
+      return res.status(404).json({ message: 'Culture value not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: cultureValue
+    });
+  } catch (error) {
+    console.error('Error fetching culture value:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching culture value', 
+      error: error.message 
+    });
+  }
+};
+
+// Add new culture value
+const addCultureValue = async (req, res) => {
+  try {
+    const newValue = req.body;
+    const career = await Career.findOne();
+    
+    if (!career) {
+      return res.status(404).json({ message: 'Career data not found' });
+    }
+    
+    if (!career.culture) {
+      career.culture = {
+        title: 'Our Culture',
+        subtitle: "We're building a team of passionate individuals committed to making clean energy accessible to all",
+        values: []
+      };
+    }
+    
+    career.culture.values.push(newValue);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(201).json({
+      success: true,
+      message: 'Culture value added successfully',
+      data: career.culture.values[career.culture.values.length - 1]
+    });
+  } catch (error) {
+    console.error('Error adding culture value:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error adding culture value', 
+      error: error.message 
+    });
+  }
+};
+
+// Update culture value
+const updateCultureValue = async (req, res) => {
+  try {
+    const { valueId } = req.params;
+    const updatedValue = req.body;
+    const career = await Career.findOne();
+    
+    if (!career || !career.culture || !career.culture.values) {
+      return res.status(404).json({ message: 'Culture values not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let valueIndex = -1;
+    
+    try {
+      // Try to convert valueId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(valueId);
+      valueIndex = career.culture.values.findIndex(value => 
+        value._id && value._id.equals(objectId)
+      );
+    } catch (err) {
+      // If valueId is not a valid ObjectId, try string comparison as fallback
+      valueIndex = career.culture.values.findIndex(value => 
+        value._id && value._id.toString() === valueId
+      );
+    }
+    
+    if (valueIndex === -1) {
+      return res.status(404).json({ message: 'Culture value not found' });
+    }
+    
+    career.culture.values[valueIndex] = {
+      ...career.culture.values[valueIndex].toObject(),
+      ...updatedValue
+    };
+    
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Culture value updated successfully',
+      data: career.culture.values[valueIndex]
+    });
+  } catch (error) {
+    console.error('Error updating culture value:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error updating culture value', 
+      error: error.message 
+    });
+  }
+};
+
+// Delete culture value
+const deleteCultureValue = async (req, res) => {
+  try {
+    const { valueId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.culture || !career.culture.values) {
+      return res.status(404).json({ message: 'Culture values not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let valueIndex = -1;
+    
+    try {
+      // Try to convert valueId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(valueId);
+      valueIndex = career.culture.values.findIndex(value => 
+        value._id && value._id.equals(objectId)
+      );
+    } catch (err) {
+      // If valueId is not a valid ObjectId, try string comparison as fallback
+      valueIndex = career.culture.values.findIndex(value => 
+        value._id && value._id.toString() === valueId
+      );}
+    
+    if (valueIndex === -1) {
+      return res.status(404).json({ message: 'Culture value not found' });
+    }
+    
+    career.culture.values.splice(valueIndex, 1);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Culture value deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting culture value:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error deleting culture value', 
+      error: error.message 
+    });
+  }
+};
+
+// Get all benefit categories
+const getBenefitCategories = async (req, res) => {
+  try {
+    const career = await Career.findOne();
+    
+    if (!career || !career.benefits || !career.benefits.categories) {
+      return res.status(404).json({ message: 'Benefit categories not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: career.benefits.categories
+    });
+  } catch (error) {
+    console.error('Error fetching benefit categories:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching benefit categories', 
+      error: error.message 
+    });
+  }
+};
+
+// Get benefit category by ID
+const getBenefitCategoryById = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.benefits || !career.benefits.categories) {
+      return res.status(404).json({ message: 'Benefit categories not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let benefitCategory;
+    
+    try {
+      // Try to convert categoryId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(categoryId);
+      benefitCategory = career.benefits.categories.find(category => 
+        category._id && category._id.equals(objectId)
+      );
+    } catch (err) {
+      // If categoryId is not a valid ObjectId, try string comparison as fallback
+      benefitCategory = career.benefits.categories.find(category => 
+        category._id && category._id.toString() === categoryId
+      );
+    }
+    
+    if (!benefitCategory) {
+      return res.status(404).json({ message: 'Benefit category not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: benefitCategory
+    });
+  } catch (error) {
+    console.error('Error fetching benefit category:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching benefit category', 
+      error: error.message 
+    });
+  }
+};
+
+// Add new benefit category
+const addBenefitCategory = async (req, res) => {
+  try {
+    const newCategory = req.body;
+    const career = await Career.findOne();
+    
+    if (!career) {
+      return res.status(404).json({ message: 'Career data not found' });
+    }
+    
+    if (!career.benefits) {
+      career.benefits = {
+        title: 'Benefits & Perks',
+        subtitle: 'We value our team members and offer competitive benefits to support your professional and personal growth',
+        categories: []
+      };
+    }
+    
+    career.benefits.categories.push(newCategory);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(201).json({
+      success: true,
+      message: 'Benefit category added successfully',
+      data: career.benefits.categories[career.benefits.categories.length - 1]
+    });
+  } catch (error) {
+    console.error('Error adding benefit category:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error adding benefit category', 
+      error: error.message 
+    });
+  }
+};
+
+// Update benefit category
+const updateBenefitCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const updatedCategory = req.body;
+    const career = await Career.findOne();
+    
+    if (!career || !career.benefits || !career.benefits.categories) {
+      return res.status(404).json({ message: 'Benefit categories not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let categoryIndex = -1;
+    
+    try {
+      // Try to convert categoryId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(categoryId);
+      categoryIndex = career.benefits.categories.findIndex(category => 
+        category._id && category._id.equals(objectId)
+      );
+    } catch (err) {
+      // If categoryId is not a valid ObjectId, try string comparison as fallback
+      categoryIndex = career.benefits.categories.findIndex(category => 
+        category._id && category._id.toString() === categoryId
+      );
+    }
+    
+    if (categoryIndex === -1) {
+      return res.status(404).json({ message: 'Benefit category not found' });
+    }
+    
+    career.benefits.categories[categoryIndex] = {
+      ...career.benefits.categories[categoryIndex].toObject(),
+      ...updatedCategory
+    };
+    
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Benefit category updated successfully',
+      data: career.benefits.categories[categoryIndex]
+    });
+  } catch (error) {
+    console.error('Error updating benefit category:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error updating benefit category', 
+      error: error.message 
+    });
+  }
+};
+
+// Delete benefit category
+const deleteBenefitCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.benefits || !career.benefits.categories) {
+      return res.status(404).json({ message: 'Benefit categories not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let categoryIndex = -1;
+    
+    try {
+      // Try to convert categoryId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(categoryId);
+      categoryIndex = career.benefits.categories.findIndex(category => 
+        category._id && category._id.equals(objectId)
+      );
+    } catch (err) {
+      // If categoryId is not a valid ObjectId, try string comparison as fallback
+      categoryIndex = career.benefits.categories.findIndex(category => 
+        category._id && category._id.toString() === categoryId
+      );
+    }
+    
+    if (categoryIndex === -1) {
+      return res.status(404).json({ message: 'Benefit category not found' });
+    }
+    
+    career.benefits.categories.splice(categoryIndex, 1);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Benefit category deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting benefit category:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error deleting benefit category', 
+      error: error.message 
+    });
+  }
+};
+
+// Get all job positions
+const getJobPositions = async (req, res) => {
+  try {
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.jobs) {
+      return res.status(404).json({ message: 'Job positions not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: career.openPositions.jobs
+    });
+  } catch (error) {
+    console.error('Error fetching job positions:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching job positions', 
+      error: error.message 
+    });
+  }
+};
+
+// Get job position by ID
+const getJobPositionById = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.jobs) {
+      return res.status(404).json({ message: 'Job positions not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let jobPosition;
+    
+    try {
+      // Try to convert jobId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(jobId);
+      jobPosition = career.openPositions.jobs.find(job => 
+        job._id && job._id.equals(objectId)
+      );
+    } catch (err) {
+      // If jobId is not a valid ObjectId, try string comparison as fallback
+      jobPosition = career.openPositions.jobs.find(job => 
+        job._id && job._id.toString() === jobId
+      );
+    }
+    
+    if (!jobPosition) {
+      return res.status(404).json({ message: 'Job position not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: jobPosition
+    });
+  } catch (error) {
+    console.error('Error fetching job position:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching job position', 
+      error: error.message 
+    });
+  }
+};
+
+// Add new job position
+const addJobPosition = async (req, res) => {
+  try {
+    const newJob = req.body;
+    const career = await Career.findOne();
+    
+    if (!career) {
+      return res.status(404).json({ message: 'Career data not found' });
+    }
+    
+    if (!career.openPositions) {
+      career.openPositions = {
+        title: 'Open Positions',
+        subtitle: "Join our team and help us revolutionize India's energy landscape",
+        departments: [{ id: 'all', name: 'All Departments' }],
+        jobs: []
+      };
+    }
+    
+    if (!career.openPositions.jobs) {
+      career.openPositions.jobs = [];
+    }
+    
+    career.openPositions.jobs.push(newJob);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(201).json({
+      success: true,
+      message: 'Job position added successfully',
+      data: career.openPositions.jobs[career.openPositions.jobs.length - 1]
+    });
+  } catch (error) {
+    console.error('Error adding job position:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error adding job position', 
+      error: error.message 
+    });
+  }
+};
+
+// Update job position
+const updateJobPosition = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const updatedJob = req.body;
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.jobs) {
+      return res.status(404).json({ message: 'Job positions not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let jobIndex = -1;
+    
+    try {
+      // Try to convert jobId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(jobId);
+      jobIndex = career.openPositions.jobs.findIndex(job => 
+        job._id && job._id.equals(objectId)
+      );
+    } catch (err) {
+      // If jobId is not a valid ObjectId, try string comparison as fallback
+      jobIndex = career.openPositions.jobs.findIndex(job => 
+        job._id && job._id.toString() === jobId
+      );
+    }
+    
+    if (jobIndex === -1) {
+      return res.status(404).json({ message: 'Job position not found' });
+    }
+    
+    career.openPositions.jobs[jobIndex] = {
+      ...career.openPositions.jobs[jobIndex].toObject(),
+      ...updatedJob
+    };
+    
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Job position updated successfully',
+      data: career.openPositions.jobs[jobIndex]
+    });
+  } catch (error) {
+    console.error('Error updating job position:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error updating job position', 
+      error: error.message 
+    });
+  }
+};
+
+// Delete job position
+const deleteJobPosition = async (req, res) => {
+  try {
+    const { jobId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.jobs) {
+      return res.status(404).json({ message: 'Job positions not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let jobIndex = -1;
+    
+    try {
+      // Try to convert jobId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(jobId);
+      jobIndex = career.openPositions.jobs.findIndex(job => 
+        job._id && job._id.equals(objectId)
+      );
+    } catch (err) {
+      // If jobId is not a valid ObjectId, try string comparison as fallback
+      jobIndex = career.openPositions.jobs.findIndex(job => 
+        job._id && job._id.toString() === jobId
+      );
+    }
+    
+    if (jobIndex === -1) {
+      return res.status(404).json({ message: 'Job position not found' });
+    }
+    
+    career.openPositions.jobs.splice(jobIndex, 1);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Job position deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting job position:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error deleting job position', 
+      error: error.message 
+    });
+  }
+};
+
+// Get all departments
+const getDepartments = async (req, res) => {
+  try {
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.departments) {
+      return res.status(404).json({ message: 'Departments not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: career.openPositions.departments
+    });
+  } catch (error) {
+    console.error('Error fetching departments:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching departments', 
+      error: error.message 
+    });
+  }
+};
+
+// Get department by ID
+const getDepartmentById = async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.departments) {
+      return res.status(404).json({ message: 'Departments not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let department;
+    
+    try {
+      // Try to convert departmentId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(departmentId);
+      department = career.openPositions.departments.find(dept => 
+        dept._id && dept._id.equals(objectId)
+      );
+    } catch (err) {
+      // If departmentId is not a valid ObjectId, try string comparison as fallback
+      department = career.openPositions.departments.find(dept => 
+        dept._id && dept._id.toString() === departmentId
+      );
+    }
+    
+    if (!department) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: department
+    });
+  } catch (error) {
+    console.error('Error fetching department:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error fetching department', 
+      error: error.message 
+    });
+  }
+};
+
+// Add new department
+const addDepartment = async (req, res) => {
+  try {
+    const newDepartment = req.body;
+    const career = await Career.findOne();
+    
+    if (!career) {
+      return res.status(404).json({ message: 'Career data not found' });
+    }
+    
+    if (!career.openPositions) {
+      career.openPositions = {
+        title: 'Open Positions',
+        subtitle: "Join our team and help us revolutionize India's energy landscape",
+        departments: [],
+        jobs: []
+      };
+    }
+    
+    if (!career.openPositions.departments) {
+      career.openPositions.departments = [];
+    }
+    
+    career.openPositions.departments.push(newDepartment);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(201).json({
+      success: true,
+      message: 'Department added successfully',
+      data: career.openPositions.departments[career.openPositions.departments.length - 1]
+    });
+  } catch (error) {
+    console.error('Error adding department:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error adding department', 
+      error: error.message 
+    });
+  }
+};
+
+// Update department
+const updateDepartment = async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const updatedDepartment = req.body;
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.departments) {
+      return res.status(404).json({ message: 'Departments not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let departmentIndex = -1;
+    
+    try {
+      // Try to convert departmentId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(departmentId);
+      departmentIndex = career.openPositions.departments.findIndex(dept => 
+        dept._id && dept._id.equals(objectId)
+      );
+    } catch (err) {
+      // If departmentId is not a valid ObjectId, try string comparison as fallback
+      departmentIndex = career.openPositions.departments.findIndex(dept => 
+        dept._id && dept._id.toString() === departmentId
+      );
+    }
+    
+    if (departmentIndex === -1) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+    
+    career.openPositions.departments[departmentIndex] = {
+      ...career.openPositions.departments[departmentIndex].toObject(),
+      ...updatedDepartment
+    };
+    
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Department updated successfully',
+      data: career.openPositions.departments[departmentIndex]
+    });
+  } catch (error) {
+    console.error('Error updating department:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error updating department', 
+      error: error.message 
+    });
+  }
+};
+
+// Delete department
+const deleteDepartment = async (req, res) => {
+  try {
+    const { departmentId } = req.params;
+    const career = await Career.findOne();
+    
+    if (!career || !career.openPositions || !career.openPositions.departments) {
+      return res.status(404).json({ message: 'Departments not found' });
+    }
+    
+    // Use mongoose's ObjectId for proper comparison
+    const mongoose = require('mongoose');
+    let departmentIndex = -1;
+    
+    try {
+      // Try to convert departmentId to ObjectId for comparison
+      const objectId = new mongoose.Types.ObjectId(departmentId);
+      departmentIndex = career.openPositions.departments.findIndex(dept => 
+        dept._id && dept._id.equals(objectId)
+      );
+    } catch (err) {
+      // If departmentId is not a valid ObjectId, try string comparison as fallback
+      departmentIndex = career.openPositions.departments.findIndex(dept => 
+        dept._id && dept._id.toString() === departmentId
+      );
+    }
+    
+    if (departmentIndex === -1) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+    
+    career.openPositions.departments.splice(departmentIndex, 1);
+    career.updatedAt = Date.now();
+    await career.save();
+    
+    res.status(200).json({
+      success: true,
+      message: 'Department deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting department:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error deleting department', 
+      error: error.message 
+    });
+  }
+};
+
 module.exports = {
   getCareer,
   updateCareer,
   uploadImage,
-  upload
+  upload,
+  getCultureValues,
+  getCultureValueById,
+  addCultureValue,
+  updateCultureValue,
+  deleteCultureValue,
+  getBenefitCategories,
+  getBenefitCategoryById,
+  addBenefitCategory,
+  updateBenefitCategory,
+  deleteBenefitCategory,
+  getJobPositions,
+  getJobPositionById,
+  addJobPosition,
+  updateJobPosition,
+  deleteJobPosition,
+  getDepartments,
+  getDepartmentById,
+  addDepartment,
+  updateDepartment,
+  deleteDepartment
 };

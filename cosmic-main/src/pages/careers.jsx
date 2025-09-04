@@ -434,7 +434,7 @@ const Careers = () => {
 
       {/* CTA Section */}
       <div className="relative bg-gradient-to-r from-primary-700 to-primary-900 py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className={`absolute inset-0 bg-[url('${cta?.backgroundImage || "/solar-panels.jpg"}')] opacity-20 bg-cover bg-center mix-blend-overlay`}></div>
+        <div className="absolute inset-0 bg-[url('/solar-panels.jpg')] opacity-20 bg-cover bg-center mix-blend-overlay"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-primary-900/80"></div>
         
         <motion.div 
