@@ -16,7 +16,7 @@ import ScrollToTop from './components/ScrollToTop';
 import AdminLayout from './components/AdminLayout';
 
 // Pages
-import Home from './pages/Home'
+import Home from './pages/home'
 import About from './pages/about'
 import Services from './pages/services'
 import Projects from './pages/projects'
