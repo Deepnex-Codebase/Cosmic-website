@@ -13,6 +13,7 @@ import CookieConsent from './components/CookieConsent';
 import CustomerSupportChat from './components/CustomerSupportChat';
 import ScrollToTop from './components/ScrollToTop';
 import AdminLayout from './components/AdminLayout';
+import OfferPopup from './components/OfferPopup';
 
 // Pages
 import Home from './pages/home'
@@ -114,6 +115,7 @@ function AppContent() {
 
       <Footer />
       <CookieConsent />
+      <OfferPopup />
       <ScrollToTop />
       <CustomerSupportChat />
       <ToastContainer position="bottom-right" autoClose={5000} />
