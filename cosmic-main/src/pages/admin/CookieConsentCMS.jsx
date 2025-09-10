@@ -40,7 +40,7 @@ const CookieConsentCMS = () => {
       };
       
       console.log('Fetching consents with params:', params);
-      const response = await axios.get('/api/cookie-consent', config);
+      const response = await axios.get('https://api.cosmicpowertech.com/api/cookie-consent', config);
       console.log('API Response:', response.data);
       
       // Check if the response has the expected structure
@@ -178,7 +178,7 @@ const CookieConsentCMS = () => {
       };
       
       console.log('Fetching stats...');
-      const response = await axios.get('/api/cookie-consent/stats', config);
+      const response = await axios.get('https://api.cosmicpowertech.com/api/cookie-consent/stats', config);
       console.log('Stats API Response:', response.data);
       
       if (response.data && response.data.data) {
@@ -301,7 +301,7 @@ const CookieConsentCMS = () => {
           headers: { Authorization: `Bearer ${token}` }
         };
         
-        await axios.delete(`/api/cookie-consent/${id}`, config);
+        await axios.delete(`https://api.cosmicpowertech.com/api/cookie-consent/${id}`, config);
         fetchConsents(currentPage, filters);
       } catch (error) {
         console.error('Error deleting consent record:', error);

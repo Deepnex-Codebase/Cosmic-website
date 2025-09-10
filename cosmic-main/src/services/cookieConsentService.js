@@ -1,11 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'https://api.cosmicpowertech.com/api/cookie-consent';
 
 // Create or update cookie consent record
 export const saveConsent = async (consentData) => {
   try {
-    const response = await axios.post(API_URL, consentData);
+    const response = await axios.post('https://api.cosmicpowertech.com/api/cookie-consent',consentData);
     return response.data;
   } catch (error) {
     console.error('Error saving consent data:', error);
@@ -16,7 +15,7 @@ export const saveConsent = async (consentData) => {
 // Track user activity
 export const trackActivity = async (activityData) => {
   try {
-    const response = await axios.post(`${API_URL}/track-activity`, activityData);
+    const response = await axios.post('https://api.cosmicpowertech.com/api/cookie-consent/track-activity', activityData);
     return response.data;
   } catch (error) {
     console.error('Error tracking user activity:', error);
