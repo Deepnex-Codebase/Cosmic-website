@@ -315,7 +315,6 @@ const HomeCMS = () => {
       // Always use the API_BASE_URL for consistency
       const apiUrl = `${API_BASE_URL}/pan-india-presence`;
       
-      console.log('Using API URL:', apiUrl);
       
       const response = await axios.post(apiUrl, formDataToSend, {
         headers: {

@@ -147,7 +147,6 @@ export default function Portfolio() {
         setGalleryData(extractedImages.slice(0, 8));
       } else {
         // If no projects from API or empty array, use fallback
-        console.log('No projects found from API, using fallback data');
         setFallbackData();
       }
     } catch (error) {

@@ -100,7 +100,7 @@ export default function AchievementCMS() {
             1 // Ensure at least 1
           );
           
-          console.log('Initial load - Max rowId found:', maxRowId);
+          // Max rowId found
           
           // Update availableRows if maxRowId is greater, but ensure at least 2 rows
           setAvailableRows(Math.max(maxRowId, 2));
@@ -124,7 +124,7 @@ export default function AchievementCMS() {
           // If we have new rows to create, update the data
           if (rowsToCreate.length > 0) {
             data.awardWinningSolutions.rows = [...existingRows, ...rowsToCreate];
-            console.log('Created missing row entries:', rowsToCreate);
+            // Created missing row entries
           }
         }
       } else {
@@ -150,12 +150,12 @@ export default function AchievementCMS() {
         1 // Ensure at least 1
       );
       
-      console.log('Max rowId found:', maxRowId);
+      
       
       // Update availableRows if maxRowId is greater
       if (maxRowId > availableRows) {
         setAvailableRows(maxRowId);
-        console.log('Updated availableRows to:', maxRowId);
+     
       }
     }
   }, [pageData.awardWinningSolutions?.achievements]);
@@ -263,9 +263,7 @@ export default function AchievementCMS() {
         }
       };
       
-      console.log(`Added new row ${newRowId} with placeholder achievement`);
-      console.log('Updated achievements:', updatedData.awardWinningSolutions.achievements);
-      console.log('Updated rows:', updatedData.awardWinningSolutions.rows);
+      
       
       return updatedData;
     });
@@ -294,7 +292,7 @@ export default function AchievementCMS() {
         rowId: item?.rowId || numericRowId // Use the provided rowId or the one from the item
       });
       
-      console.log('Setting form data with rowId:', item?.rowId || numericRowId);
+      
     } else if (type === 'certificate') {
       setFormData({
         name: item?.name || '',
@@ -341,7 +339,7 @@ export default function AchievementCMS() {
           rowId: parseInt(formData.rowId, 10) || 1
         };
         
-        console.log('Submitting achievement with rowId:', updatedFormData.rowId);
+        
         
         // Update the form data with the validated rowId
         setFormData(updatedFormData);
@@ -349,7 +347,7 @@ export default function AchievementCMS() {
         // Make sure availableRows is updated if this is a new row
         if (updatedFormData.rowId > availableRows) {
           setAvailableRows(updatedFormData.rowId);
-          console.log('Updated availableRows to match new achievement rowId:', updatedFormData.rowId);
+          
         }
       }
       
@@ -363,7 +361,6 @@ export default function AchievementCMS() {
           rowId: parseInt(formData.rowId, 10) || 1
         };
         
-        // Removed console.log for achievement data
         
         if (editingItem) {
           result = await achievementService.updateAchievement(editingItem._id, achievementData);
@@ -413,8 +410,6 @@ export default function AchievementCMS() {
             return;
           }
           
-          console.log('Deleting row:', rowId);
-          console.log('Current rows:', pageData.awardWinningSolutions.rows);
           
           // Make sure rows is an array
           if (!Array.isArray(pageData.awardWinningSolutions.rows)) {
@@ -426,7 +421,7 @@ export default function AchievementCMS() {
           
           // Update rows array by filtering out the row to delete
           const updatedRows = pageData.awardWinningSolutions.rows.filter(row => row.rowId !== rowId);
-          console.log('Updated rows after deletion:', updatedRows);
+          
           
           // Reassign achievements from this row to row 1
           const updatedAchievements = pageData.awardWinningSolutions.achievements.map(achievement => {
@@ -446,7 +441,6 @@ export default function AchievementCMS() {
                 achievements: updatedAchievements
               }
             };
-            console.log('New state after row deletion:', newState.awardWinningSolutions.rows);
             return newState;
           });
           

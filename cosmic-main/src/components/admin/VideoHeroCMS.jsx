@@ -163,7 +163,6 @@ const VideoHeroCMS = () => {
     if (!videoHeroData.videoSource) return '';
     
     let videoSrc = '';
-    console.log('Original videoSource:', videoHeroData.videoSource);
     
     // If it's already a full URL with http/https, use it directly
     if (videoHeroData.videoSource.startsWith('http')) {
@@ -184,7 +183,6 @@ const VideoHeroCMS = () => {
       videoSrc = `${window.location.origin}/${videoHeroData.videoSource.replace(/^\/+/, '')}`;
     }
     
-    console.log('Processed videoSrc:', videoSrc);
     return videoSrc;
   };
 

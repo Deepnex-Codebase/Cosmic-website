@@ -76,7 +76,6 @@ const CareerCMS = () => {
       setCareerData(response.data);
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching career data:', err);
       setError('Failed to load career information. Please try again later.');
       setLoading(false);
       toast.error('Failed to load career data');
@@ -114,7 +113,6 @@ const CareerCMS = () => {
       // Force a refresh of the data
       fetchCareerData();
     } catch (err) {
-      console.error('Error saving career data:', err);
       setSaving(false);
       toast.error('Failed to save career data');
     }
@@ -135,7 +133,6 @@ const CareerCMS = () => {
     }
 
     // Show file info for debugging
-    // Removed console.log for file info
     toast.info(`Uploading ${file.name}...`);
 
     const formData = new FormData();
@@ -143,7 +140,6 @@ const CareerCMS = () => {
     formData.append('section', section);
 
     try {
-      // Removed console.log for request URL
       
       const response = await axios.post(`${API_URL}/cms/careers/upload`, formData, {
         headers: {
@@ -151,7 +147,6 @@ const CareerCMS = () => {
         }
       });
 
-      // Removed console.log for upload response
 
       // Update the state with the new image URL using formatImageUrl
       setCareerData(prev => ({
@@ -243,7 +238,6 @@ const CareerCMS = () => {
       
       toast.success(editingBenefitIndex !== null ? 'Benefit updated successfully' : 'Benefit added successfully');
     } catch (error) {
-      console.error('Error saving benefit:', error);
       toast.error('Failed to save benefit');
       // Refresh data in case of error
       fetchCareerData();
@@ -318,7 +312,6 @@ const CareerCMS = () => {
       
       toast.success(editingValueIndex !== null ? 'Value updated successfully' : 'Value added successfully');
     } catch (error) {
-      console.error('Error saving value:', error);
       toast.error('Failed to save value');
       // Refresh data in case of error
       fetchCareerData();
@@ -350,7 +343,6 @@ const CareerCMS = () => {
         
         toast.success('Value deleted successfully');
       } catch (error) {
-        console.error('Error deleting value:', error);
         toast.error('Failed to delete value');
         // Refresh data in case of error
         fetchCareerData();
@@ -422,7 +414,6 @@ const CareerCMS = () => {
       
       toast.success(editingJobIndex !== null ? 'Job updated successfully' : 'Job added successfully');
     } catch (error) {
-      console.error('Error saving job:', error);
       toast.error('Failed to save job');
       // Refresh data in case of error
       fetchCareerData();
@@ -509,7 +500,6 @@ const CareerCMS = () => {
       
       toast.success(editingDepartmentIndex !== null ? 'Department updated successfully' : 'Department added successfully');
     } catch (error) {
-      console.error('Error saving department:', error);
       toast.error('Failed to save department');
       // Refresh data in case of error
       fetchCareerData();

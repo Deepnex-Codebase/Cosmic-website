@@ -34,7 +34,7 @@ const AdminCompanyCulture = () => {
           typeof FaIcons[key] === 'function' && key.startsWith('Fa')
         );
         
-        console.log(`Found ${allFaIconNames.length} total Font Awesome icons`);
+        // Found total Font Awesome icons
         
         // Format all available icons
         const formattedIcons = allFaIconNames.map(icon => ({
@@ -43,7 +43,7 @@ const AdminCompanyCulture = () => {
           label: icon.replace('Fa', '')
         }));
         
-        console.log(`Loaded ${formattedIcons.length} icons`);
+        // Loaded icons
         setAvailableIcons(formattedIcons);
         setFilteredIcons(formattedIcons);
       } catch (error) {
@@ -1149,7 +1149,6 @@ const FontAwesomeIconSelector = ({ onClose, onSelectIcon }) => {
           label: icon.replace('Fa', '')
         })).filter(icon => icon.component);
         
-        console.log(`Modal loaded ${formattedIcons.length} icons`);
         setAvailableIcons(formattedIcons);
         setFilteredIcons(formattedIcons);
       } catch (error) {

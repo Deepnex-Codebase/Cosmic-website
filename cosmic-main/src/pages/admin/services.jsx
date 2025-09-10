@@ -202,8 +202,6 @@ const AdminServices = () => {
         heroTitle: pageSections.heroTitle || ''
       };
       
-      console.log('Sending page section data:', sectionData);
-      
       // Make sure we're sending a non-empty object
       if (Object.values(sectionData).some(value => value !== '')) {
         const response = await updatePageSections(sectionData);
@@ -285,9 +283,6 @@ const AdminServices = () => {
         image: formData.image
       };
       
-      // Log the data being sent
-      console.log('Sending service data:', serviceData);
-
       let response;
       if (editingService) {
         response = await updateService(editingService._id, serviceData);

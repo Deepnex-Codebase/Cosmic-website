@@ -130,10 +130,8 @@ const TeamAdmin = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this team member?')) {
       try {
-        console.log(`Attempting to delete team member with ID: ${id} from component`);
         // Call the updated deleteTeamMember function
         const response = await teamService.deleteTeamMember(id);
-        console.log('Delete response:', response);
         
         if (response && response.data && response.data.success) {
           toast.success('Team member deleted successfully');
@@ -151,7 +149,6 @@ const TeamAdmin = () => {
         let errorMessage = 'Server error';
         if (error.response && error.response.data) {
           errorMessage = error.response.data.message || error.response.data.error || errorMessage;
-          console.log('Error response data:', error.response.data);
         } else if (error.message) {
           errorMessage = error.message;
         }

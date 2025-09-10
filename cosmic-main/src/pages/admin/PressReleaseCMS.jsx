@@ -62,7 +62,6 @@ const PressReleaseCMS = () => {
         _: timestamp // Add cache-busting parameter
       });
       
-      console.log('Fetching press releases with params:', params.toString());
       const response = await fetch(`${API_BASE_URL}/press-releases?${params}`, {
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -71,7 +70,6 @@ const PressReleaseCMS = () => {
         }
       });
       const data = await response.json();
-      console.log('Press releases API response:', data);
       
       if (data.success) {
         setPressReleases(data.data);

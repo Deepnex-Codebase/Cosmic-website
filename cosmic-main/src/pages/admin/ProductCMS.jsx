@@ -67,13 +67,12 @@ const ProductCMS = () => {
     try {
       setLoading(true);
       const response = await productService.getAllProducts();
-      console.log('Full API Response:', response);
-      console.log('Response data:', response.data);
+
       
       // Axios returns full response object, we need response.data
       if (response.data && response.data.success && response.data.data) {
         setProducts(response.data.data);
-        console.log('Products set:', response.data.data);
+
       } else {
         console.error('Invalid response structure:', response);
         setProducts([]);
@@ -249,12 +248,10 @@ const ProductCMS = () => {
       });
       
       // Add specifications with dot notation
-      console.log('Frontend - Sending specifications:', formData.specifications);
       Object.keys(formData.specifications).forEach(key => {
         // Send all specification fields, even if empty (for proper updates)
         const value = formData.specifications[key] || '';
         formDataToSend.append(`specifications.${key}`, value);
-        console.log(`Frontend - Adding specification: ${key} = ${value}`);
       });
       
       // Add images with folder parameter for proper image path
@@ -274,7 +271,6 @@ const ProductCMS = () => {
         formDataToSend.append('folder', 'navbar');
       }
 
-      console.log('Submitting form data:', formDataToSend);
       
       let response;
       if (editingProduct) {
@@ -283,7 +279,6 @@ const ProductCMS = () => {
         response = await productService.createProduct(formDataToSend);
       }
       
-      console.log('Submit response:', response);
        
        // Axios returns full response object, we need response.data
        if (response.data && response.data.success) {
@@ -305,8 +300,6 @@ const ProductCMS = () => {
 
   // Edit product
   const handleEdit = (product) => {
-    console.log('Editing product:', product);
-    console.log('Product specifications:', product.specifications);
     
     setEditingProduct(product);
     
@@ -385,7 +378,6 @@ const ProductCMS = () => {
       document.getElementById('hoverImagePreview').style.display = 'block';
     }
     
-    console.log('Form data set with specifications:', mergedSpecs);
     setShowForm(true);
   };
 

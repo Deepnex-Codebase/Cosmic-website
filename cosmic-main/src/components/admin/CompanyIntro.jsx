@@ -51,7 +51,6 @@ const CompanyIntro = () => {
         }
         
         setVideoPreview(videoUrl);
-        console.log('Video preview URL:', videoUrl);
         setExistingData(result.data);
       }
     } catch (error) {
@@ -151,8 +150,6 @@ const CompanyIntro = () => {
         : `${API_BASE_URL}/company-intro`;
       
       const method = existingData ? 'PUT' : 'POST';
-      
-      console.log('Submitting to URL:', url);
 
       const response = await fetch(url, {
         method: method,
