@@ -100,8 +100,8 @@ const CookieConsent = () => {
   return (
     <>
       {/* Main Cookie Banner */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg z-50 p-5 md:p-6 border-t-2 border-yellow-green-300 w-full">
-        <div className="container mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-5">
+      <div className="fixed bottom-0 left-0 right-0 bg-white shadow-xl z-50 p-5 md:p-6 border-t-4 border-[#9fc22f] w-full animate-slideUp">
+        <div className="container mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-5 rounded-t-lg">
           <div className="text-gray-800 max-w-2xl">
             <div className="flex items-center gap-2 mb-2">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,18 +121,18 @@ const CookieConsent = () => {
           <div className="flex flex-col gap-3 justify-end min-w-[200px]">
             <button 
               onClick={acceptCookies}
-              className="px-4 py-2.5 bg-yellow-green-500 text-white rounded-md hover:bg-yellow-green-600 transition-colors text-sm font-medium w-full flex items-center justify-center gap-2"
+              className="px-4 py-3 bg-[#9fc22f] text-white rounded-md hover:bg-[#8aaa25] transition-colors text-base font-bold w-full flex items-center justify-center gap-2 shadow-md"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               Accept All Cookies
             </button>
             <button 
               onClick={() => setShowModal(true)}
-              className="px-4 py-2.5 bg-white border border-yellow-green-500 text-yellow-green-600 rounded-md hover:bg-yellow-green-50 transition-colors text-sm font-medium w-full flex items-center justify-center gap-2"
+              className="px-4 py-3 bg-white border-2 border-[#9fc22f] text-[#9fc22f] rounded-md hover:bg-gray-50 transition-colors text-base font-medium w-full flex items-center justify-center gap-2 shadow-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -140,9 +140,9 @@ const CookieConsent = () => {
             </button>
             <button 
               onClick={declineCookies}
-              className="px-4 py-2.5 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors text-sm font-medium w-full flex items-center justify-center gap-2"
+              className="px-4 py-3 border-2 border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 transition-colors text-base font-medium w-full flex items-center justify-center gap-2 shadow-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
               Decline All
@@ -283,7 +283,7 @@ const CookieConsent = () => {
               </button>
               <button 
                 onClick={savePreferences}
-                className="px-4 py-2 bg-yellow-green-500 text-white rounded-md hover:bg-yellow-green-600 transition-colors text-sm font-medium"
+                className="px-4 py-2.5 bg-[#9fc22f] text-white rounded-md hover:bg-[#8aaa25] transition-colors text-sm font-bold shadow-md"
               >
                 Save Preferences
               </button>
