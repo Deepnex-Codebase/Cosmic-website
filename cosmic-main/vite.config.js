@@ -9,8 +9,8 @@ export default defineConfig({
     port: 5174,
     proxy: {
       '/api': {
-       // target: 'https://api.cosmicpowertech.com',
-        target: 'http://localhost:8000',
+       target: 'https://api.cosmicpowertech.com',
+        //target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api'),
@@ -21,8 +21,8 @@ export default defineConfig({
         }
       },
       '/uploads': {
-        //target: 'https://api.cosmicpowertech.com',
-         target: 'http://localhost:8000',
+        target: 'https://api.cosmicpowertech.com',
+        // target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/uploads/, '/uploads'),
