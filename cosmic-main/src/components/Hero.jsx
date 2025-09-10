@@ -329,7 +329,7 @@ export default function Hero() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">  
                 <Link
-                  to="/advanced-calculator"
+                  to="/calculator"
                   className="group relative overflow-hidden inline-flex items-center pl-5 sm:pl-8 md:pl-10 pr-4 sm:pr-5 md:pr-6 py-2 sm:py-3 md:py-3 bg-accent-500 text-gray-900 rounded-full font-semibold shadow-lg text-sm sm:text-base md:text-lg border-2 border-transparent hover:border-accent-500 transition-all duration-300"
                 >
                   <span className="relative z-10 transition-colors duration-300 group-hover:text-white">Try Advanced Calculator</span>

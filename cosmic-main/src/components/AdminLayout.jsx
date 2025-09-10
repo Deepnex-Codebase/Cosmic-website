@@ -69,6 +69,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/press-releases', icon: FaRegFileAlt, label: 'Press Releases' },
         { path: '/admin/careers', icon: FaBriefcase, label: 'Careers' },
         { path: '/admin/forms', icon: FaWpforms, label: 'Form Management' },
+        { path: '/admin/offers', icon: FaBullhorn, label: 'Special Offers' },
       ]
     },
     {

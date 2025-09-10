@@ -1,24 +1,64 @@
 import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 
 const OfferPopup = () => {
   const [visible, setVisible] = useState(false);
+  const [offer, setOffer] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user has accepted cookies and hasn't closed the popup before
-    const cookieConsent = localStorage.getItem('cookieConsent');
-    const popupClosed = localStorage.getItem('offerPopupClosed');
+    // Fetch active offer from the backend
+    const fetchActiveOffer = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/cms/offers/active');
+        
+        if (response.data.success && response.data.data) {
+          setOffer(response.data.data);
+          
+          // Check if user has accepted cookies and hasn't closed the popup before
+          const cookieConsent = localStorage.getItem('cookieConsent');
+          const popupClosed = localStorage.getItem('offerPopupClosed');
+          
+          // Only show offer popup if cookies were accepted and popup wasn't closed before
+          if ((cookieConsent === 'accepted' || cookieConsent === 'customized') && !popupClosed) {
+            // Show popup immediately after cookie acceptance
+            setVisible(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching active offer:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    // Only show offer popup if cookies were accepted and popup wasn't closed before
-    if ((cookieConsent === 'accepted' || cookieConsent === 'customized') && !popupClosed) {
-      // Show popup after 10 seconds (only once)
-      const timerId = setTimeout(() => {
-        setVisible(true);
-      }, 10000); // 10 seconds
-      
-      // Clean up timeout if component unmounts
-      return () => clearTimeout(timerId);
-    }
+    fetchActiveOffer();
   }, []);
+  
+  // Listen for cookie consent changes
+  useEffect(() => {
+    const handleCookieConsentChange = () => {
+      const cookieConsent = localStorage.getItem('cookieConsent');
+      const popupClosed = localStorage.getItem('offerPopupClosed');
+      
+      // If cookies were just accepted and popup wasn't closed before, show the popup
+      if ((cookieConsent === 'accepted' || cookieConsent === 'customized') && !popupClosed && offer) {
+        setVisible(true);
+      }
+    };
+    
+    // Add event listener for storage changes
+    window.addEventListener('storage', handleCookieConsentChange);
+    
+    // Also check on mount
+    handleCookieConsentChange();
+    
+    // Clean up
+    return () => {
+      window.removeEventListener('storage', handleCookieConsentChange);
+    };
+  }, [offer]);
 
   // Close the popup and remember that user closed it
   const closePopup = () => {
@@ -29,8 +69,8 @@ const OfferPopup = () => {
     localStorage.setItem('offerPopupClosed', 'true');
   };
 
-  // If not visible, don't render anything
-  if (!visible) {
+  // If not visible or no active offer, don't render anything
+  if (!visible || !offer || loading) {
     return null;
   }
 
@@ -38,8 +78,8 @@ const OfferPopup = () => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full overflow-hidden animate-fadeIn">
         {/* Header with close button */}
-        <div className="bg-[#cae28e] p-4 flex justify-between items-center">
-          <h2 className="text-white font-bold text-xl">Special Offer!</h2>
+        <div className="p-4 flex justify-between items-center" style={{ backgroundColor: offer.backgroundColor || '#cae28e' }}>
+          <h2 className="text-white font-bold text-xl">{offer.title}</h2>
           <button 
             onClick={closePopup}
             className="text-white hover:text-yellow-green-100 transition-colors"
@@ -54,37 +94,43 @@ const OfferPopup = () => {
         <div className="p-6">
           <div className="mb-4 text-center">
             <span className="inline-block bg-yellow-green-100 text-yellow-green-800 text-sm font-medium px-3 py-1 rounded-full mb-3">
-              Limited Time Offer
+              {offer.subtitle}
             </span>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">20% OFF on Solar Panels</h3>
-            <p className="text-gray-600">Get 20% discount on all our premium solar panel installations when you book this month!</p>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">{offer.discountPercentage}% OFF on Solar Panels</h3>
+            <p className="text-gray-600">{offer.description}</p>
           </div>
           
           <div className="bg-yellow-green-50 p-4 rounded-lg mb-4 border border-yellow-green-100">
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-700 font-medium">Offer ends in:</span>
-              <span className="text-yellow-green-700 font-bold">7 days</span>
+              <span className="text-yellow-green-700 font-bold">{offer.expiryDays} days</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-700 font-medium">Discount:</span>
-              <span className="text-yellow-green-700 font-bold">20%</span>
+              <span className="text-yellow-green-700 font-bold">{offer.discountPercentage}%</span>
             </div>
           </div>
           
           <div className="text-center">
-            <p className="text-sm text-gray-500 mb-4">Use code <span className="font-bold text-yellow-green-600">COSMIC20</span> at checkout</p>
-            <button 
-              onClick={closePopup}
-              className="w-full bg-yellow-green-500 text-white py-3 px-4 rounded-md font-medium hover:bg-yellow-green-600 transition-colors"
-            >
-              Claim Offer Now
-            </button>
+            <p className="text-sm text-gray-500 mb-4">Use code <span className="font-bold text-yellow-green-600">{offer.discountCode}</span> at checkout</p>
+            <div className="flex flex-col space-y-3">
+              <button 
+                onClick={closePopup}
+                className="w-full text-white py-3 px-4 rounded-md font-medium transition-colors"
+                style={{ backgroundColor: offer.buttonColor || '#4CAF50', hover: { backgroundColor: offer.buttonColor ? `${offer.buttonColor}dd` : '#45a049' } }}
+              >
+                Claim Offer Now
+              </button>
+              <p className="text-xs text-gray-500 text-center">
+                By using this offer, you agree to our <a href="/privacy-policy" className="underline hover:text-yellow-green-600">Privacy Policy</a> and <a href="/terms" className="underline hover:text-yellow-green-600">Terms of Service</a>.
+              </p>
+            </div>
           </div>
         </div>
         
         {/* Footer */}
         <div className="bg-gray-50 px-6 py-3 text-center text-xs text-gray-500 border-t">
-          *Terms and conditions apply. Offer valid until limited stock lasts.
+          {offer.termsAndConditions}
         </div>
       </div>
     </div>

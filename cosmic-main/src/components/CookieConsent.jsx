@@ -35,6 +35,12 @@ const CookieConsent = () => {
     
     // Set all cookies using the utility function
     setAllCookies();
+    
+    // Reset offerPopupClosed to ensure the offer can be shown
+    localStorage.removeItem('offerPopupClosed');
+    
+    // Dispatch storage event to notify other components
+    window.dispatchEvent(new Event('storage'));
   };
   
   const savePreferences = () => {
@@ -62,6 +68,12 @@ const CookieConsent = () => {
     // Hide the modal and banner
     setShowModal(false);
     setVisible(false);
+    
+    // Reset offerPopupClosed to ensure the offer can be shown
+    localStorage.removeItem('offerPopupClosed');
+    
+    // Dispatch storage event to notify other components
+    window.dispatchEvent(new Event('storage'));
   };
 
   const declineCookies = () => {

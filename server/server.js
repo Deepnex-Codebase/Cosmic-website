@@ -40,6 +40,7 @@ const footerConfigurationRoutes = require('./routes/footerConfigurationRoutes');
 
 const navbarConfigurationRoutes = require('./routes/navbarConfigurationRoutes');
 const careerRoutes = require('./routes/careerRoutes');
+const offerRoutes = require('./routes/offerRoutes');
 
 // Initialize Express app
 const app = express();
@@ -97,6 +98,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/cms/about', aboutRoutes);
 app.use('/api/cms/company-culture', companyCultureRoutes);
 app.use('/api/cms/careers', careerRoutes);
+app.use('/api/cms/offers', offerRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/processes', processRoutes);

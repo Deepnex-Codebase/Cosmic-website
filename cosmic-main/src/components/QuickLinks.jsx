@@ -13,7 +13,7 @@ const quickLinks = [
     title: 'Advanced Calculator',
     description: 'Get detailed financial projections and environmental impact analysis with our advanced calculator.',
     icon: <FaCalculator className="text-3xl text-[#cae28e]" />,
-    href: '/advanced-calculator',
+    href: '/calculator',
   },
   {
     title: 'Products Catalog',

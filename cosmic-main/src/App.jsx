@@ -58,6 +58,7 @@ import AdminTeamCelebration from './pages/admin/team-celebration';
 import SolarConfigPage from './pages/admin/solar-config';
 import CareersAdmin from './pages/admin/careers';
 import Settings from './pages/admin/Settings';
+import OfferCMS from './pages/admin/OfferCMS';
 
 import NavbarCMS from './components/NavbarCMS';
 
@@ -164,6 +165,7 @@ const AdminRoutes = () => {
               <Route path="/navbar" element={<NavbarCMS />} />
               <Route path="/solar-config" element={<SolarConfigPage />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/offers" element={<OfferCMS />} />
             </Routes>
           </AdminLayout>
         </ProtectedRoute>
