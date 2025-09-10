@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/cookie-consent';
+const API_URL = 'https://api.cosmicpowertech.com/api/cookie-consent';
 
 // Create or update cookie consent record
 export const saveConsent = async (consentData) => {
