@@ -4,6 +4,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const path = require('path');
+const cookieParser = require('cookie-parser');
 
 // Import routes
 const chatRoutes = require('./routes/chatRoutes');
@@ -15,6 +16,7 @@ const directorRoutes = require('./routes/directorRoutes');
 const teamRoutes = require('./routes/teamRoutes');
 const aboutRoutes = require('./routes/aboutRoutes');
 const companyCultureRoutes = require('./routes/companyCultureRoutes');
+const cookieConsentRoutes = require('./routes/cookieConsentRoutes');
 const userRoutes = require('./routes/userRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const projectRoutes = require('./routes/projectRoutes');
@@ -47,12 +49,13 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['https://cosmicpowertech.com', 'https://api.cosmicpowertech.com' , 'http://localhost:5174'], // Allow all origins
+  origin: ['https://cosmicpowertech.com', "https://www.cosmicpowertech.com", 'https://api.cosmicpowertech.com' , 'http://localhost:5174' ], // Allow all origins
   methods: ["GET", "POST", "PUT", "DELETE" ,"OPTIONS" , "PATCH"],
   credentials: true,
 }));
 app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ limit: '200mb', extended: true }));
+app.use(cookieParser());
 app.use(morgan('dev'));
 
 // Serve uploaded files
@@ -127,6 +130,7 @@ app.use('/api/form-config', formConfigurationRoutes);
 app.use('/api/footer-config', footerConfigurationRoutes);
 
 app.use('/api/navbar-config', navbarConfigurationRoutes);
+app.use('/api/cookie-consent', cookieConsentRoutes);
 
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

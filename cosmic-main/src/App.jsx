@@ -59,6 +59,7 @@ import SolarConfigPage from './pages/admin/solar-config';
 import CareersAdmin from './pages/admin/careers';
 import Settings from './pages/admin/Settings';
 import OfferCMS from './pages/admin/OfferCMS';
+import CookieConsentCMS from './pages/admin/CookieConsentCMS';
 
 import NavbarCMS from './components/NavbarCMS';
 
@@ -166,6 +167,7 @@ const AdminRoutes = () => {
               <Route path="/solar-config" element={<SolarConfigPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/offers" element={<OfferCMS />} />
+              <Route path="/cookie-consent" element={<CookieConsentCMS />} />
             </Routes>
           </AdminLayout>
         </ProtectedRoute>

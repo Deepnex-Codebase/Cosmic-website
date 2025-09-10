@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
-import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaDatabase } from 'react-icons/fa';
+import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaDatabase, FaCookieBite } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { IoSettingsSharp } from 'react-icons/io5';
 import { BiSolidNavigation } from 'react-icons/bi';
@@ -70,6 +70,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/careers', icon: FaBriefcase, label: 'Careers' },
         { path: '/admin/forms', icon: FaWpforms, label: 'Form Management' },
         { path: '/admin/offers', icon: FaBullhorn, label: 'Special Offers' },
+        { path: '/admin/cookie-consent', icon: FaCookieBite, label: 'Cookie Consent' },
       ]
     },
     {
@@ -148,7 +149,7 @@ const AdminLayout = ({ children }) => {
       </div>
       
       {/* Main Content */}
-      <div className="flex-1 ml-64 overflow-x-hidden overflow-y-auto bg-gray-50">
+      <div className="flex-1 ml-64 overflow-y-auto bg-gray-50">
         {/* Top Navigation */}
         <header className="bg-white shadow-sm sticky top-0 z-10">
           <div className="px-6 py-4 flex justify-between items-center">

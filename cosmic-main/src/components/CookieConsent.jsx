@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { setCookie, setAllCookies, getCookie } from '../utils/cookies';
+import { saveConsent, getUserIP, getUserAgent } from '../services/cookieConsentService';
+import { startTracking, getTrackingData, resetTracking } from '../utils/activityTracker';
 
 const CookieConsent = () => {
   const [visible, setVisible] = useState(false);
@@ -21,7 +23,7 @@ const CookieConsent = () => {
     }
   }, []);
 
-  const acceptCookies = () => {
+  const acceptCookies = async () => {
     // Set cookie consent to true in localStorage
     localStorage.setItem('cookieConsent', 'accepted');
     
@@ -39,11 +41,35 @@ const CookieConsent = () => {
     // Reset offerPopupClosed to ensure the offer can be shown
     localStorage.removeItem('offerPopupClosed');
     
+    // Start tracking user activity
+    startTracking();
+    
+    // Save consent data to backend
+    try {
+      const ipAddress = await getUserIP();
+      const userAgent = getUserAgent();
+      
+      await saveConsent({
+        consentChoice: 'accepted',
+        cookieSettings: {
+          essential: true,
+          analytics: true,
+          marketing: true,
+          preferences: true
+        },
+        ipAddress,
+        userAgent,
+        userActivity: getTrackingData()
+      });
+    } catch (error) {
+      console.error('Error saving consent data:', error);
+    }
+    
     // Dispatch storage event to notify other components
     window.dispatchEvent(new Event('storage'));
   };
   
-  const savePreferences = () => {
+  const savePreferences = async () => {
     // Save user preferences
     localStorage.setItem('cookieConsent', 'customized');
     
@@ -69,6 +95,27 @@ const CookieConsent = () => {
     setShowModal(false);
     setVisible(false);
     
+    // Start tracking user activity if analytics is enabled
+    if (cookieSettings.analytics) {
+      startTracking();
+    }
+    
+    // Save consent data to backend
+    try {
+      const ipAddress = await getUserIP();
+      const userAgent = getUserAgent();
+      
+      await saveConsent({
+        consentChoice: 'customized',
+        cookieSettings,
+        ipAddress,
+        userAgent,
+        userActivity: cookieSettings.analytics ? getTrackingData() : null
+      });
+    } catch (error) {
+      console.error('Error saving consent data:', error);
+    }
+    
     // Reset offerPopupClosed to ensure the offer can be shown
     localStorage.removeItem('offerPopupClosed');
     
@@ -76,7 +123,7 @@ const CookieConsent = () => {
     window.dispatchEvent(new Event('storage'));
   };
 
-  const declineCookies = () => {
+  const declineCookies = async () => {
     // Set cookie consent to false in localStorage
     localStorage.setItem('cookieConsent', 'declined');
     
@@ -84,6 +131,27 @@ const CookieConsent = () => {
     setVisible(false);
     
     // No cookies will be set
+    
+    // Save consent data to backend
+    try {
+      const ipAddress = await getUserIP();
+      const userAgent = getUserAgent();
+      
+      await saveConsent({
+        consentChoice: 'declined',
+        cookieSettings: {
+          essential: true,
+          analytics: false,
+          marketing: false,
+          preferences: false
+        },
+        ipAddress,
+        userAgent,
+        userActivity: null
+      });
+    } catch (error) {
+      console.error('Error saving consent data:', error);
+    }
   };
 
   // Check if consent has expired (1 month)
@@ -100,12 +168,26 @@ const CookieConsent = () => {
           localStorage.removeItem('cookieConsent');
           localStorage.removeItem('cookieConsentExpiry');
           setVisible(true);
+          // Reset tracking data
+          resetTracking();
+        } else {
+          // If consent is valid and analytics is enabled, start tracking
+          const consent = localStorage.getItem('cookieConsent');
+          if (consent === 'accepted' || 
+             (consent === 'customized' && cookieSettings.analytics)) {
+            startTracking();
+          }
         }
       }
     };
     
     checkConsentExpiry();
-  }, []);
+    
+    // Clean up event listeners when component unmounts
+    return () => {
+      // This will be handled by the activityTracker utility
+    };
+  }, [cookieSettings.analytics]);
 
   if (!visible) return null;
 

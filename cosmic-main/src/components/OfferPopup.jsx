@@ -16,13 +16,12 @@ const OfferPopup = () => {
         if (response.data.success && response.data.data) {
           setOffer(response.data.data);
           
-          // Check if user has accepted cookies and hasn't closed the popup before
-          const cookieConsent = localStorage.getItem('cookieConsent');
+          // Check if user hasn't closed the popup before
           const popupClosed = localStorage.getItem('offerPopupClosed');
           
-          // Only show offer popup if cookies were accepted and popup wasn't closed before
-          if ((cookieConsent === 'accepted' || cookieConsent === 'customized') && !popupClosed) {
-            // Show popup immediately after cookie acceptance
+          // Show offer popup if it wasn't closed before
+          if (!popupClosed) {
+            // Show popup every time the site is opened
             setVisible(true);
           }
         }
@@ -36,27 +35,21 @@ const OfferPopup = () => {
     fetchActiveOffer();
   }, []);
   
-  // Listen for cookie consent changes
+  // Listen for storage changes (in case offerPopupClosed is modified in another tab)
   useEffect(() => {
-    const handleCookieConsentChange = () => {
-      const cookieConsent = localStorage.getItem('cookieConsent');
-      const popupClosed = localStorage.getItem('offerPopupClosed');
-      
-      // If cookies were just accepted and popup wasn't closed before, show the popup
-      if ((cookieConsent === 'accepted' || cookieConsent === 'customized') && !popupClosed && offer) {
+    const handleStorageChange = (event) => {
+      // If offerPopupClosed was changed and the popup should be visible
+      if (event.key === 'offerPopupClosed' && event.newValue === null && offer) {
         setVisible(true);
       }
     };
     
     // Add event listener for storage changes
-    window.addEventListener('storage', handleCookieConsentChange);
-    
-    // Also check on mount
-    handleCookieConsentChange();
+    window.addEventListener('storage', handleStorageChange);
     
     // Clean up
     return () => {
-      window.removeEventListener('storage', handleCookieConsentChange);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [offer]);
 
