@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { ToastContainer } from 'react-toastify';
@@ -11,7 +11,6 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import CustomerSupportChat from './components/CustomerSupportChat';
-import OfferPopup from './components/OfferPopup';
 import ScrollToTop from './components/ScrollToTop';
 import AdminLayout from './components/AdminLayout';
 
@@ -115,7 +114,6 @@ function AppContent() {
 
       <Footer />
       <CookieConsent />
-      <OfferPopup />
       <ScrollToTop />
       <CustomerSupportChat />
       <ToastContainer position="bottom-right" autoClose={5000} />
@@ -123,7 +121,7 @@ function AppContent() {
   );
 }
 
-import { getAuthToken, isAuthenticated } from './utils/cookies';
+import { isAuthenticated } from './utils/cookies';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

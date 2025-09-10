@@ -23,6 +23,7 @@ const Settings = () => {
     { path: '/admin/footer', label: 'Footer Management' },
     { path: '/admin/navbar', label: 'Navigation Bar' },
     { path: '/admin/solar-config', label: 'Solar Configuration' },
+    { path: '/admin/offer-banner', label: 'Offer Banner' },
   ];
 
   // Public routes

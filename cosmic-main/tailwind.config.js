@@ -46,6 +46,7 @@ export default {
         'border-pulse': 'borderPulse 2s infinite',
         'arrow': 'arrow 1.5s infinite',
         'color-change': 'colorChange 4s infinite alternate',
+        'slideUp': 'slideUp 0.5s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -83,6 +84,9 @@ export default {
       zIndex: {
         '60': '60',
         '70': '70',
+      },
+      fontSize: {
+        '2xs': '0.625rem', // 10px
       },
     },
   },

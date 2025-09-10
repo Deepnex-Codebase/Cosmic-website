@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
-import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaCalculator } from 'react-icons/fa';
+import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaDatabase } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { IoSettingsSharp } from 'react-icons/io5';
 import { BiSolidNavigation } from 'react-icons/bi';
