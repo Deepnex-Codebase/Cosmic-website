@@ -6,6 +6,7 @@ import { getGreenFutureAndNewsCards } from "../services/greenFutureService";
 import { getIndustryRecognition, formatImageUrl } from '../services/industryRecognitionService';
 import Hero from "../components/Hero";
 import Marquee from "../components/Marquee";
+import BrochureButton from "../components/BrochureButton";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
@@ -332,6 +333,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-transparent relative overflow-x-hidden">
+      <BrochureButton />
       {/* Fixed Background Image */}
       <div
         className="fixed inset-0 bg-cover bg-center z-[-1]"
