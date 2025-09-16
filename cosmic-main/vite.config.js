@@ -45,7 +45,7 @@ export default defineConfig({
         }
       },
       '/newsimage.pn': {
-        target: 'https://api.cosmicpowertech.com',
+        target: 'hhttps://api.cosmicpowertech.com',
         //target: 'http://localhost:8000',
         changeOrigin: true,
         secure: false,

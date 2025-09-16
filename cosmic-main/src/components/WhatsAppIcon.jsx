@@ -49,8 +49,12 @@ const WhatsAppIcon = () => {
   // Choose the appropriate URL based on device
   const finalUrl = isMobile ? mobileUrl : desktopUrl;
 
-  // Always show the icon regardless of loading state or config
-  // We'll use the default values if config is not loaded
+  // Only show the icon if isEnabled is true in the config
+  // If loading or isEnabled is false, don't render the button
+
+  if (loading || !config.isEnabled) {
+    return null;
+  }
 
   return (
     <div className="fixed bottom-5 left-5 z-50">
