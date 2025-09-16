@@ -18,14 +18,30 @@ const protect = asyncHandler(async (req, res, next) => {
   if (token) {
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'cosmic-secret-key');
 
-      // Get user from the token (exclude password)
-      req.user = await User.findById(decoded.id).select('-password');
+      // For hardcoded user in userRoutes.js
+      if (decoded.user && decoded.user.id === '1') {
+        req.user = {
+          _id: '1',
+          email: decoded.user.email,
+          isAdmin: decoded.user.role === 'admin'
+        };
+        return next();
+      }
 
-      if (!req.user) {
+      // For database users
+      if (decoded.id) {
+        // Get user from the token (exclude password)
+        req.user = await User.findById(decoded.id).select('-password');
+
+        if (!req.user) {
+          res.status(401);
+          throw new Error('Not authorized, user not found');
+        }
+      } else {
         res.status(401);
-        throw new Error('Not authorized, user not found');
+        throw new Error('Invalid token format');
       }
 
       next();
@@ -56,10 +72,23 @@ const optionalAuth = asyncHandler(async (req, res, next) => {
   if (token) {
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'cosmic-secret-key');
 
-      // Get user from the token (exclude password)
-      req.user = await User.findById(decoded.id).select('-password');
+      // For hardcoded user in userRoutes.js
+      if (decoded.user && decoded.user.id === '1') {
+        req.user = {
+          _id: '1',
+          email: decoded.user.email,
+          isAdmin: decoded.user.role === 'admin'
+        };
+        return next();
+      }
+
+      // For database users
+      if (decoded.id) {
+        // Get user from the token (exclude password)
+        req.user = await User.findById(decoded.id).select('-password');
+      }
     } catch (error) {
       console.error('Token verification failed, but continuing:', error.message);
     }

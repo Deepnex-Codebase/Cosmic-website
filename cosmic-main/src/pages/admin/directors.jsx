@@ -163,11 +163,8 @@ const DirectorAdmin = () => {
         return;
       }
       
-      // Validate image for new directors
-      if (!isEditing && !formData.imageFile && !formData.image) {
-        toast.error('Please upload a director image');
-        return;
-      }
+      // Image is now optional for directors
+      // No validation needed for image
       
       const formDataToSend = new FormData();
       
@@ -181,6 +178,9 @@ const DirectorAdmin = () => {
       // Append image file if exists
       if (formData.imageFile) {
         formDataToSend.append('image', formData.imageFile);
+        formDataToSend.append('hasImage', 'true');
+      } else {
+        formDataToSend.append('hasImage', 'false');
       }
       
       // Append social links as JSON string
@@ -282,7 +282,6 @@ const DirectorAdmin = () => {
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md"
                 accept="image/*"
-                required={!isEditing}
               />
               {formData.image && (
                 <div className="mt-2">

@@ -16,7 +16,7 @@ const directorSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: [true, 'Director image is required']
+    required: false // Made optional so directors can be added without images
   },
   qualification: {
     type: String,
