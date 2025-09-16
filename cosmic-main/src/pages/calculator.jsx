@@ -8,7 +8,7 @@ import { calculateSolarSystem } from '../utils/solarCalc';
 
 const Calculator = () => {
   const [formData, setFormData] = useState({
-    state: '',
+    state: 'Gujarat', // Set Gujarat as default state
     category: 'residential',
     electricityBill: '',
     roofArea: '',
@@ -207,12 +207,19 @@ const Calculator = () => {
   // Get states from CMS configuration
   const getStatesFromConfig = () => {
     if (!solarConfig || !solarConfig.configuration || !solarConfig.configuration.tariff) {
-      // Fallback list if CMS data is not available
-      return ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Default"];
+      // Fallback list if CMS data is not available with Gujarat as first option
+      return ["Gujarat", "Maharashtra", "Rajasthan", "Delhi", "Karnataka", "Tamil Nadu", "Uttar Pradesh"];
     }
     
-    // Get states from tariff configuration
-    return Object.keys(solarConfig.configuration.tariff);
+    // Get states from tariff configuration and ensure Gujarat is first
+    const states = Object.keys(solarConfig.configuration.tariff);
+    const gujaratIndex = states.indexOf('Gujarat');
+    if (gujaratIndex > 0) {
+      // Move Gujarat to first position
+      states.splice(gujaratIndex, 1);
+      states.unshift('Gujarat');
+    }
+    return states;
   };
   
   // Get categories from CMS configuration
@@ -315,7 +322,6 @@ const Calculator = () => {
                     required
                     disabled={loading}
                   >
-                    <option value="">Select Your State</option>
                     {indianStates.map((state) => (
                       <option key={state} value={state}>{state}</option>
                     ))}

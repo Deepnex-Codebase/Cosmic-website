@@ -18,48 +18,48 @@ const MessageModal = ({ isOpen, onClose, director }) => {
   if (!isOpen) return null;
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 transition-opacity duration-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black bg-opacity-70 transition-opacity duration-300 overflow-y-auto">
       <motion.div 
         initial={{ opacity: 0, scale: 0.9 }} 
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[80vh] overflow-hidden flex flex-col"
+        className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] sm:max-h-[80vh] overflow-hidden flex flex-col my-2 sm:my-4"
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-xl font-bold text-gray-900">Message from {director?.name}</h3>
+        <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 bg-gray-50">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 pr-2">Message from {director?.name}</h3>
           <button 
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0"
             aria-label="Close modal"
           >
-            <FaTimesCircle className="w-6 h-6" />
+            <FaTimesCircle className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
         
-        <div className="p-6 overflow-y-auto">
-          <div className="relative text-gray-700 space-y-4">
-            <FaQuoteLeft className="text-accent-500/30 h-8 w-8 mb-4" />
+        <div className="p-4 sm:p-6 overflow-y-auto">
+          <div className="relative text-gray-700 space-y-3 sm:space-y-4">
+            <FaQuoteLeft className="text-accent-500/30 h-6 w-6 sm:h-8 sm:w-8 mb-3 sm:mb-4" />
             
             {director?.message.split('\n\n').map((paragraph, index) => (
-              <p key={index} className="leading-relaxed">{paragraph}</p>
+              <p key={index} className="leading-relaxed text-sm sm:text-base">{paragraph}</p>
             ))}
             
-            <FaQuoteRight className="text-accent-500/30 h-8 w-8 ml-auto mt-4" />
+            <FaQuoteRight className="text-accent-500/30 h-6 w-6 sm:h-8 sm:w-8 ml-auto mt-3 sm:mt-4" />
           </div>
           
-          <div className="mt-8 p-4 bg-primary-600 text-white rounded-lg">
-            <h4 className="text-lg font-bold mb-2 flex items-center">
+          <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-primary-600 text-white rounded-lg">
+            <h4 className="text-base sm:text-lg font-bold mb-2 flex items-center">
               <span className="mr-2 text-accent-500">Vision</span>
               <span className="h-px flex-grow bg-accent-500/30"></span>
             </h4>
-            <p className="italic">"{director?.vision}"</p>
+            <p className="italic text-sm sm:text-base">"{director?.vision}"</p>
           </div>
         </div>
         
-        <div className="p-4 border-t border-gray-200 bg-gray-50 flex justify-end">
+        <div className="p-3 sm:p-4 border-t border-gray-200 bg-gray-50 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-accent-500 text-black rounded-md hover:bg-accent-600 transition-colors"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-accent-500 text-black rounded-md hover:bg-accent-600 transition-colors text-sm sm:text-base"
           >
             Close
           </button>
@@ -181,7 +181,7 @@ const DirectorDesk = () => {
         initial="hidden"
         animate="visible"
         variants={fadeUpVariant}
-        className="relative h-64 sm:h-80 md:h-[800px] flex items-center justify-center overflow-hidden"
+        className="relative h-[400px] sm:h-[500px] md:h-[800px] flex items-center justify-center overflow-hidden"
       >
         <video 
           className="absolute inset-0 w-full h-full object-cover" 
@@ -194,9 +194,9 @@ const DirectorDesk = () => {
           Your browser does not support the video tag.
         </video>
         <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">Director's Desk</h1>
-          <nav className="flex items-center justify-center space-x-2 text-sm">
+        <div className="relative z-10 text-center text-white px-4 max-w-full">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Director's Desk</h1>
+          <nav className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
             <Link to="/" className="hover:text-accent-500 transition">
               Home
             </Link>
@@ -237,15 +237,19 @@ const DirectorDesk = () => {
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
                   variants={fadeUpVariant}
-                  className="flex flex-col md:flex-row gap-8 items-center"
+                  className="flex flex-col md:flex-row gap-6 md:gap-8 items-center"
                 >
                   {/* Director Image - Prominent */}
                   <div className={`relative w-full md:w-1/3 ${index % 2 !== 0 ? 'md:order-2' : ''}`}>
-                    <div className="relative overflow-hidden rounded-lg shadow-xl h-[550px]" >
+                    <div className="relative overflow-hidden rounded-lg shadow-xl h-[350px] sm:h-[450px] md:h-[550px]" >
                       <img
-                        src={director.image && director.image.startsWith('/uploads') ? `https://api.cosmicpowertech.com${director.image}` : director.image}
-                        alt={director.name}
+                        src={director.image ? (director.image.startsWith('/uploads') ? `https://api.cosmicpowertech.com${director.image}` : director.image) : "/image-not-found.svg"}
+                        alt={director.name || "Director"}
                         className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/image-not-found.svg"; // Fallback to image-not-found if image not found
+                        }}
                       />
                       <div className="absolute top-0 right-0 bg-accent-500 p-2 rounded-bl-lg">
                         <img
@@ -259,25 +263,25 @@ const DirectorDesk = () => {
                   
                   {/* Director Info with Short Message */}
                   <div className={`w-full md:w-2/3 ${index % 2 !== 0 ? 'md:order-1 md:text-right' : ''}`}>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{director.name}</h3>
-                    <p className="text-accent-500 font-semibold text-lg mb-4">{director.position}</p>
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">{director.name}</h3>
+                    <p className="text-accent-500 font-semibold text-base sm:text-lg mb-3 sm:mb-4">{director.position}</p>
                     
                     {/* Short Message Preview - Larger size with better styling */}
-                    <div className="bg-gray-50 p-5 rounded-lg border-l-4 border-accent-500 mb-6 shadow-sm relative min-h-[200px]">
-                      <FaQuoteLeft className="text-accent-500/30 text-4xl absolute top-3 left-3" />
-                      <p className="text-gray-700 leading-relaxed text-base italic pl-8 pt-2 whitespace-pre-line">
-                        {director.message?.split('\n').slice(0, 6).join('\n')}
+                    <div className="bg-gray-50 p-4 sm:p-5 rounded-lg border-l-4 border-accent-500 mb-4 sm:mb-6 shadow-sm relative min-h-[150px] sm:min-h-[200px]">
+                      <FaQuoteLeft className="text-accent-500/30 text-2xl sm:text-4xl absolute top-3 left-3" />
+                      <p className="text-gray-700 leading-relaxed text-sm sm:text-base italic pl-6 sm:pl-8 pt-2 whitespace-pre-line">
+                        {director.message?.split('\n').slice(0, 4).join('\n')}
                       </p>
-                      <FaQuoteRight className="text-accent-500/30 text-2xl absolute bottom-3 right-3" />
+                      <FaQuoteRight className="text-accent-500/30 text-xl sm:text-2xl absolute bottom-3 right-3" />
                     </div>
                      
-                    <div className={`flex ${index % 2 !== 0 ? 'justify-end' : 'justify-start'} gap-4`}>
+                    <div className={`flex flex-wrap ${index % 2 !== 0 ? 'justify-center md:justify-end' : 'justify-center md:justify-start'} gap-3 sm:gap-4`}>
                       {/* Message Button */}
                       <button
                         onClick={() => openModal(director)}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-accent-500 text-black font-medium rounded-md hover:bg-accent-600 transition-colors duration-300"
+                        className="flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 bg-accent-500 text-black font-medium rounded-md hover:bg-accent-600 transition-colors duration-300 text-sm sm:text-base"
                       >
-                        <FaMessage className="h-4 w-4" />
+                        <FaMessage className="h-3 w-3 sm:h-4 sm:w-4" />
                         <span>Read Full Message</span>
                       </button>
                       
@@ -323,9 +327,9 @@ const DirectorDesk = () => {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-100 transition-colors duration-300"
+                            className="flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base"
                           >
-                            <Icon className={`h-4 w-4 ${iconColor}`} />
+                            <Icon className={`h-3 w-3 sm:h-4 sm:w-4 ${iconColor}`} />
                             <span>{linkText}</span>
                           </a>
                         );

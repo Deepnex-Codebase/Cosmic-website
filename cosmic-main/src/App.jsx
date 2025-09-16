@@ -14,6 +14,7 @@ import CustomerSupportChat from './components/CustomerSupportChat';
 import ScrollToTop from './components/ScrollToTop';
 import AdminLayout from './components/AdminLayout';
 import OfferPopup from './components/OfferPopup';
+import WhatsAppIcon from './components/WhatsAppIcon';
 
 // Pages
 import Home from './pages/home'
@@ -57,14 +58,16 @@ import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
 import AdminTeamCelebration from './pages/admin/team-celebration';
 import SolarConfigPage from './pages/admin/solar-config';
-import CareersAdmin from './pages/admin/careers';
 import Settings from './pages/admin/Settings';
 import OfferCMS from './pages/admin/OfferCMS';
 import CookieConsentCMS from './pages/admin/CookieConsentCMS';
 import BrochureCMS from './pages/admin/BrochureCMS';
+
 import RateCMS from './pages/admin/RateCMS';
+import WhatsAppConfig from './pages/admin/WhatsAppConfig';
 
 import NavbarCMS from './components/NavbarCMS';
+import CareerCMS from './components/admin/CareerCMS';
 
 
 // AppContent component to handle transitions
@@ -122,6 +125,7 @@ function AppContent() {
       <CookieConsent />
       <OfferPopup />
       <ScrollToTop />
+      <WhatsAppIcon />
       <CustomerSupportChat />
       <ToastContainer position="bottom-right" autoClose={5000} />
     </div>
@@ -164,7 +168,7 @@ const AdminRoutes = () => {
               <Route path="/products" element={<ProductCMS />} />
               <Route path="/blogs" element={<BlogCMS />} />
               <Route path="/press-releases" element={<PressReleaseCMS />} />
-              <Route path="/careers" element={<CareersAdmin />} />
+              <Route path="/careers" element={<CareerCMS />} />
               <Route path="/forms" element={<FormCMS />} />
               <Route path="/footer" element={<FooterCMS />} />
               <Route path="/navbar" element={<NavbarCMS />} />
@@ -174,6 +178,7 @@ const AdminRoutes = () => {
               <Route path="/cookie-consent" element={<CookieConsentCMS />} />
               <Route path="/brochures" element={<BrochureCMS />} />
               <Route path="/rates" element={<RateCMS />} />
+              <Route path="/whatsapp-config" element={<WhatsAppConfig />} />
             </Routes>
           </AdminLayout>
         </ProtectedRoute>

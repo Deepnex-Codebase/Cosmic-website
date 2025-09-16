@@ -44,18 +44,14 @@ exports.getDirector = async (req, res) => {
 // Create new director
 exports.createDirector = async (req, res) => {
   try {
-    // Check if file was uploaded
-    if (!req.file && !req.body.image) {
-      return res.status(400).json({
-        success: false,
-        error: 'Director image is required'
-      });
-    }
-
     // If file was uploaded, add the file path to the request body
     if (req.file) {
       req.body.image = `${process.env.BASE_URL}/uploads/directors/${req.file.filename}`;
+    } else {
+      // Image is optional, so we can proceed without it
+      req.body.image = null;
     }
+    // Image is now optional, so we don't need to check if it exists
 
     // Parse socialLinks if it's a string
     if (req.body.socialLinks && typeof req.body.socialLinks === 'string') {
