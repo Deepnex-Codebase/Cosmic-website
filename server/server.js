@@ -40,6 +40,7 @@ const solarJourneyRoutes = require('./routes/solarJourneyRoutes');
 const formConfigurationRoutes = require('./routes/formConfigurationRoutes');
 const footerConfigurationRoutes = require('./routes/footerConfigurationRoutes');
 const brochureRoutes = require('./routes/brochureRoutes');
+const rateRoutes = require('./routes/rateRoutes');
 
 const navbarConfigurationRoutes = require('./routes/navbarConfigurationRoutes');
 const careerRoutes = require('./routes/careerRoutes');
@@ -133,8 +134,9 @@ app.use('/api/footer-config', footerConfigurationRoutes);
 app.use('/api/navbar-config', navbarConfigurationRoutes);
 app.use('/api/cookie-consent', cookieConsentRoutes);
 app.use('/api/brochures', brochureRoutes);
+app.use('/api/rates', rateRoutes);
 
-// Serve static files from uploads directory
+// Serve uploaded files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Serve static assets if in production

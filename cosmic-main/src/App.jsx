@@ -37,6 +37,7 @@ import DirectorDesk from './pages/director-desk'
 import CompanyCulture from './pages/company-culture'
 import AchievementsAwards from './pages/achievements-awards'
 import FAQ from './pages/faq'
+import Brochures from './pages/Brochures'
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -61,6 +62,7 @@ import Settings from './pages/admin/Settings';
 import OfferCMS from './pages/admin/OfferCMS';
 import CookieConsentCMS from './pages/admin/CookieConsentCMS';
 import BrochureCMS from './pages/admin/BrochureCMS';
+import RateCMS from './pages/admin/RateCMS';
 
 import NavbarCMS from './components/NavbarCMS';
 
@@ -108,6 +110,7 @@ function AppContent() {
                 <Route path="/company-culture" element={<CompanyCulture />} />
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/brochures" element={<Brochures />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>
             </div>
@@ -170,6 +173,7 @@ const AdminRoutes = () => {
               <Route path="/offers" element={<OfferCMS />} />
               <Route path="/cookie-consent" element={<CookieConsentCMS />} />
               <Route path="/brochures" element={<BrochureCMS />} />
+              <Route path="/rates" element={<RateCMS />} />
             </Routes>
           </AdminLayout>
         </ProtectedRoute>

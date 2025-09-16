@@ -25,6 +25,7 @@ const Settings = () => {
     { path: '/admin/solar-config', label: 'Solar Configuration' },
     { path: '/admin/offer-banner', label: 'Offer Banner' },
     { path: '/admin/cookie-consent', label: 'Cookie Consent' },
+    { path: '/admin/rates', label: 'Rates Management' },
   ];
 
   // Public routes

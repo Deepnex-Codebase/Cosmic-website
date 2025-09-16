@@ -72,6 +72,7 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/offers', icon: FaBullhorn, label: 'Special Offers' },
         { path: '/admin/cookie-consent', icon: FaCookieBite, label: 'Cookie Consent' },
         { path: '/admin/brochures', icon: FaRegFileAlt, label: 'Brochures' },
+        { path: '/admin/rates', icon: FaRegFileAlt, label: 'Rates' },
       ]
     },
     {
