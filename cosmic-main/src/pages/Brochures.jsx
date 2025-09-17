@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { FaFileDownload, FaEye, FaCalendarAlt, FaRupeeSign, FaCheckCircle, FaSpinner } from 'react-icons/fa';
+import { FaFileDownload, FaEye, FaCalendarAlt, FaRupeeSign, FaCheckCircle, FaSpinner, FaGift, FaPercent, FaCopy, FaClock } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import OfferCard from '../components/OfferCard';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
@@ -10,9 +11,11 @@ const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
 const Brochures = () => {
   const [brochures, setBrochures] = useState([]);
   const [rates, setRates] = useState([]);
+  const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ratesLoading, setRatesLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('brochures'); // 'brochures' or 'rates'
+  const [offersLoading, setOffersLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState('brochures'); // 'brochures', 'rates', or 'offers'
 
   useEffect(() => {
     fetchBrochures();
@@ -42,6 +45,24 @@ const Brochures = () => {
       setRates([]);
     } finally {
       setRatesLoading(false);
+    }
+  };
+
+  const fetchOffers = async () => {
+    try {
+      setOffersLoading(true);
+      // Use the new OfferCard API with filters for brochures page
+      const response = await axios.get(`${API_BASE_URL}/offer-cards?active=true&brochures=true`);
+      if (response.data.success) {
+        setOffers(response.data.data || []);
+      } else {
+        setOffers([]);
+      }
+    } catch (error) {
+      console.error('Error fetching offers:', error);
+      setOffers([]);
+    } finally {
+      setOffersLoading(false);
     }
   };
 
@@ -154,9 +175,9 @@ Generated on: ${new Date().toLocaleDateString()}
       <section className="bg-white shadow-sm border-b">
         <div className="container mx-auto">
           <div className="flex justify-center">
-            <div className="flex max-w-lg w-full">
+            <div className="flex max-w-3xl w-full">
               <button 
-                className={`flex-1 px-8 py-4 text-center font-semibold relative transition-all duration-300 ${
+                className={`flex-1 px-6 py-4 text-center font-semibold relative transition-all duration-300 ${
                   activeTab === 'brochures' 
                     ? 'bg-[#9fc22f] text-white shadow-lg' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -174,7 +195,7 @@ Generated on: ${new Date().toLocaleDateString()}
                 )}
               </button>
               <button 
-                className={`flex-1 px-8 py-4 text-center font-semibold transition-all duration-300 ${
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-all duration-300 ${
                   activeTab === 'rates' 
                     ? 'bg-[#9fc22f] text-white shadow-lg' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -191,6 +212,27 @@ Generated on: ${new Date().toLocaleDateString()}
                   Rates
                 </span>
                 {activeTab === 'rates' && (
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[15px] border-r-[15px] border-t-[15px] border-l-transparent border-r-transparent border-t-[#9fc22f]"></div>
+                )}
+              </button>
+              <button 
+                className={`flex-1 px-6 py-4 text-center font-semibold transition-all duration-300 ${
+                  activeTab === 'offers' 
+                    ? 'bg-[#9fc22f] text-white shadow-lg' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                onClick={() => {
+                  setActiveTab('offers');
+                  if (offers.length === 0) {
+                    fetchOffers();
+                  }
+                }}
+              >
+                <span className="flex items-center justify-center">
+                  <FaGift className="mr-2" />
+                  Offers
+                </span>
+                {activeTab === 'offers' && (
                   <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[15px] border-r-[15px] border-t-[15px] border-l-transparent border-r-transparent border-t-[#9fc22f]"></div>
                 )}
               </button>
@@ -212,12 +254,15 @@ Generated on: ${new Date().toLocaleDateString()}
           >
             <div className="px-6 py-6 bg-gradient-to-r from-[#9fc22f] to-[#8aaa28] text-white">
               <h2 className="text-3xl font-bold mb-2">
-                {activeTab === 'brochures' ? 'Available Brochures' : 'Our Pricing Plans'}
+                {activeTab === 'brochures' ? 'Available Brochures' : 
+                 activeTab === 'rates' ? 'Our Pricing Plans' : 'Special Offers'}
               </h2>
               <p className="text-green-100">
                 {activeTab === 'brochures' 
                   ? 'Download our comprehensive company brochures and product catalogs'
-                  : 'Transparent and competitive pricing for all your solar energy needs'
+                  : activeTab === 'rates'
+                  ? 'Transparent and competitive pricing for all your solar energy needs'
+                  : 'Exclusive deals and discounts on our solar energy solutions'
                 }
               </p>
             </div>
@@ -544,6 +589,37 @@ Generated on: ${new Date().toLocaleDateString()}
                     ))}
                   </div>
                   </>
+                )}
+              </div>
+            )}
+
+            {/* Offers Content */}
+            {activeTab === 'offers' && (
+              <div>
+                {offersLoading ? (
+                  <div className="p-12 text-center">
+                    <FaSpinner className="animate-spin text-4xl text-[#9fc22f] mx-auto mb-4" />
+                    <p className="text-gray-600">Loading offers...</p>
+                  </div>
+                ) : offers.length === 0 ? (
+                  <div className="p-12 text-center">
+                    <FaGift className="mx-auto h-16 w-16 text-gray-400 mb-4" />
+                    <p className="text-gray-600 text-lg">
+                      No special offers available at the moment.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {offers.map((offer, index) => (
+                        <OfferCard 
+                          key={offer._id} 
+                          offer={offer} 
+                          index={index} 
+                        />
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
             )}

@@ -15,7 +15,7 @@ const Settings = () => {
     { path: '/admin/company-culture', label: 'Company Culture' },
     { path: '/admin/team-celebration', label: 'Team Celebrations' },
     { path: '/admin/achievements', label: 'Achievements' },
-    { path: '/admin/products', label: 'Products' },
+
     { path: '/admin/blogs', label: 'Blog Posts' },
     { path: '/admin/press-releases', label: 'Press Releases' },
     { path: '/admin/careers', label: 'Careers' },
@@ -24,6 +24,7 @@ const Settings = () => {
     { path: '/admin/navbar', label: 'Navigation Bar' },
     { path: '/admin/solar-config', label: 'Solar Configuration' },
     { path: '/admin/offer-banner', label: 'Offer Banner' },
+    { path: '/admin/offer-cards', label: 'Offer Cards' },
     { path: '/admin/cookie-consent', label: 'Cookie Consent' },
     { path: '/admin/rates', label: 'Rates Management' },
   ];
@@ -34,7 +35,7 @@ const Settings = () => {
     { path: '/about', label: 'About Us' },
     { path: '/services', label: 'Services' },
     { path: '/projects', label: 'Projects' },
-    { path: '/products', label: 'Products' },
+
     { path: '/blogs', label: 'Blogs' },
     { path: '/press-releases', label: 'Press Releases' },
     { path: '/achievements-awards', label: 'Achievements & Awards' },

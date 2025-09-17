@@ -180,9 +180,9 @@ export default function Hero() {
         </motion.div>
       </AnimatePresence>
 
-      <div className="relative z-10 w-full h-full flex flex-col md:flex-row items-center pb-16 md:pb-24">
-              {/* left rail ****************************************************** */}
-        <aside className="hidden md:flex flex-col w-72">
+      <div className="relative z-10 w-full h-full flex flex-col xl2:flex-row items-center pb-16 xl2:pb-24">
+              {/* left rail ****************************************************** */}
+        <aside className="hidden xl2:flex flex-col w-72">
           {slides.map((s, index) => {
             const activeItem = typeof active === 'number' ? index === active : s.key === active;
             return (
@@ -282,7 +282,7 @@ export default function Hero() {
           })}
         </aside>
         {/* MOBILE CONTROLS */}
-        <div className="flex md:hidden justify-center w-full absolute bottom-4 z-30 px-4">
+        <div className="flex xl2:hidden justify-center w-full absolute bottom-4 z-30 px-4">
           <div className="flex space-x-4 bg-black/30 rounded-full p-2">
             {slides.map((s, index) => {
               const isActive = typeof active === 'number' 
@@ -352,13 +352,13 @@ export default function Hero() {
                 
                 <Link
                   to="/contact"
-                  className="group relative overflow-hidden inline-flex items-center pl-5 sm:pl-8 md:pl-10 pr-4 sm:pr-5 md:pr-6 py-2 sm:py-3 md:py-3 bg-transparent text-white rounded-full font-semibold shadow-lg text-sm sm:text-base md:text-lg border-2 border-white hover:border-accent-500 transition-all duration-300"
+                  className="group relative overflow-hidden inline-flex items-center pl-5 sm:pl-8 xl2:pl-10 pr-4 sm:pr-5 xl2:pr-6 py-2 sm:py-3 xl2:py-3 bg-transparent text-white rounded-full font-semibold shadow-lg text-sm sm:text-base xl2:text-lg border-2 border-white hover:border-accent-500 transition-all duration-300"
                 >
                   <span className="relative z-10 transition-colors duration-300 group-hover:text-white">Discover More</span>
                   <span className="absolute inset-0 bg-accent-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-in-out"></span>
-                  <span className="ml-3 sm:ml-4 md:ml-5 flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 md:h-10 md:w-10 rounded-full bg-white group-hover:bg-accent-500 transition-all duration-300 relative z-10">
+                  <span className="ml-3 sm:ml-4 xl2:ml-5 flex items-center justify-center h-7 w-7 sm:h-8 sm:w-8 xl2:h-10 xl2:w-10 rounded-full bg-white group-hover:bg-accent-500 transition-all duration-300 relative z-10">
                     <svg
-                      className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 stroke-primary-600 group-hover:stroke-white transition-all duration-300"
+                      className="h-4 w-4 sm:h-5 sm:w-5 xl2:h-6 xl2:w-6 stroke-primary-600 group-hover:stroke-white transition-all duration-300"
                       viewBox="0 0 24 24"
                       fill="none"
                       strokeWidth={2}

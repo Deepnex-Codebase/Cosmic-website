@@ -1,5 +1,5 @@
 const Review = require('../models/review');
-const Product = require('../models/product');
+const Service = require('../models/Service');
 const mongoose = require('mongoose');
 
 // Get all reviews with filtering and pagination

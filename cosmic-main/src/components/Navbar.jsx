@@ -63,10 +63,11 @@ export default function Navbar() {
         { label: "Team Celebration", href: "/team-celebration" }
       ]
     },
-    { label: "Products", href: "/products" },
+
     { label: "Services", href: "/services" },
     { label: "Projects", href: "/projects" },
     { label: "Calculator", href: "/calculator" },
+    { label: "Pros & Cons", href: "/pros-cons" },
     { label: "FAQ", href: "/faq" },
     { 
       label: "Media", 
@@ -97,7 +98,7 @@ export default function Navbar() {
         </Link>
 
         {/* desktop nav */}
-        <ul className="hidden flex-1 justify-center space-x-8 text-base font-medium lg:flex">
+        <ul className="hidden flex-1 justify-center space-x-8 text-base font-medium xl2:flex">
           {navigation.map((item) => {
             const { label, href, target, submenu } = item;
             const activeSubmenu = submenu?.filter(sub => sub.isActive) || [];
@@ -151,7 +152,7 @@ export default function Navbar() {
           {navbarConfig?.ctaButton?.isVisible !== false && (
             <Link
               to={navbarConfig?.ctaButton?.href || "/contact"}
-              className={`group hidden md:inline-flex lg:hidden relative overflow-hidden items-center rounded-full ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} px-5 py-2 text-sm font-semibold shadow-md border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
+              className={`group hidden md:inline-flex xl2:hidden relative overflow-hidden items-center rounded-full ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} px-5 py-2 text-sm font-semibold shadow-md border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
               style={navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? { backgroundColor: navbarConfig.ctaButton.backgroundColor } : null}
             >
               <span 
@@ -164,7 +165,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          <button onClick={() => setOpen((p) => !p)} className="text-gray-300 hover:text-accent-500 transition-colors duration-300 lg:hidden hover-pulse">
+          <button onClick={() => setOpen((p) => !p)} className="text-gray-300 hover:text-accent-500 transition-colors duration-300 xl2:hidden hover-pulse">
             {open ? 
               <XMarkIcon className="h-7 w-7" /> : 
               <div className="flex flex-col space-y-1.5">
@@ -178,7 +179,7 @@ export default function Navbar() {
           {navbarConfig?.ctaButton?.isVisible !== false && (
             <Link
               to={navbarConfig?.ctaButton?.href || "/contact"}
-              className={`group hidden lg:inline-flex relative overflow-hidden items-center rounded-full ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} px-7 py-2.5 text-base font-semibold shadow-lg border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
+              className={`group hidden xl2:inline-flex relative overflow-hidden items-center rounded-full ${!navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? navbarConfig?.ctaButton?.backgroundColor || 'bg-accent-500' : ''} px-7 py-2.5 text-base font-semibold shadow-lg border-2 border-transparent hover:border-accent-500 transition-all duration-300`}
               style={navbarConfig?.ctaButton?.backgroundColor?.startsWith('#') ? { backgroundColor: navbarConfig.ctaButton.backgroundColor } : null}
             >
               <span 

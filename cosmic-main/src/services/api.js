@@ -314,40 +314,7 @@ export const energySolutionService = {
   getSolutionBySlug: (slug) => api.get(`/energy-solutions/slug/${slug}`),
 };
 
-export const productService = {
-  getAllProducts: (params) => api.get('/products', { params }),
-  getActiveProducts: (params) => api.get('/products/active', { params }),
-  getFeaturedProducts: () => api.get('/products/featured'),
-  getProductById: (id) => api.get(`/products/${id}`),
-  getProductBySlug: (slug) => api.get(`/products/slug/${slug}`),
-  getProductsByCategory: (categoryId, params) => api.get(`/products/category/${categoryId}`, { params }),
-  searchProducts: (query) => api.get(`/products/search?q=${query}`),
-  getRelatedProducts: (id) => api.get(`/products/${id}/related`),
-  createProduct: (productData) => {
-    // Check if productData is FormData for file uploads
-    if (productData instanceof FormData) {
-      return apiFormData.post('/products', productData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-    }
-    return api.post('/products', productData);
-  },
-  updateProduct: (id, productData) => {
-    // Check if productData is FormData for file uploads
-    if (productData instanceof FormData) {
-      return apiFormData.put(`/products/${id}`, productData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-    }
-    return api.put(`/products/${id}`, productData);
-  },
-  deleteProduct: (id) => api.delete(`/products/${id}`),
-  getProductStats: () => api.get('/products/stats'),
-};
+
 
 export const reviewService = {
   getAllReviews: (params) => api.get('/reviews', { params }),

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
-import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaDatabase, FaCookieBite, FaWhatsapp } from 'react-icons/fa';
+import { FaUsers, FaNewspaper, FaBriefcase, FaCog, FaSignOutAlt, FaTachometerAlt, FaCogs, FaRoute, FaBullhorn, FaTrophy, FaHome, FaBox, FaWpforms, FaBars, FaWindowMaximize, FaChevronDown, FaChevronRight, FaSolarPanel, FaHandshake, FaImages, FaInfoCircle, FaBuilding, FaAward, FaRegNewspaper, FaRegFileAlt, FaRegEdit, FaStream, FaDatabase, FaCookieBite, FaWhatsapp, FaGift } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 import { IoSettingsSharp } from 'react-icons/io5';
 import { BiSolidNavigation } from 'react-icons/bi';
@@ -64,12 +64,13 @@ const AdminLayout = ({ children }) => {
         { path: '/admin/services', icon: FaCogs, label: 'Services' },
         { path: '/admin/projects', icon: FaBriefcase, label: 'Projects' },
         { path: '/admin/processes', icon: FaRoute, label: 'Processes' },
-        { path: '/admin/products', icon: FaSolarPanel, label: 'Products' },
+
         { path: '/admin/blogs', icon: FaRegNewspaper, label: 'Blog Posts' },
         { path: '/admin/press-releases', icon: FaRegFileAlt, label: 'Press Releases' },
         { path: '/admin/careers', icon: FaBriefcase, label: 'Careers' },
         { path: '/admin/forms', icon: FaWpforms, label: 'Form Management' },
         { path: '/admin/offers', icon: FaBullhorn, label: 'Special Offers' },
+        { path: '/admin/offer-cards', icon: FaGift, label: 'Offer Cards' },
         { path: '/admin/cookie-consent', icon: FaCookieBite, label: 'Cookie Consent' },
         { path: '/admin/brochures', icon: FaRegFileAlt, label: 'Brochures' },
         { path: '/admin/rates', icon: FaRegFileAlt, label: 'Rates' },

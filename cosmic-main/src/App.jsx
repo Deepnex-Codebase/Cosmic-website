@@ -28,8 +28,7 @@ import Blog from './pages/blog'
 import BlogDetail from './pages/blogDetail'
 import Careers from './pages/careers'
 
-import Products from './pages/products/Products';
-import ProductDetail from './pages/products/product-detail';
+
 import ProjectDetail from './pages/project-detail';
 import PressRelease from './pages/pr'
 import PressReleaseDetail from './pages/pressReleaseDetail'
@@ -53,16 +52,16 @@ import BlogCMS from './pages/admin/BlogCMS'
 import HomeCMS from './pages/admin/HomeCMS'
 import AchievementCMS from './pages/admin/AchievementCMS'
 import PressReleaseCMS from './pages/admin/PressReleaseCMS'
-import ProductCMS from './pages/admin/ProductCMS'
+
 import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
 import AdminTeamCelebration from './pages/admin/team-celebration';
 import SolarConfigPage from './pages/admin/solar-config';
 import Settings from './pages/admin/Settings';
 import OfferCMS from './pages/admin/OfferCMS';
+import OfferCardCMS from './pages/admin/OfferCardCMS';
 import CookieConsentCMS from './pages/admin/CookieConsentCMS';
 import BrochureCMS from './pages/admin/BrochureCMS';
-
 import RateCMS from './pages/admin/RateCMS';
 import WhatsAppConfig from './pages/admin/WhatsAppConfig';
 
@@ -95,9 +94,7 @@ function AppContent() {
               <Routes location={location}>
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
-                <Route path="/products" element={<Products />} />
 
-                <Route path="/products/product-detail/:id" element={<ProductDetail />} />
                 <Route path="/services" element={<Services />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/projects/:id" element={<ProjectDetail />} />
@@ -114,6 +111,7 @@ function AppContent() {
                 <Route path="/careers" element={<Careers />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/brochures" element={<Brochures />} />
+                <Route path="/SolarBusinessModel" element={<SolarBusinessModel />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>
             </div>
@@ -133,6 +131,7 @@ function AppContent() {
 }
 
 import { isAuthenticated } from './utils/cookies';
+import SolarBusinessModel from './pages/SolarBusinessModel';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -165,7 +164,7 @@ const AdminRoutes = () => {
               <Route path="/company-culture" element={<CompanyCultureAdmin />} />
               <Route path="/team-celebration" element={<AdminTeamCelebration />} />
               <Route path="/achievements" element={<AchievementCMS />} />
-              <Route path="/products" element={<ProductCMS />} />
+
               <Route path="/blogs" element={<BlogCMS />} />
               <Route path="/press-releases" element={<PressReleaseCMS />} />
               <Route path="/careers" element={<CareerCMS />} />
@@ -175,6 +174,7 @@ const AdminRoutes = () => {
               <Route path="/solar-config" element={<SolarConfigPage />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/offers" element={<OfferCMS />} />
+              <Route path="/offer-cards" element={<OfferCardCMS />} />
               <Route path="/cookie-consent" element={<CookieConsentCMS />} />
               <Route path="/brochures" element={<BrochureCMS />} />
               <Route path="/rates" element={<RateCMS />} />

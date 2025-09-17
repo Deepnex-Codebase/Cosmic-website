@@ -6,6 +6,9 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        'xl2': '1420px',
+      },
       fontFamily: {
         'sans': ['Inter', 'sans-serif'],
         'space-grotesk': ['Space Grotesk', 'sans-serif'],

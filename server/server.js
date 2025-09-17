@@ -27,7 +27,7 @@ const heroRoutes = require('./routes/heroRoutes');
 const achievementRoutes = require('./routes/achievementRoutes');
 const pressReleaseRoutes = require('./routes/pressReleaseRoutes');
 const teamCelebrationRoutes = require('./routes/teamCelebrationRoutes');
-const productRoutes = require('./routes/products');
+
 const reviewRoutes = require('./routes/reviews');
 const panIndiaPresenceRoutes = require('./routes/panIndiaPresenceRoutes');
 const companyIntroRoutes = require('./routes/companyIntroRoutes');
@@ -45,7 +45,8 @@ const rateRoutes = require('./routes/rateRoutes');
 
 const navbarConfigurationRoutes = require('./routes/navbarConfigurationRoutes');
 const careerRoutes = require('./routes/careerRoutes');
-const offerRoutes = require('./routes/offerRoutes')
+const offerRoutes = require('./routes/offerRoutes');
+const offerCardRoutes = require('./routes/offerCardRoutes');
 
 // Initialize Express app
 const app = express();
@@ -113,7 +114,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/heroes', heroRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/press-releases', pressReleaseRoutes);
-app.use('/api/products', productRoutes);
+
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/pan-india-presence', panIndiaPresenceRoutes);
 app.use('/api/company-intro', companyIntroRoutes);
@@ -124,7 +125,7 @@ app.use('/api/cms/company-stats', companyStatsRoutes);
 app.use('/api/cms/green-future', greenFutureRoutes);
 app.use('/api/cms/news-cards', newsCardsRoutes);
 app.use('/api/cms/solar-journey', solarJourneyRoutes);
-app.use('/api/products', productRoutes);
+
 app.use('/api/press-releases', pressReleaseRoutes);
 app.use('/api/achievements', achievementRoutes);
 app.use('/api/heroes', heroRoutes);
@@ -137,6 +138,7 @@ app.use('/api/navbar-config', navbarConfigurationRoutes);
 app.use('/api/cookie-consent', cookieConsentRoutes);
 app.use('/api/brochures', brochureRoutes);
 app.use('/api/rates', rateRoutes);
+app.use('/api/offer-cards', offerCardRoutes);
 
 // Serve uploaded files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

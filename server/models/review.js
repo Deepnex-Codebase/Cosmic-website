@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const reviewSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
-    required: [true, 'Product reference is required']
+    ref: 'Service',
+    required: [true, 'Service reference is required']
   },
   customerName: {
     type: String,
@@ -50,26 +50,26 @@ reviewSchema.index({ isApproved: 1 });
 reviewSchema.index({ rating: 1 });
 reviewSchema.index({ createdAt: -1 });
 
-// Update product rating when review is saved
+// Update service rating when review is saved
 reviewSchema.post('save', async function() {
   if (this.isApproved) {
-    await this.constructor.updateProductRating(this.product);
+    await this.constructor.updateServiceRating(this.product);
   }
 });
 
-// Update product rating when review is removed
+// Update service rating when review is removed
 reviewSchema.post('remove', async function() {
-  await this.constructor.updateProductRating(this.product);
+  await this.constructor.updateServiceRating(this.product);
 });
 
-// Static method to update product rating
-reviewSchema.statics.updateProductRating = async function(productId) {
-  const Product = mongoose.model('Product');
+// Static method to update service rating
+reviewSchema.statics.updateServiceRating = async function(serviceId) {
+  const Service = mongoose.model('Service');
   
   const stats = await this.aggregate([
     {
       $match: {
-        product: productId,
+        product: serviceId,
         isApproved: true
       }
     },
@@ -83,13 +83,13 @@ reviewSchema.statics.updateProductRating = async function(productId) {
   ]);
 
   if (stats.length > 0) {
-    await Product.findByIdAndUpdate(productId, {
+    await Service.findByIdAndUpdate(serviceId, {
       averageRating: Math.round(stats[0].averageRating * 10) / 10,
       reviewCount: stats[0].reviewCount,
       rating: Math.round(stats[0].averageRating * 10) / 10
     });
   } else {
-    await Product.findByIdAndUpdate(productId, {
+    await Service.findByIdAndUpdate(serviceId, {
       averageRating: 0,
       reviewCount: 0,
       rating: 0

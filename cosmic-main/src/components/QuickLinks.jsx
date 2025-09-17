@@ -15,12 +15,7 @@ const quickLinks = [
     icon: <FaCalculator className="text-3xl text-[#cae28e]" />,
     href: '/calculator',
   },
-  {
-    title: 'Products Catalog',
-    description: 'Browse our complete range of solar panels, inverters, batteries, and accessories.',
-    icon: <FaSolarPanel className="text-3xl text-[#cae28e]" />,
-    href: '/products',
-  },
+
   {
     title: 'Contact Us',
     description: 'Have questions? Our solar experts are ready to help you make the switch to solar.',

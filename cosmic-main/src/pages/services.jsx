@@ -64,7 +64,7 @@ const Services = () => {
         setLoading(true);
         
         // Fetch all services
-        const allServicesResponse = await getAllServices({ isActive: true });
+        const allServicesResponse = await getAllServices({ isActive: true, limit: 100 });
         const services = allServicesResponse.data || [];
         
         // Separate main services (core category) and additional services
@@ -169,37 +169,39 @@ const Services = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {mainServices.map((service, index) => (
               <div 
                 key={service._id || index} 
-                className={`group relative bg-white rounded-xl p-8 shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 ${service.bgColor || 'bg-accent-50'}`}
+                className={`group relative bg-white rounded-xl p-6 shadow-xl border border-gray-100 overflow-hidden hover:shadow-2xl transition-all duration-500 ${service.bgColor || 'bg-accent-50'} h-full flex flex-col`}
               >
                 <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${service.color || 'from-accent-400 to-accent-600'}`}></div>
                 
-                <div className="relative z-10">
-                  <div className={`text-4xl mb-6 text-gray-800 transition-all duration-300 ${service.hoverColor || 'group-hover:text-accent-500'}`}>
-                    {renderIcon(service.icon, 'w-10 h-10')}
+                <div className="relative z-10 flex flex-col h-full">
+                  <div className={`text-4xl mb-4 text-gray-800 transition-all duration-300 ${service.hoverColor || 'group-hover:text-accent-500'}`}>
+                    {renderIcon(service.icon, 'w-8 h-8')}
                   </div>
                   
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4 transition-all duration-300 group-hover:text-gray-800">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3 transition-all duration-300 group-hover:text-gray-800">
                     {service.title}
                   </h2>
                   
-                  <p className="text-gray-600 mb-6 transition-all duration-300">
+                  <p className="text-gray-600 mb-4 transition-all duration-300 flex-grow">
                     {service.description}
                   </p>
                   
-                  <ul className="space-y-4">
-                    {service.features && service.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start">
-                        <FiCheckCircle className={`mt-1 mr-2 transition-all duration-300 ${service.hoverColor || 'group-hover:text-accent-500'}`} />
-                        <span className="text-gray-700">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  {service.features && service.features.length > 0 && (
+                    <ul className="space-y-2 mb-4">
+                      {service.features.map((feature, featureIndex) => (
+                        <li key={featureIndex} className="flex items-start">
+                          <FiCheckCircle className={`mt-1 mr-2 text-sm transition-all duration-300 ${service.hoverColor || 'group-hover:text-accent-500'}`} />
+                          <span className="text-gray-700 text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   
-                  <div className="mt-8 pt-4 border-t border-gray-100">
+                  <div className="mt-auto pt-4 border-t border-gray-100">
                     <Link to="/contact" className={`inline-flex items-center text-sm font-medium transition-all duration-300 ${service.hoverColor || 'group-hover:text-accent-500'}`}>
                       Learn more <FiArrowRight className="ml-2" />
                     </Link>
