@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base URL
 // Using environment variables for API URL configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -438,6 +438,15 @@ export const chatService = {
   getConversationHistory: (conversationId) => chatbotApi.get(`/chat/history/${conversationId}`),
   clearConversation: (conversationId) => chatbotApi.delete(`/chat/history/${conversationId}`),
   calculateROI: (monthlyBill, state) => chatbotApi.post('/chat/roi', { monthlyBill, state }),
+};
+
+export const privacyPolicyService = {
+  getAllPolicies: (params) => api.get('/privacy-policy', { params }),
+  getActivePolicy: () => api.get('/privacy-policy'),
+  getPolicyById: (id) => api.get(`/privacy-policy/${id}`),
+  createPolicy: (data) => api.post('/privacy-policy', data),
+  updatePolicy: (id, data) => api.put(`/privacy-policy`, data),
+  deletePolicy: (id) => api.delete(`/privacy-policy/${id}`),
 };
 
 export default api;

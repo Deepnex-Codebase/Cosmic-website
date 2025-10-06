@@ -38,6 +38,7 @@ import CompanyCulture from './pages/company-culture'
 import AchievementsAwards from './pages/achievements-awards'
 import FAQ from './pages/faq'
 import Brochures from './pages/Brochures'
+import PrivacyPolicy from './pages/privacy-policy'
 
 // Admin Pages
 import Login from './pages/admin/Login';
@@ -52,7 +53,7 @@ import BlogCMS from './pages/admin/BlogCMS'
 import HomeCMS from './pages/admin/HomeCMS'
 import AchievementCMS from './pages/admin/AchievementCMS'
 import PressReleaseCMS from './pages/admin/PressReleaseCMS'
-
+import PrivacyPolicyCMS from './pages/admin/PrivacyPolicyCMS'
 import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
 import AdminTeamCelebration from './pages/admin/team-celebration';
@@ -64,7 +65,6 @@ import CookieConsentCMS from './pages/admin/CookieConsentCMS';
 import BrochureCMS from './pages/admin/BrochureCMS';
 import RateCMS from './pages/admin/RateCMS';
 import WhatsAppConfig from './pages/admin/WhatsAppConfig';
-
 import NavbarCMS from './components/NavbarCMS';
 import CareerCMS from './components/admin/CareerCMS';
 
@@ -112,6 +112,7 @@ function AppContent() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/brochures" element={<Brochures />} />
                 <Route path="/SolarBusinessModel" element={<SolarBusinessModel />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/contact" element={<Contact />} />
               </Routes>
             </div>
@@ -164,7 +165,6 @@ const AdminRoutes = () => {
               <Route path="/company-culture" element={<CompanyCultureAdmin />} />
               <Route path="/team-celebration" element={<AdminTeamCelebration />} />
               <Route path="/achievements" element={<AchievementCMS />} />
-
               <Route path="/blogs" element={<BlogCMS />} />
               <Route path="/press-releases" element={<PressReleaseCMS />} />
               <Route path="/careers" element={<CareerCMS />} />
@@ -176,10 +176,11 @@ const AdminRoutes = () => {
               <Route path="/offers" element={<OfferCMS />} />
               <Route path="/offer-cards" element={<OfferCardCMS />} />
               <Route path="/cookie-consent" element={<CookieConsentCMS />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicyCMS />} />
               <Route path="/brochures" element={<BrochureCMS />} />
               <Route path="/rates" element={<RateCMS />} />
               <Route path="/whatsapp-config" element={<WhatsAppConfig />} />
-            </Routes>
+              </Routes>
           </AdminLayout>
         </ProtectedRoute>
       } />

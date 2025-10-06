@@ -47,6 +47,7 @@ const navbarConfigurationRoutes = require('./routes/navbarConfigurationRoutes');
 const careerRoutes = require('./routes/careerRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const offerCardRoutes = require('./routes/offerCardRoutes');
+const privacyPolicyRoutes = require('./routes/privacyPolicyRoutes');
 
 // Initialize Express app
 const app = express();
@@ -139,6 +140,7 @@ app.use('/api/cookie-consent', cookieConsentRoutes);
 app.use('/api/brochures', brochureRoutes);
 app.use('/api/rates', rateRoutes);
 app.use('/api/offer-cards', offerCardRoutes);
+app.use('/api/privacy-policy', privacyPolicyRoutes);
 
 // Serve uploaded files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
