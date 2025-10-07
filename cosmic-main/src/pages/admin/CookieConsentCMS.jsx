@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaCheck, FaTimes, FaFilter, FaDownload, FaChartBar, FaSlidersH, FaInfoCircle } from 'react-icons/fa';
+import { FaCheck, FaTimes, FaFilter, FaDownload, FaChartBar, FaSlidersH, FaInfoCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { format } from 'date-fns';
 import AdminLayout from '../../components/AdminLayout';
 import Loader from '../../components/Loader';
@@ -615,9 +615,9 @@ const CookieConsentCMS = () => {
                     <p className="text-sm text-gray-700">
                       Showing <span className="font-medium">{(currentPage - 1) * 10 + 1}</span> to{' '}
                       <span className="font-medium">
-                        {Math.min(currentPage * 10, stats.totalRecords)}
+                        {Math.min(currentPage * 10, stats?.totalRecords || 0)}
                       </span>{' '}
-                      of <span className="font-medium">{stats.totalRecords}</span> results
+                      of <span className="font-medium">{stats?.totalRecords || 0}</span> results
                     </p>
                   </div>
                   <div>
