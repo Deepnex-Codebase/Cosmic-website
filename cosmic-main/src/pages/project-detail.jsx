@@ -5,13 +5,52 @@ import { getProjectById, getProjectsByCategory } from '../services/projectServic
 
 // Helper function to format image URLs
 const formatImageUrl = (imageUrl) => {
-  if (!imageUrl) return 'https://placehold.co/800x450?text=Image+Not+Found';
-  if (imageUrl.startsWith('http')) return imageUrl;
+  console.log('Original Image URL:', imageUrl);
+  
+  if (!imageUrl) {
+    console.log('No image URL provided, returning placeholder');
+    return 'https://placehold.co/800x450?text=Image+Not+Found';
+  }
+  
+  // Clean the URL if it has backticks
+  let cleanUrl = imageUrl;
+  if (typeof cleanUrl === 'string' && cleanUrl.includes('`')) {
+    cleanUrl = cleanUrl.replace(/`/g, '').trim();
+    console.log('Removed backticks from URL:', cleanUrl);
+  }
+  
+  if (cleanUrl.startsWith('http')) {
+    console.log('URL already starts with http, returning as is');
+    return cleanUrl;
+  }
+  
   // Use base URL without /api path
   const baseUrl = 'https://api.cosmicpowertech.com';
+  
+  // Handle different image path formats
+  let cleanImagePath = cleanUrl;
+  
   // Remove /api from the image path if it exists
-  const cleanImagePath = imageUrl.startsWith('/api/') ? imageUrl.replace('/api/', '/') : imageUrl;
-  return `${baseUrl}${cleanImagePath.startsWith('/') ? '' : '/'}${cleanImagePath}`;
+  if (cleanUrl.startsWith('/api/')) {
+    console.log('Image URL starts with /api/, removing it');
+    cleanImagePath = cleanUrl.replace('/api/', '/');
+  }
+  
+  // Handle uploads path
+  if (cleanUrl.startsWith('/uploads')) {
+    console.log('Image URL starts with /uploads, keeping as is');
+    cleanImagePath = cleanUrl;
+  }
+  
+  // Ensure path starts with a slash
+  if (!cleanImagePath.startsWith('/')) {
+    console.log('Adding leading slash to path');
+    cleanImagePath = '/' + cleanImagePath;
+  }
+  
+  const finalUrl = `${baseUrl}${cleanImagePath}`;
+  console.log('Final formatted URL:', finalUrl);
+  return finalUrl;
 };
 
 const ProjectDetail = () => {
@@ -81,6 +120,8 @@ const ProjectDetail = () => {
           response = await getProjectById(id);
         }
         
+        console.log('API Response:', response);
+        
         // Handle different API response formats
         let projectData;
         
@@ -94,10 +135,22 @@ const ProjectDetail = () => {
           throw new Error('Invalid project data format');
         }
         
+        console.log('Project Data from API:', projectData);
+        console.log('Project Images:', projectData.images);
+        console.log('Project Cover Image:', projectData.coverImage);
+        
+        // Clean featuredImage if it exists and has backticks
+        if (projectData.featuredImage) {
+          projectData.featuredImage = projectData.featuredImage.replace(/`/g, '').trim();
+          console.log('Cleaned featuredImage:', projectData.featuredImage);
+        }
+        
         // Enhance project data with additional fields if they don't exist
         const enhancedProjectData = {
           ...projectData,
-          images: projectData.images || [projectData.coverImage || fallbackProject.coverImage],
+          images: projectData.images && projectData.images.length > 0 
+            ? projectData.images 
+            : (projectData.featuredImage ? [projectData.featuredImage] : [fallbackProject.coverImage]),
           specifications: Array.isArray(projectData.specifications) 
             ? projectData.specifications 
             : (projectData.specifications && typeof projectData.specifications === 'object'
@@ -111,6 +164,9 @@ const ProjectDetail = () => {
           solution: projectData.solution || fallbackProject.solution,
           results: projectData.results || fallbackProject.results,
         };
+        
+        console.log('Enhanced Project Data:', enhancedProjectData);
+        console.log('Enhanced Project Images:', enhancedProjectData.images);
         
         setProject(enhancedProjectData);
           
@@ -256,7 +312,8 @@ const ProjectDetail = () => {
             <div className="aspect-w-16 aspect-h-9 mb-4 overflow-hidden rounded-lg">
               <img 
                 src={project.images && project.images.length > 0 ? 
-                  formatImageUrl(project.images[selectedImage]) : formatImageUrl(project.coverImage)}
+                  formatImageUrl(project.images[selectedImage]) : 
+                  (project.coverImage ? formatImageUrl(project.coverImage) : 'https://placehold.co/800x450?text=Image+Not+Found')}
                 alt={project.title} 
                 className="w-full h-full object-cover"
                 onError={(e) => {
