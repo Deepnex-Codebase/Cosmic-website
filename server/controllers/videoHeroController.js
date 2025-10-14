@@ -3,23 +3,36 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer storage for video files
+// Configure multer storage for media files
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '../uploads/videos');
+    let uploadDir;
+    
+    // Determine upload directory based on file type
+    if (file.mimetype.startsWith('video/')) {
+      uploadDir = path.join(__dirname, '../uploads/videos');
+    } else if (file.mimetype.startsWith('image/')) {
+      uploadDir = path.join(__dirname, '../uploads/images');
+    } else {
+      uploadDir = path.join(__dirname, '../uploads/media');
+    }
+    
     // Create directory if it doesn't exist
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
+    
     cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'video-hero-' + uniqueSuffix + path.extname(file.originalname));
+    const prefix = file.mimetype.startsWith('video/') ? 'video-hero-' : 'image-hero-';
+    cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
-const upload = multer({ 
+// Video upload configuration
+const videoUpload = multer({ 
   storage: storage,
   limits: { fileSize: 200 * 1024 * 1024 }, // 200MB limit for videos
   fileFilter: function (req, file, cb) {
@@ -31,6 +44,22 @@ const upload = multer({
       return cb(null, true);
     }
     cb(new Error('Only video files are allowed!'));
+  }
+});
+
+// Image upload configuration
+const imageUpload = multer({ 
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit for images
+  fileFilter: function (req, file, cb) {
+    const filetypes = /jpeg|jpg|png|gif|webp/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files (JPEG, PNG, GIF, WEBP) are allowed!'));
   }
 });
 
@@ -121,8 +150,12 @@ exports.uploadVideo = async (req, res) => {
     let videoHeroData = await VideoHero.findOne({ isActive: true });
     
     if (!videoHeroData) {
-      videoHeroData = await VideoHero.create({ videoSource: relativePath });
+      videoHeroData = await VideoHero.create({ 
+        mediaType: 'video',
+        videoSource: relativePath 
+      });
     } else {
+      videoHeroData.mediaType = 'video';
       videoHeroData.videoSource = relativePath;
       videoHeroData.updatedAt = new Date();
       await videoHeroData.save();
@@ -142,6 +175,59 @@ exports.uploadVideo = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error uploading video',
+      error: error.message
+    });
+  }
+};
+
+// Upload image file
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image file uploaded'
+      });
+    }
+    
+    // Create a proper path that will work with the frontend
+    // Store the path in the database as a relative path starting with /uploads
+    const relativePath = `/uploads/images/${req.file.filename}`;
+    // Create the full URL for the response
+    const fullUrl = `${process.env.BASE_URL}${relativePath}`;
+    
+    console.log('Image uploaded, relative path:', relativePath);
+    console.log('Image uploaded, full URL:', fullUrl);
+    
+    // Update the image source in the database
+    let videoHeroData = await VideoHero.findOne({ isActive: true });
+    
+    if (!videoHeroData) {
+      videoHeroData = await VideoHero.create({ 
+        mediaType: 'image',
+        imageSource: relativePath 
+      });
+    } else {
+      videoHeroData.mediaType = 'image';
+      videoHeroData.imageSource = relativePath;
+      videoHeroData.updatedAt = new Date();
+      await videoHeroData.save();
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: {
+        imagePath: relativePath,
+        fullUrl: fullUrl,
+        filename: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading image',
       error: error.message
     });
   }
@@ -197,4 +283,5 @@ exports.initializeDefaultVideoHero = async () => {
 };
 
 // Export multer upload middleware
-exports.upload = upload;
+exports.videoUpload = videoUpload;
+exports.imageUpload = imageUpload;

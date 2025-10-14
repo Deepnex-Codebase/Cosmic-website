@@ -25,8 +25,8 @@ router.get('/stats', getAchievementStats);
 router.put('/', updateAchievementPage);
 
 // Achievement management routes
-router.post('/achievement', upload.single('image'), addAchievement);
-router.put('/achievement/:achievementId', upload.single('image'), updateAchievement);
+router.post('/achievement', upload.single('file'), addAchievement);
+router.put('/achievement/:achievementId', upload.single('file'), updateAchievement);
 router.delete('/achievement/:achievementId', deleteAchievement);
 
 // Certificate management routes

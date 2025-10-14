@@ -26,9 +26,20 @@ const heroSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  mediaType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
+  },
   img: {
     type: String,
-    required: true
+    required: function() {
+      return this.mediaType === 'image' || this.mediaType === undefined;
+    }
+  },
+  videoSource: {
+    type: String,
+    required: false
   },
   icon: {
     type: String, // Icon identifier for predefined icons

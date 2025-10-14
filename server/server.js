@@ -48,6 +48,11 @@ const careerRoutes = require('./routes/careerRoutes');
 const offerRoutes = require('./routes/offerRoutes');
 const offerCardRoutes = require('./routes/offerCardRoutes');
 const privacyPolicyRoutes = require('./routes/privacyPolicyRoutes');
+const directorDeskHeroRoutes = require('./routes/directorDeskHeroRoutes');
+const projectHeroRoutes = require('./routes/projectHeroRoutes');
+const serviceHeroRoutes = require('./routes/serviceHeroRoutes');
+const blogHeroRoutes = require('./routes/blogHeroRoutes');
+const faqImagesRoutes = require('./routes/faqImagesRoutes');
 
 // Initialize Express app
 const app = express();
@@ -141,6 +146,11 @@ app.use('/api/brochures', brochureRoutes);
 app.use('/api/rates', rateRoutes);
 app.use('/api/offer-cards', offerCardRoutes);
 app.use('/api/privacy-policy', privacyPolicyRoutes);
+app.use('/api/director-desk-hero', directorDeskHeroRoutes);
+app.use('/api/project-hero', projectHeroRoutes);
+app.use('/api/service-hero', serviceHeroRoutes);
+app.use('/api/blog-hero', blogHeroRoutes);
+app.use('/api/faq-images', faqImagesRoutes);
 
 // Serve uploaded files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

@@ -20,6 +20,22 @@ const expertiseStorage = multer.diskStorage({
   }
 });
 
+// Configure multer storage for hero images
+const heroImageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../uploads/about');
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, 'hero-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
 // Configure multer storage for testimonial images
 const testimonialStorage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -55,6 +71,22 @@ const videoStorage = multer.diskStorage({
 // Image upload configuration
 const imageUpload = multer({ 
   storage: expertiseStorage,
+  limits: { fileSize: 40 * 1024 * 1024 }, // 40MB limit
+  fileFilter: function (req, file, cb) {
+    const filetypes = /jpeg|jpg|png|gif|webp/;
+    const mimetype = filetypes.test(file.mimetype);
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    
+    if (mimetype && extname) {
+      return cb(null, true);
+    }
+    cb(new Error('Only image files are allowed!'));
+  }
+});
+
+// Hero image upload configuration
+const heroImageUpload = multer({ 
+  storage: heroImageStorage,
   limits: { fileSize: 40 * 1024 * 1024 }, // 40MB limit
   fileFilter: function (req, file, cb) {
     const filetypes = /jpeg|jpg|png|gif|webp/;
@@ -191,7 +223,7 @@ exports.uploadExpertiseImage = async (req, res) => {
       }
       
       // Create the image URL with BASE_URL
-      const imageUrl = `${process.env.BASE_URL}/uploads/about/${req.file.filename}`;
+      const imageUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/about/${req.file.filename}`;
       
       res.status(200).json({ 
         message: 'Image uploaded successfully', 
@@ -219,7 +251,7 @@ exports.uploadHeroVideo = async (req, res) => {
       }
       
       // Create the video URL with BASE_URL
-      const videoUrl = `${process.env.BASE_URL}/uploads/about/${req.file.filename}`;
+      const videoUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/about/${req.file.filename}`;
       
       // Update the hero section in the database with the new video URL
       let aboutData = await About.findOne();
@@ -233,6 +265,7 @@ exports.uploadHeroVideo = async (req, res) => {
       }
       
       aboutData.hero.videoUrl = videoUrl;
+      aboutData.hero.mediaType = 'video';
       aboutData.updatedAt = Date.now();
       
       await aboutData.save();
@@ -383,7 +416,7 @@ exports.uploadTestimonialImage = async (req, res) => {
       }
       
       // Create the image URL with BASE_URL
-      const imageUrl = `${process.env.BASE_URL}/uploads/about/testimonials/${req.file.filename}`;
+      const imageUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/about/testimonials/${req.file.filename}`;
       
       res.status(200).json({ 
         message: 'Testimonial image uploaded successfully', 
@@ -393,5 +426,50 @@ exports.uploadTestimonialImage = async (req, res) => {
   } catch (error) {
     console.error('Error uploading testimonial image:', error);
     res.status(500).json({ message: 'Failed to upload testimonial image', error: error.message });
+  }
+};
+
+// Upload hero image
+exports.uploadHeroImage = async (req, res) => {
+  try {
+    const uploadMiddleware = heroImageUpload.single('image');
+    
+    uploadMiddleware(req, res, async function (err) {
+      if (err) {
+        return res.status(400).json({ message: err.message });
+      }
+      
+      if (!req.file) {
+        return res.status(400).json({ message: 'No image file uploaded' });
+      }
+      
+      // Create the image URL with BASE_URL
+      const imageUrl = `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/about/${req.file.filename}`;
+      
+      // Update the hero section in the database with the new image URL
+      let aboutData = await About.findOne();
+      
+      if (!aboutData) {
+        aboutData = new About({});
+      }
+      
+      if (!aboutData.hero) {
+        aboutData.hero = {};
+      }
+      
+      aboutData.hero.imageUrl = imageUrl;
+      aboutData.hero.mediaType = 'image';
+      aboutData.updatedAt = Date.now();
+      
+      await aboutData.save();
+      
+      res.status(200).json({ 
+        message: 'Image uploaded successfully', 
+        imageUrl: imageUrl 
+      });
+    });
+  } catch (error) {
+    console.error('Error uploading hero image:', error);
+    res.status(500).json({ message: 'Failed to upload image', error: error.message });
   }
 };

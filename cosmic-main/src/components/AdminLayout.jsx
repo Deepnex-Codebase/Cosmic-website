@@ -49,6 +49,7 @@ const AdminLayout = ({ children }) => {
       icon: FaBuilding,
       items: [
         { path: '/admin/directors', icon: FaUsers, label: 'Directors' },
+        { path: '/admin/director-desk-hero', icon: FaImages, label: 'Director Desk Hero' },
         { path: '/admin/team', icon: FaUsers, label: 'Team Members' },
         { path: '/admin/about', icon: FaInfoCircle, label: 'About Page' },
         { path: '/admin/company-culture', icon: FaHandshake, label: 'Company Culture' },
@@ -61,11 +62,14 @@ const AdminLayout = ({ children }) => {
       label: 'Content',
       icon: FaRegEdit,
       items: [
+        { path: '/admin/service-hero', icon: FaImages, label: 'Service Hero' },
         { path: '/admin/services', icon: FaCogs, label: 'Services' },
         { path: '/admin/projects', icon: FaBriefcase, label: 'Projects' },
+        { path: '/admin/project-hero', icon: FaImages, label: 'Project Hero' },
         { path: '/admin/processes', icon: FaRoute, label: 'Processes' },
 
         { path: '/admin/blogs', icon: FaRegNewspaper, label: 'Blog Posts' },
+        { path: '/admin/blog-hero', icon: FaImages, label: 'Blog Hero' },
         { path: '/admin/press-releases', icon: FaRegFileAlt, label: 'Press Releases' },
         { path: '/admin/careers', icon: FaBriefcase, label: 'Careers' },
         { path: '/admin/forms', icon: FaWpforms, label: 'Form Management' },

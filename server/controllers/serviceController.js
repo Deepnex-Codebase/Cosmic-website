@@ -16,7 +16,12 @@ exports.getPageSections = async (req, res) => {
     let servicePage = await Service.findOne({}, 'pageSections');
     
     if (!servicePage) {
-      servicePage = await Service.create({});
+      // Create with required fields to avoid validation errors
+      servicePage = await Service.create({
+        title: 'Default Service',
+        description: 'Default service description',
+        category: 'core'
+      });
     }
     
     res.status(200).json({

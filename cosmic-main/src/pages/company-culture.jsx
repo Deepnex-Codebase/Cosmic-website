@@ -178,12 +178,25 @@ const CompanyCulture = () => {
         initial="hidden"
         animate="visible"
         variants={fadeUpVariant}
-        className="relative bg-cover bg-center h-64 sm:h-80 md:h-[300px] flex items-center justify-center"
-        style={{
-          backgroundImage:
-            `url('${formatImageUrl(data.companyCulture.hero.backgroundImage)}')`,
-        }}
+        className="relative h-64 sm:h-80 md:h-[300px] flex items-center justify-center overflow-hidden"
       >
+        {data.companyCulture.hero.mediaType === 'video' && data.companyCulture.hero.backgroundVideo ? (
+          <video 
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+            src={formatImageUrl(data.companyCulture.hero.backgroundVideo)}
+          />
+        ) : (
+          <div 
+            className="absolute inset-0 w-full h-full bg-cover bg-center"
+            style={{
+              backgroundImage: `url('${formatImageUrl(data.companyCulture.hero.backgroundImage)}')`,
+            }}
+          />
+        )}
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">

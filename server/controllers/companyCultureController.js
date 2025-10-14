@@ -20,14 +20,14 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+      cb(new Error('Only image or video files are allowed!'), false);
     }
   },
   limits: {
-    fileSize: 40 * 1024 * 1024 // 40MB limit
+    fileSize: 100 * 1024 * 1024 // 100MB limit for videos
   }
 });
 
@@ -206,8 +206,8 @@ const updateCompanyCulture = async (req, res) => {
   }
 };
 
-// Upload image
-const uploadImage = async (req, res) => {
+// Upload media (image or video)
+const uploadMedia = async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -216,18 +216,20 @@ const uploadImage = async (req, res) => {
       });
     }
     
-    const imageUrl = `${process.env.BASE_URL}/uploads/company-culture/${req.file.filename}`;
+    const mediaUrl = `${process.env.BASE_URL}/uploads/company-culture/${req.file.filename}`;
+    const mediaType = req.file.mimetype.startsWith('video/') ? 'video' : 'image';
     
     res.json({
       success: true,
-      message: 'Image uploaded successfully',
-      imageUrl: imageUrl
+      message: `${mediaType.charAt(0).toUpperCase() + mediaType.slice(1)} uploaded successfully`,
+      mediaUrl: mediaUrl,
+      mediaType: mediaType
     });
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error('Error uploading media:', error);
     res.status(500).json({
       success: false,
-      message: 'Error uploading image',
+      message: 'Error uploading media',
       error: error.message
     });
   }
@@ -236,6 +238,6 @@ const uploadImage = async (req, res) => {
 module.exports = {
   getCompanyCulture,
   updateCompanyCulture,
-  uploadImage,
+  uploadMedia,
   upload
 };

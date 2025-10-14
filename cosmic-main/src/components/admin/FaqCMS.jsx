@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes } from 'react-icons/fa';
+import { FaPlus, FaTrash, FaEdit, FaSave, FaTimes, FaImage } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 
-// Use environment variable directly
+// Use environment variables directly
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+// Image base URL
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'https://api.cosmicpowertech.com';
 
 const FaqCMS = () => {
   const [faqs, setFaqs] = useState([]);
@@ -13,6 +15,19 @@ const FaqCMS = () => {
   const [newFaq, setNewFaq] = useState({ question: '', answer: '' });
   const [editFaq, setEditFaq] = useState({ question: '', answer: '' });
   const [showAddForm, setShowAddForm] = useState(false);
+  
+  // State for FAQ images
+  const [faqImages, setFaqImages] = useState({
+    leftImage: '',
+    rightImage: '',
+    badgeImage: ''
+  });
+  const [imageLoading, setImageLoading] = useState(false);
+  
+  // Refs for file inputs
+  const leftImageRef = useRef(null);
+  const rightImageRef = useRef(null);
+  const badgeImageRef = useRef(null);
 
   // Fetch FAQs from the server
   const fetchFaqs = async () => {
@@ -108,7 +123,57 @@ const FaqCMS = () => {
   // Load FAQs when component mounts
   useEffect(() => {
     fetchFaqs();
+    fetchFaqImages();
   }, []);
+  
+  // Fetch FAQ images
+  const fetchFaqImages = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/faq-images`);
+      if (response.data) {
+        setFaqImages(response.data);
+      }
+    } catch (error) {
+      toast.error('Failed to load FAQ images');
+    }
+  };
+  
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    
+    if (leftImageRef.current.files[0]) {
+      formData.append('leftImage', leftImageRef.current.files[0]);
+    }
+    
+    if (rightImageRef.current.files[0]) {
+      formData.append('rightImage', rightImageRef.current.files[0]);
+    }
+    
+    if (badgeImageRef.current.files[0]) {
+      formData.append('badgeImage', badgeImageRef.current.files[0]);
+    }
+    
+    try {
+      setImageLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_BASE_URL}/faq-images`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      setFaqImages(response.data);
+      toast.success('FAQ images updated successfully');
+    } catch (error) {
+      toast.error('Failed to update FAQ images');
+    } finally {
+      setImageLoading(false);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -117,6 +182,84 @@ const FaqCMS = () => {
         <p className="text-sm text-gray-500">
           Add, edit, or remove frequently asked questions that appear on your website.
         </p>
+      </div>
+      
+      {/* FAQ Images Section */}
+      <div className="bg-white rounded-lg border mb-6">
+        <div className="p-4 border-b">
+          <h3 className="font-medium flex items-center"><FaImage className="mr-2" /> FAQ Section Images</h3>
+        </div>
+        
+        <form onSubmit={handleImageUpload} className="p-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Left Image</label>
+              <input 
+                type="file" 
+                ref={leftImageRef}
+                accept="image/*"
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {faqImages.leftImage && (
+                <div className="mt-2">
+                  <img 
+                    src={`${IMAGE_BASE_URL}${faqImages.leftImage}`} 
+                    alt="Left FAQ Image" 
+                    className="h-24 object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Right Image</label>
+              <input 
+                type="file" 
+                ref={rightImageRef}
+                accept="image/*"
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {faqImages.rightImage && (
+                <div className="mt-2">
+                  <img 
+                    src={`${IMAGE_BASE_URL}${faqImages.rightImage}`} 
+                    alt="Right FAQ Image" 
+                    className="h-24 object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Badge Image</label>
+              <input 
+                type="file" 
+                ref={badgeImageRef}
+                accept="image/*"
+                className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+              {faqImages.badgeImage && (
+                <div className="mt-2">
+                  <img 
+                    src={`${IMAGE_BASE_URL}${faqImages.badgeImage}`} 
+                    alt="Badge Image" 
+                    className="h-24 object-cover rounded"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={imageLoading}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center"
+            >
+              {imageLoading ? 'Updating...' : 'Update Images'}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* FAQ List */}

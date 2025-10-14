@@ -4,6 +4,8 @@ import { FiArrowRight, FiMapPin, FiMail, FiTruck, FiCheckCircle, FiChevronDown, 
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { getDeliveryProcesses } from '../services/processService';
+import { getProjectHero } from '../services/cmsService';
+import { fetchProjects } from '../services/projectService';
 
 // Define API_BASE_URL using environment variable
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
@@ -77,6 +79,14 @@ const ProjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [processStepsData, setProcessStepsData] = useState(processSteps);
+  const [heroData, setHeroData] = useState({
+    title: "Our Projects",
+    subtitle: "Discover our innovative solar solutions transforming homes and businesses",
+    buttonText: "Explore Now",
+    buttonLink: "#projects",
+    mediaType: "image",
+    media: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=1200&q=80"
+  });
   
   const categories = ['All', 'Residential', 'Commercial', 'Industrial', 'Utility Scale'];
 
@@ -84,6 +94,7 @@ const ProjectsPage = () => {
   useEffect(() => {
     fetchProjectsData();
     fetchProcessSteps();
+    fetchHeroData();
   }, []);
 
   const setFallbackData = () => {
@@ -145,8 +156,8 @@ const ProjectsPage = () => {
     try {
       setLoading(true);
       
-      // Try to fetch from API first
-      const response = await axios.get(`${API_BASE_URL}/projects?limit=50`);
+      // Try to fetch from API using fetchProjects service
+      const response = await fetchProjects({limit: 50});
       
       if (response.data && response.data.success && response.data.data) {
           const apiProjects = response.data.data;
@@ -237,23 +248,58 @@ const ProjectsPage = () => {
       // Keep fallback data if API fails
     }
   };
+  
+  const fetchHeroData = async () => {
+    try {
+      const response = await getProjectHero();
+      if (response && response.media) {
+        // If we have hero data from the API, update the state
+        setHeroData({
+          title: response.title || "Our Projects",
+          subtitle: response.subtitle || "Discover our innovative solar solutions transforming homes and businesses",
+          buttonText: response.buttonText || "Explore Now",
+          buttonLink: response.buttonLink || "#projects",
+          mediaType: response.mediaType || "image",
+          media: response.media.startsWith('http') ? response.media : `${API_BASE_URL}${response.media.startsWith('/api/') ? response.media.replace('/api/', '/') : response.media}`
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching project hero:', error);
+      // Keep fallback data if API fails
+    }
+  };
 
   return (
     <div className="font-sans text-gray-700 bg-gray-50">
 
       {/* ───────────── Hero ───────────── */}
       <section className="relative h-64 md:h-80 lg:h-96">
-        <img
-          src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&w=1200&q=80"
-          alt="solar panels"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        {heroData.mediaType === 'video' ? (
+          <video
+            src={heroData.media && heroData.media.includes('/api/') ? heroData.media.replace('/api/', '/') : heroData.media}
+            alt="solar projects"
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+          />
+        ) : (
+          <img
+            src={heroData.media && heroData.media.includes('/api/') ? heroData.media.replace('/api/', '/') : heroData.media}
+            alt="solar panels"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-r from-[#13181f]/80 via-[#13181f]/70 to-[#13181f]/60" />
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">Our Projects</h1>
-          <p className="text-sm md:text-base max-w-xl mx-auto">Discover our innovative solar solutions transforming homes and businesses</p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2 md:mb-4">{heroData.title}</h1>
+          <p className="text-sm md:text-base max-w-xl mx-auto">{heroData.subtitle}</p>
           <div className="mt-6 md:mt-8">
-            <button className="bg-accent-400 hover:bg-accent-500 text-accent-950 px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg">Explore Now</button>
+            <Link to={heroData.buttonLink}>
+              <button className="bg-accent-400 hover:bg-accent-500 text-accent-950 px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 shadow-lg">
+                {heroData.buttonText}
+              </button>
+            </Link>
           </div>
         </div>
       </section>

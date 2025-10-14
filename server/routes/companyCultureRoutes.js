@@ -3,7 +3,7 @@ const router = express.Router();
 const {
   getCompanyCulture,
   updateCompanyCulture,
-  uploadImage,
+  uploadMedia,
   upload
 } = require('../controllers/companyCultureController');
 
@@ -13,7 +13,7 @@ router.get('/', getCompanyCulture);
 // Update company culture data
 router.put('/', updateCompanyCulture);
 
-// Upload image
-router.post('/upload', upload.single('image'), uploadImage);
+// Upload media (image or video)
+router.post('/upload', upload.single('media'), uploadMedia);
 
 module.exports = router;

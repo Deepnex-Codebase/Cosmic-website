@@ -14,6 +14,15 @@ const achievementSchema = new mongoose.Schema({
     backgroundImage: {
       type: String,
       default: '/quality1.jpg'
+    },
+    backgroundVideo: {
+      type: String,
+      default: ''
+    },
+    mediaType: {
+      type: String,
+      enum: ['image', 'video'],
+      default: 'image'
     }
   },
   
@@ -62,7 +71,16 @@ const achievementSchema = new mongoose.Schema({
       },
       image: {
         type: String,
-        required: true
+        required: false
+      },
+      video: {
+        type: String,
+        required: false
+      },
+      mediaType: {
+        type: String,
+        enum: ['image', 'video'],
+        default: 'image'
       },
       order: {
         type: Number,

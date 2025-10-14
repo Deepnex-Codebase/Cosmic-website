@@ -26,12 +26,14 @@ const upload = multer({
     // Check file type
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
+    } else if (file.mimetype.startsWith('video/')) {
+      cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+      cb(new Error('Only image or video files are allowed!'), false);
     }
   },
   limits: {
-    fileSize: 40 * 1024 * 1024 // 40MB limit
+    fileSize: 100 * 1024 * 1024 // 100MB limit for videos
   }
 });
 
@@ -147,10 +149,21 @@ exports.createHero = async (req, res) => {
       }
     }
     
-    // Handle image upload
-    if (req.file) {
-      heroData.img = `${process.env.BASE_URL}/uploads/heroes/${req.file.filename}`;
-      heroData.imageFile = `/uploads/heroes/${req.file.filename}`;
+    // Handle media upload (image or video)
+    if (req.files) {
+      // Check if video file exists
+      if (req.files.videoSource && req.files.videoSource.length > 0) {
+        heroData.mediaType = 'video';
+        heroData.videoSource = `/uploads/heroes/${req.files.videoSource[0].filename}`;
+        // Set a placeholder for img to satisfy schema
+        heroData.img = 'placeholder-for-video';
+      } 
+      // Check if image file exists
+      else if (req.files.img && req.files.img.length > 0) {
+        heroData.mediaType = 'image';
+        heroData.img = `${process.env.BASE_URL}/uploads/heroes/${req.files.img[0].filename}`;
+        heroData.imageFile = `/uploads/heroes/${req.files.img[0].filename}`;
+      }
     }
     
     // Set order if not provided
@@ -191,12 +204,23 @@ exports.updateHero = async (req, res) => {
       }
     }
     
-    // Handle image upload
-    if (req.file) {
-      updateData.img = `${process.env.BASE_URL}/uploads/heroes/${req.file.filename}`;
-      updateData.imageFile = `/uploads/heroes/${req.file.filename}`;
+    // Handle media upload (image or video)
+    if (req.files) {
+      // Check if video file exists
+      if (req.files.videoSource && req.files.videoSource.length > 0) {
+        updateData.mediaType = 'video';
+        updateData.videoSource = `/uploads/heroes/${req.files.videoSource[0].filename}`;
+        // Set a placeholder for img to satisfy schema
+        updateData.img = 'placeholder-for-video';
+      } 
+      // Check if image file exists
+      else if (req.files.img && req.files.img.length > 0) {
+        updateData.mediaType = 'image';
+        updateData.img = `${process.env.BASE_URL}/uploads/heroes/${req.files.img[0].filename}`;
+        updateData.imageFile = `/uploads/heroes/${req.files.img[0].filename}`;
+      }
       
-      // Don't delete old image to ensure persistence
+      // Don't delete old files to ensure persistence
       // Just update with new file path
     }
     
@@ -326,8 +350,11 @@ exports.updateHeroOrder = async (req, res) => {
   }
 };
 
-// Upload middleware
-exports.uploadHeroImage = upload.single('img');
+// Upload middleware - single middleware that can handle both image and video uploads
+exports.uploadHeroImage = upload.fields([
+  { name: 'img', maxCount: 1 },
+  { name: 'videoSource', maxCount: 1 }
+]);
 
 // Initialize default hero slides
 exports.initializeDefaultHeroes = async () => {

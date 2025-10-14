@@ -245,11 +245,34 @@ const TeamCelebration = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <section 
-        className="relative bg-cover bg-center py-24 text-white"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${data?.hero?.backgroundImage ? (data?.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage : data?.hero?.backgroundImage.startsWith('data:image') ? data?.hero?.backgroundImage : data?.hero?.backgroundImage.startsWith('https://') ? data?.hero?.backgroundImage : 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage) : 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80'}')`,
-        }}
+        className="relative py-24 text-white"
       >
+        {/* Background Media (Image or Video) */}
+        {data?.hero?.mediaType === 'video' && data?.hero?.backgroundVideo ? (
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            <div className="absolute inset-0 bg-black opacity-70 z-10"></div>
+            <video 
+              className="absolute inset-0 w-full h-full object-cover" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              src={data.hero.backgroundVideo.startsWith('/uploads') 
+                ? 'https://api.cosmicpowertech.com' + data.hero.backgroundVideo 
+                : data.hero.backgroundVideo}
+            >
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        ) : (
+          <div 
+            className="absolute inset-0 bg-cover bg-center z-0"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('${data?.hero?.backgroundImage ? (data?.hero?.backgroundImage.startsWith('/uploads') ? 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage : data?.hero?.backgroundImage.startsWith('data:image') ? data?.hero?.backgroundImage : data?.hero?.backgroundImage.startsWith('https://') ? data?.hero?.backgroundImage : 'https://api.cosmicpowertech.com' + data?.hero?.backgroundImage) : 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80'}')`,
+            }}
+          ></div>
+        )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

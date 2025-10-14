@@ -54,29 +54,45 @@ const About = () => {
         variants={fadeUpVariant}
         className="relative h-100 sm:h-80 md:h-[500px] flex items-center justify-center overflow-hidden"
       >
-        <video 
-          className="absolute inset-0 w-full h-full object-cover" 
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-        >
-          <source 
+        {aboutData?.hero?.mediaType === 'image' ? (
+          <img 
+            className="absolute inset-0 w-full h-full object-cover"
             src={
-              aboutData?.hero?.videoUrl
-                ? aboutData.hero.videoUrl.startsWith('http')
-                  ? aboutData.hero.videoUrl
-                  : aboutData.hero.videoUrl.startsWith('/uploads/')
-                    ? `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}${aboutData.hero.videoUrl.startsWith('/') ? '' : '/'}${aboutData.hero.videoUrl}`
-                    : aboutData.hero.videoUrl.startsWith('/videos/')
-                      ? `${window.location.origin}${aboutData.hero.videoUrl}`
-                      : `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}/uploads/about/${aboutData.hero.videoUrl}`
-                : "/aboutvideo.mp4"
-            } 
-            type="video/mp4" 
+              aboutData?.hero?.imageUrl
+                ? aboutData.hero.imageUrl.startsWith('http')
+                  ? aboutData.hero.imageUrl
+                  : aboutData.hero.imageUrl.startsWith('/uploads/')
+                    ? `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}${aboutData.hero.imageUrl.startsWith('/') ? '' : '/'}${aboutData.hero.imageUrl}`
+                    : `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}/uploads/about/${aboutData.hero.imageUrl}`
+                : "/solar-panels.jpg"
+            }
+            alt="About Hero"
           />
-          Your browser does not support the video tag.
-        </video>
+        ) : (
+          <video 
+            className="absolute inset-0 w-full h-full object-cover" 
+            autoPlay 
+            muted 
+            loop 
+            playsInline
+          >
+            <source 
+              src={
+                aboutData?.hero?.videoUrl
+                  ? aboutData.hero.videoUrl.startsWith('http')
+                    ? aboutData.hero.videoUrl
+                    : aboutData.hero.videoUrl.startsWith('/uploads/')
+                      ? `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}${aboutData.hero.videoUrl.startsWith('/') ? '' : '/'}${aboutData.hero.videoUrl}`
+                      : aboutData.hero.videoUrl.startsWith('/videos/')
+                        ? `${window.location.origin}${aboutData.hero.videoUrl}`
+                        : `${import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com'}/uploads/about/${aboutData.hero.videoUrl}`
+                  : "/aboutvideo.mp4"
+              } 
+              type="video/mp4" 
+            />
+            Your browser does not support the video tag.
+          </video>
+        )}
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">{aboutData?.hero?.title || "About"}</h1>

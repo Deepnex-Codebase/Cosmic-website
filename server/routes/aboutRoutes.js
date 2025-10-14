@@ -14,6 +14,9 @@ router.post('/expertise/upload', aboutController.uploadExpertiseImage);
 // Upload hero video
 router.post('/video/upload', aboutController.uploadHeroVideo);
 
+// Upload hero image
+router.post('/image/upload', aboutController.uploadHeroImage);
+
 // Add expertise item
 router.post('/expertise/item', aboutController.addExpertiseItem);
 

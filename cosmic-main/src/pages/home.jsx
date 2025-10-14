@@ -375,7 +375,7 @@ const Home = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                {/* Map Image */}
+                {/* Map Image or Video */}
                 <motion.div
                   initial={{ opacity: 0, x: -50 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -384,15 +384,28 @@ const Home = () => {
                   className="flex justify-center"
                 >
                   <div className="relative">
-                    <img 
-                      src={panIndiaData?.mapImage ? 
-                        (panIndiaData.mapImage.startsWith('/uploads') ? 
-                          `${SERVER_URL}${panIndiaData.mapImage}` : 
-                          panIndiaData.mapImage) : 
-                        "/mapindea.png"} 
-                      alt="Cosmic Energy India Presence Map" 
-                      className="w-full h-auto max-w-lg mx-auto shadow-lg rounded-lg"
-                    />
+                    {panIndiaData?.mediaType === 'video' && panIndiaData?.mapVideo ? (
+                      <video 
+                        src={panIndiaData.mapVideo.startsWith('/uploads') ? 
+                          `${SERVER_URL}${panIndiaData.mapVideo}` : 
+                          panIndiaData.mapVideo}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="w-full h-auto max-w-lg mx-auto shadow-lg rounded-lg"
+                      />
+                    ) : (
+                      <img 
+                        src={panIndiaData?.mapImage ? 
+                          (panIndiaData.mapImage.startsWith('/uploads') ? 
+                            `${SERVER_URL}${panIndiaData.mapImage}` : 
+                            panIndiaData.mapImage) : 
+                          "/mapindea.png"} 
+                        alt="Cosmic Energy India Presence Map" 
+                        className="w-full h-auto max-w-lg mx-auto shadow-lg rounded-lg"
+                      />
+                    )}
                     <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-[#9fc22f] rounded-full opacity-20 blur-xl"></div>
                     <div className="absolute -top-4 -left-4 w-32 h-32 bg-[#003e63] rounded-full opacity-10 blur-xl"></div>
                   </div>

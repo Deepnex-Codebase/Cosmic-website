@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaPlus, FaTrash, FaUpload, FaSave, FaEye } from 'react-icons/fa';
-import { getTeamCelebration, updateTeamCelebration, uploadTeamCelebrationImage } from '../../services/teamCelebrationService';
+import { getTeamCelebration, updateTeamCelebration, uploadTeamCelebrationImage, uploadTeamCelebrationVideo } from '../../services/teamCelebrationService';
 
 const AdminTeamCelebration = () => {
   const [teamCelebrationData, setTeamCelebrationData] = useState(null);
@@ -58,6 +58,27 @@ const AdminTeamCelebration = () => {
     } catch (error) {
       console.error('Error uploading image:', error);
       setMessage('Error uploading image');
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  const handleVideoUpload = async (file, section, field) => {
+    try {
+      setUploading(true);
+      const videoUrl = await uploadTeamCelebrationVideo(file);
+      setTeamCelebrationData(prev => ({
+        ...prev,
+        [section]: {
+          ...prev[section],
+          [field]: videoUrl
+        }
+      }));
+      setMessage('Video uploaded successfully!');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      setMessage('Error uploading video');
     } finally {
       setUploading(false);
     }
@@ -245,37 +266,98 @@ const AdminTeamCelebration = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Background Image</label>
-                <div className="flex gap-4">
-                  <input
-                    type="text"
-                    value={teamCelebrationData.hero?.backgroundImage || ''}
-                    onChange={(e) => handleInputChange('hero', 'backgroundImage', e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter image URL or upload"
-                  />
-                  <label className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 cursor-pointer">
-                    <FaUpload /> Upload
+                <label className="block text-sm font-medium text-gray-700 mb-2">Media Type</label>
+                <div className="flex gap-4 mb-4">
+                  <label className="inline-flex items-center">
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'hero', 'backgroundImage')}
-                      className="hidden"
+                      type="radio"
+                      name="mediaType"
+                      value="image"
+                      checked={teamCelebrationData.hero?.mediaType === 'image' || !teamCelebrationData.hero?.mediaType}
+                      onChange={() => handleInputChange('hero', 'mediaType', 'image')}
+                      className="form-radio h-4 w-4 text-blue-600"
                     />
+                    <span className="ml-2">Image</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="mediaType"
+                      value="video"
+                      checked={teamCelebrationData.hero?.mediaType === 'video'}
+                      onChange={() => handleInputChange('hero', 'mediaType', 'video')}
+                      className="form-radio h-4 w-4 text-blue-600"
+                    />
+                    <span className="ml-2">Video</span>
                   </label>
                 </div>
-                {teamCelebrationData.hero?.backgroundImage && (
-                  <img
-                    src={teamCelebrationData.hero.backgroundImage.startsWith('data:image') ? 
-                      teamCelebrationData.hero.backgroundImage : 
-                      (teamCelebrationData.hero.backgroundImage.startsWith('/uploads') || !teamCelebrationData.hero.backgroundImage.startsWith('https://') ? 
-                        `https://api.cosmicpowertech.com${teamCelebrationData.hero.backgroundImage.startsWith('/') ? '' : '/'}${teamCelebrationData.hero.backgroundImage}` : 
-                        teamCelebrationData.hero.backgroundImage)}
-                    alt="Hero background"
-                    className="mt-2 w-full h-48 object-cover rounded-md"
-                  />
-                )}
               </div>
+
+              {(!teamCelebrationData.hero?.mediaType || teamCelebrationData.hero?.mediaType === 'image') ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Background Image</label>
+                  <div className="flex gap-4">
+                    <input
+                      type="text"
+                      value={teamCelebrationData.hero?.backgroundImage || ''}
+                      onChange={(e) => handleInputChange('hero', 'backgroundImage', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter image URL or upload"
+                    />
+                    <label className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 cursor-pointer">
+                      <FaUpload /> Upload
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => e.target.files[0] && handleImageUpload(e.target.files[0], 'hero', 'backgroundImage')}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {teamCelebrationData.hero?.backgroundImage && (
+                    <img
+                      src={teamCelebrationData.hero.backgroundImage.startsWith('data:image') ? 
+                        teamCelebrationData.hero.backgroundImage : 
+                        (teamCelebrationData.hero.backgroundImage.startsWith('/uploads') || !teamCelebrationData.hero.backgroundImage.startsWith('https://') ? 
+                          `https://api.cosmicpowertech.com${teamCelebrationData.hero.backgroundImage.startsWith('/') ? '' : '/'}${teamCelebrationData.hero.backgroundImage}` : 
+                          teamCelebrationData.hero.backgroundImage)}
+                      alt="Hero background"
+                      className="mt-2 w-full h-48 object-cover rounded-md"
+                    />
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Background Video</label>
+                  <div className="flex gap-4">
+                    <input
+                      type="text"
+                      value={teamCelebrationData.hero?.backgroundVideo || ''}
+                      onChange={(e) => handleInputChange('hero', 'backgroundVideo', e.target.value)}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter video URL or upload"
+                    />
+                    <label className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 cursor-pointer">
+                      <FaUpload /> Upload
+                      <input
+                        type="file"
+                        accept="video/*"
+                        onChange={(e) => e.target.files[0] && handleVideoUpload(e.target.files[0], 'hero', 'backgroundVideo')}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {teamCelebrationData.hero?.backgroundVideo && (
+                    <video
+                      src={teamCelebrationData.hero.backgroundVideo.startsWith('/uploads') ? 
+                        `https://api.cosmicpowertech.com${teamCelebrationData.hero.backgroundVideo}` : 
+                        teamCelebrationData.hero.backgroundVideo}
+                      className="mt-2 w-full h-48 object-cover rounded-md"
+                      controls
+                    />
+                  )}
+                </div>
+              )}
             </div>
           )}
 

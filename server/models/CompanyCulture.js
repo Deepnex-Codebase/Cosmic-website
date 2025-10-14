@@ -4,7 +4,9 @@ const CompanyCultureSchema = new mongoose.Schema({
   hero: {
     title: { type: String, default: 'Company Culture' },
     subtitle: { type: String, default: 'Building a Sustainable Future Together' },
-    backgroundImage: { type: String, default: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80' }
+    backgroundImage: { type: String, default: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80' },
+    backgroundVideo: { type: String, default: '' },
+    mediaType: { type: String, enum: ['image', 'video'], default: 'image' }
   },
   brandVision: {
     title: { type: String, default: 'Brand Vision & Strategy' },

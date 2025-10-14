@@ -15,9 +15,18 @@ const heroSectionSchema = new mongoose.Schema({
     type: String,
     default: '/videos/solar-installation.mp4'
   },
+  mediaType: {
+    type: String,
+    enum: ['video', 'image'],
+    default: 'video'
+  },
   companyVideo: {
     type: String,
     default: '/enn.mp4'
+  },
+  companyImage: {
+    type: String,
+    default: ''
   },
   sectionTitle: {
     type: String,

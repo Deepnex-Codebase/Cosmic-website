@@ -108,10 +108,25 @@ const uploadTeamCelebrationImage = async (req, res) => {
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
-    const imageUrl = `${process.env.BASE_URL}/uploads/team-celebration/${req.file.filename}`;
-    res.json({ imageUrl });
+    const filePath = `/uploads/team-celebration/${req.file.filename}`;
+    res.json({ imageUrl: filePath });
   } catch (error) {
     console.error('Error uploading team celebration image:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// Upload video for team celebration
+const uploadTeamCelebrationVideo = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const filePath = `/uploads/team-celebration-video/${req.file.filename}`;
+    res.json({ imageUrl: filePath });
+  } catch (error) {
+    console.error('Error uploading team celebration video:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
@@ -119,5 +134,6 @@ const uploadTeamCelebrationImage = async (req, res) => {
 module.exports = {
   getTeamCelebration,
   updateTeamCelebration,
-  uploadTeamCelebrationImage
+  uploadTeamCelebrationImage,
+  uploadTeamCelebrationVideo
 };

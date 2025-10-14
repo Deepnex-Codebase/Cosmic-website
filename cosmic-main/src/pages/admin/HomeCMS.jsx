@@ -141,6 +141,8 @@ const HomeCMS = () => {
     title: [''],
     body: '',
     img: null,
+    mediaType: 'image',
+    videoSource: null,
     icon: '',
     customSvgIcon: '',
     order: 0,
@@ -161,6 +163,8 @@ const HomeCMS = () => {
     title: 'Pan India Presence',
     description: 'Our growing network spans across India, providing reliable solar solutions to homes and businesses nationwide.',
     mapImage: null,
+    mapVideo: null,
+    mediaType: 'image',
     stats: [
       {
         title: '25+ States',
@@ -228,11 +232,19 @@ const HomeCMS = () => {
           data.mapImage = data.mapImage.replace('/api', '');
         }
         
+        // Format mapVideo URL if it exists and is not already an absolute URL
+        if (data.mapVideo && !data.mapVideo.startsWith('http')) {
+          // Convert from /api/uploads/... to /uploads/...
+          data.mapVideo = data.mapVideo.replace('/api', '');
+        }
+        
         setPanIndiaData(data);
         setPanIndiaFormData({
           title: data.title,
           description: data.description,
           mapImage: null,
+          mapVideo: null,
+          mediaType: data.mediaType || 'image',
           stats: Array.isArray(data.stats) ? data.stats : [],
           isActive: data.isActive
         });
@@ -251,6 +263,13 @@ const HomeCMS = () => {
       setPanIndiaFormData(prev => ({ ...prev, [name]: files[0] }));
     } else if (type === 'checkbox') {
       setPanIndiaFormData(prev => ({ ...prev, [name]: checked }));
+    } else if (type === 'radio' && name === 'mediaType') {
+      // When media type changes, clear the other media field
+      if (value === 'image') {
+        setPanIndiaFormData(prev => ({ ...prev, mediaType: value, mapVideo: null }));
+      } else {
+        setPanIndiaFormData(prev => ({ ...prev, mediaType: value, mapImage: null }));
+      }
     } else {
       setPanIndiaFormData(prev => ({ ...prev, [name]: value }));
     }
@@ -287,6 +306,7 @@ const HomeCMS = () => {
       const formDataToSend = new FormData();
       formDataToSend.append('title', panIndiaFormData.title);
       formDataToSend.append('description', panIndiaFormData.description);
+      formDataToSend.append('mediaType', panIndiaFormData.mediaType);
       
       // Properly handle stats array
       if (Array.isArray(panIndiaFormData.stats)) {
@@ -299,7 +319,7 @@ const HomeCMS = () => {
       formDataToSend.append('isActive', panIndiaFormData.isActive.toString());
       
       // Check if there's an image to upload
-      if (panIndiaFormData.mapImage) {
+      if (panIndiaFormData.mediaType === 'image' && panIndiaFormData.mapImage) {
         
         // Compress the image if it's too large (over 5MB)
         if (panIndiaFormData.mapImage.size > 5 * 1024 * 1024) {
@@ -308,8 +328,17 @@ const HomeCMS = () => {
         
         // Ensure the file is properly appended with the correct field name
         formDataToSend.append('mapImage', panIndiaFormData.mapImage, panIndiaFormData.mapImage.name);
+      }
+      
+      // Check if there's a video to upload
+      if (panIndiaFormData.mediaType === 'video' && panIndiaFormData.mapVideo) {
+        // Warn if video is large
+        if (panIndiaFormData.mapVideo.size > 50 * 1024 * 1024) {
+          toast.info('Video is large, upload may take some time...');
+        }
         
-
+        // Append video file with field name 'mapImage' because server expects this name
+        formDataToSend.append('mapImage', panIndiaFormData.mapVideo, panIndiaFormData.mapVideo.name);
       }
 
       // Always use the API_BASE_URL for consistency
@@ -385,6 +414,8 @@ const HomeCMS = () => {
       title: [''],
       body: '',
       img: null,
+      mediaType: 'image',
+      videoSource: null,
       icon: '',
       customSvgIcon: '',
       order: 0,
@@ -405,9 +436,11 @@ const HomeCMS = () => {
       Object.keys(formData).forEach(key => {
         if (key === 'title') {
           submitData.append(key, JSON.stringify(formData[key]));
-        } else if (key === 'img' && formData[key]) {
+        } else if (key === 'img' && formData[key] && formData.mediaType === 'image') {
           submitData.append(key, formData[key]);
-        } else if (key !== 'img') {
+        } else if (key === 'videoSource' && formData[key] && formData.mediaType === 'video') {
+          submitData.append(key, formData[key]);
+        } else if (key !== 'img' && key !== 'videoSource') {
           submitData.append(key, formData[key]);
         }
       });
@@ -470,6 +503,8 @@ const HomeCMS = () => {
       title: Array.isArray(hero.title) ? hero.title : [''],
       body: hero.body || '',
       img: null,
+      mediaType: hero.mediaType || 'image',
+      videoSource: null,
       icon: hero.icon || '',
       customSvgIcon: hero.customSvgIcon || '',
       order: hero.order || 0,
@@ -673,22 +708,75 @@ const HomeCMS = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Background Image
+                Background Media Type
               </label>
-              <input
-                type="file"
-                name="img"
-                onChange={handleInputChange}
-                accept="image/*"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                {...(!editingHero && { required: true })}
-              />
-              {editingHero && editingHero.img && (
-                <p className="text-sm text-gray-500 mt-1">
-                  Current image: {editingHero.img}
-                </p>
-              )}
+              <div className="flex space-x-4 mb-2">
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="mediaTypeImage"
+                    name="mediaType"
+                    value="image"
+                    checked={formData.mediaType === 'image'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <label htmlFor="mediaTypeImage">Image</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="radio"
+                    id="mediaTypeVideo"
+                    name="mediaType"
+                    value="video"
+                    checked={formData.mediaType === 'video'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <label htmlFor="mediaTypeVideo">Video</label>
+                </div>
+              </div>
             </div>
+
+            {formData.mediaType === 'image' ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Background Image (Max 10MB)
+                </label>
+                <input
+                  type="file"
+                  name="img"
+                  onChange={handleInputChange}
+                  accept="image/*"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  {...(!editingHero && { required: true })}
+                />
+                {editingHero && editingHero.img && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Current image: {editingHero.img}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Background Video (Max 100MB)
+                </label>
+                <input
+                  type="file"
+                  name="videoSource"
+                  onChange={handleInputChange}
+                  accept="video/*"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  {...(!editingHero && { required: true })}
+                />
+                {editingHero && editingHero.videoSource && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Current video: {editingHero.videoSource}
+                  </p>
+                )}
+              </div>
+            )}
 
           
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -838,11 +926,19 @@ const HomeCMS = () => {
                         {Array.isArray(hero.title) ? hero.title.join(' ') : hero.title}
                       </div>
                       <p className="text-gray-500 text-sm line-clamp-2">{hero.body}</p>
-                      {hero.img && (
+                      {hero.mediaType === 'video' && hero.videoSource ? (
                         <div className="mt-2">
-                          <img 
-                            src={hero.img.startsWith('http') ? hero.img : hero.fullUrl || `${API_BASE_URL}${hero.img}`}
-                            alt={hero.subtitle}
+                          <video 
+                            src={hero.videoSource.startsWith('http') ? hero.videoSource : `${API_BASE_URL.replace('/api', '')}${hero.videoSource}`}
+                            className="w-20 h-12 object-cover rounded"
+                            controls
+                          />
+                        </div>
+                      ) : hero.img && (
+                        <div className="mt-2">
+                          <img
+                            src={hero.img.startsWith('http') ? hero.img : hero.fullUrl || `${API_BASE_URL.replace('/api', '')}${hero.img}`}
+                            alt="Hero"
                             className="w-20 h-12 object-cover rounded"
                           />
                         </div>
@@ -922,39 +1018,124 @@ const HomeCMS = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Map Image (Max 5MB recommended)
+                Media Type
               </label>
-              <input
-                type="file"
-                name="mapImage"
+              <div className="flex space-x-4 mb-2">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="mediaType"
+                    value="image"
+                    checked={panIndiaFormData.mediaType === 'image'}
+                    onChange={handlePanIndiaInputChange}
+                    className="form-radio h-4 w-4 text-blue-600"
+                  />
+                  <span className="ml-2">Image</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="mediaType"
+                    value="video"
+                    checked={panIndiaFormData.mediaType === 'video'}
+                    onChange={handlePanIndiaInputChange}
+                    className="form-radio h-4 w-4 text-blue-600"
+                  />
+                  <span className="ml-2">Video</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {panIndiaFormData.mediaType === 'image' ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Map Image (Max 5MB recommended)
+                </label>
+                <input
+                  type="file"
+                  name="mapImage"
+                  onChange={handlePanIndiaInputChange}
+                  accept="image/*"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">For best results, use images smaller than 5MB</p>
+                {panIndiaData && panIndiaData.mapImage && !panIndiaFormData.mapImage && panIndiaData.mediaType === 'image' && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 mb-1">Current image:</p>
+                    <img
+                      src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : 
+                        (panIndiaData.mapImage.startsWith('/uploads') ? 
+                          `${SERVER_URL}${panIndiaData.mapImage}` : 
+                          `${SERVER_URL}${panIndiaData.mapImage.replace('/api', '')}`)}
+                      alt="Current map"
+                      className="w-32 h-32 object-cover rounded-md"
+                    />
+                  </div>
+                )}
+                {panIndiaFormData.mapImage && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 mb-1">New image preview:</p>
+                    <img
+                      src={typeof panIndiaFormData.mapImage === 'string' ? panIndiaFormData.mapImage : URL.createObjectURL(panIndiaFormData.mapImage)}
+                      alt="Map preview"
+                      className="w-32 h-32 object-cover rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Map Video (Max 100MB)
+                </label>
+                <input
+                  type="file"
+                  name="mapVideo"
+                  onChange={handlePanIndiaInputChange}
+                  accept="video/*"
+                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Upload a video file (MP4, WebM, etc.)</p>
+                {panIndiaData && panIndiaData.mapVideo && !panIndiaFormData.mapVideo && panIndiaData.mediaType === 'video' && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 mb-1">Current video:</p>
+                    <video
+                      src={panIndiaData.mapVideo.startsWith('http') ? panIndiaData.mapVideo : 
+                        (panIndiaData.mapVideo.startsWith('/uploads') ? 
+                          `${SERVER_URL}${panIndiaData.mapVideo}` : 
+                          `${SERVER_URL}${panIndiaData.mapVideo.replace('/api', '')}`)}
+                      controls
+                      className="w-full max-w-xs h-auto rounded-md"
+                    />
+                  </div>
+                )}
+                {panIndiaFormData.mapVideo && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600 mb-1">New video preview:</p>
+                    <video
+                      src={typeof panIndiaFormData.mapVideo === 'string' ? panIndiaFormData.mapVideo : URL.createObjectURL(panIndiaFormData.mapVideo)}
+                      controls
+                      className="w-full max-w-xs h-auto rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={panIndiaFormData.description}
                 onChange={handlePanIndiaInputChange}
-                accept="image/*"
+                rows={3}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                required
               />
-              <p className="text-xs text-gray-500 mt-1">For best results, use images smaller than 5MB</p>
-              {panIndiaData && panIndiaData.mapImage && !panIndiaFormData.mapImage && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600 mb-1">Current image:</p>
-                  <img
-                    src={panIndiaData.mapImage.startsWith('http') ? panIndiaData.mapImage : 
-                      (panIndiaData.mapImage.startsWith('/uploads') ? 
-                        `${SERVER_URL}${panIndiaData.mapImage}` : 
-                        `${SERVER_URL}${panIndiaData.mapImage.replace('/api', '')}`)}
-                    alt="Current map"
-                    className="w-32 h-32 object-cover rounded-md"
-                  />
-                </div>
-              )}
-              {panIndiaFormData.mapImage && (
-                <div className="mt-2">
-                  <p className="text-sm text-gray-600 mb-1">New image preview:</p>
-                  <img
-                    src={typeof panIndiaFormData.mapImage === 'string' ? panIndiaFormData.mapImage : URL.createObjectURL(panIndiaFormData.mapImage)}
-                    alt="Map preview"
-                    className="w-32 h-32 object-cover rounded-md"
-                  />
-                </div>
-              )}
             </div>
           </div>
 

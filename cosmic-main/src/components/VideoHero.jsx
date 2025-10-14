@@ -178,6 +178,32 @@ const VideoHero = () => {
   
   const videoSrc = getVideoSrc();
   
+  // Process image source URL
+  const getImageSrc = () => {
+    if (!videoHeroData.imageSource) return '';
+    
+    let imageSrc = '';
+    
+    // If it's already a full URL with http/https, use it directly
+    if (videoHeroData.imageSource.startsWith('http')) {
+      imageSrc = videoHeroData.imageSource;
+    } 
+    // If it starts with /uploads, it's from the server uploads directory
+    else if (videoHeroData.imageSource.startsWith('/uploads')) {
+      // Format to match the server URL pattern
+      const cleanPath = videoHeroData.imageSource.replace(/^\/+/, '');
+      imageSrc = `${SERVER_URL}/${cleanPath}`;
+    } 
+    // For any other relative path
+    else {
+      imageSrc = `${window.location.origin}/${videoHeroData.imageSource.replace(/^\/+/, '')}`;
+    }
+    
+    return imageSrc;
+  };
+  
+  const imageSrc = getImageSrc();
+
   return (
     <div
       ref={sectionRef}
@@ -186,26 +212,37 @@ const VideoHero = () => {
       onMouseMove={handleMouseMove}
       onClick={isMobile ? toggleVideo : undefined}
     >
-      {/* Background Video */}
-      <video
-        ref={videoRef}
-        className="w-full object-cover"
-        style={{
-          height: currentHeight
-        }}
-        autoPlay={videoHeroData.videoSettings.autoPlay}
-        loop={videoHeroData.videoSettings.loop}
-        muted={videoHeroData.videoSettings.muted}
-        playsInline={videoHeroData.videoSettings.playsInline}
-      >
-        {videoSrc && (
-          <source 
-            src={videoSrc}
-            type="video/mp4" 
-          />
-        )}
-        Your browser does not support the video tag.
-      </video>
+      {videoHeroData.mediaType === 'video' ? (
+        /* Background Video */
+        <video
+          ref={videoRef}
+          className="w-full object-cover"
+          style={{
+            height: currentHeight
+          }}
+          autoPlay={videoHeroData.videoSettings.autoPlay}
+          loop={videoHeroData.videoSettings.loop}
+          muted={videoHeroData.videoSettings.muted}
+          playsInline={videoHeroData.videoSettings.playsInline}
+        >
+          {videoSrc && (
+            <source 
+              src={videoSrc}
+              type="video/mp4" 
+            />
+          )}
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        /* Background Image */
+        <div 
+          className="w-full h-full bg-center bg-cover"
+          style={{
+            backgroundImage: `url(${imageSrc})`,
+            height: currentHeight
+          }}
+        ></div>
+      )}
 
       {/* Mobile Play/Pause Button */}
       {isMobile && (

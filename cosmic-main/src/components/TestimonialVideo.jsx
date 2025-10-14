@@ -4,6 +4,8 @@ import axios from 'axios';
 
 // Import environment variables
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
+// Base URL without /api for media files
+const MEDIA_BASE_URL = API_BASE_URL.replace('/api', '');
 import * as FaIcons from 'react-icons/fa';
 import { FaQuoteLeft, FaQuoteRight, FaChevronLeft, FaChevronRight, FaUsers } from 'react-icons/fa';
 
@@ -125,6 +127,7 @@ const TestimonialVideo = () => {
   const [loading, setLoading] = useState(true);
   const sectionRef = useRef(null);
   const companyVideoRef = useRef(null);
+  const [mediaType, setMediaType] = useState('video'); // 'video' or 'image'
   
   // Fetch hero section data from API
   const fetchHeroSectionData = async () => {
@@ -139,7 +142,7 @@ const TestimonialVideo = () => {
         title: 'At Cosmic Powertech',
         description: '',
         backgroundVideo: '/videos/solar-installation.mp4',
-        companyVideo: '/enn.mp4',
+        companyVideo: '',
         sectionTitle: 'About Cosmic Powertech',
         sectionSubtitle: 'Happy Clients',
         ctaText: 'Learn More About Us',
@@ -282,31 +285,64 @@ const TestimonialVideo = () => {
                   transition={{ duration: 0.6 }}
                   viewport={{ once: true }}
                 >
-                  <video 
-                    ref={companyVideoRef}
-                    alt="Company Introduction" 
-                    className="w-full h-auto rounded-lg shadow-md"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  >
-                    <source 
-                      src={
-                        heroSectionData?.companyVideo
-                          ? heroSectionData.companyVideo.startsWith('http')
-                            ? heroSectionData.companyVideo
-                            : heroSectionData.companyVideo.startsWith('/uploads/')
-                              ? `${API_BASE_URL}${heroSectionData.companyVideo.startsWith('/') ? '' : '/'}${heroSectionData.companyVideo}`
-                              : heroSectionData.companyVideo.startsWith('/videos/')
-                                ? `${window.location.origin}${heroSectionData.companyVideo}`
-                                : `${API_BASE_URL}/uploads/videos/${heroSectionData.companyVideo}`
-                          : '/enn.mp4'
-                      } 
-                      type="video/mp4" 
+                  {heroSectionData?.mediaType === 'image' ? (
+                    <img 
+                      src={(() => {
+                        let imageUrl;
+                        if (!heroSectionData.companyImage) {
+                          return `${MEDIA_BASE_URL}/company-culture.jpeg`;
+                        }
+                        if (heroSectionData.companyImage.startsWith('http')) {
+                          imageUrl = heroSectionData.companyImage;
+                        } else if (heroSectionData.companyImage.startsWith('/uploads')) {
+                          imageUrl = `${MEDIA_BASE_URL}${heroSectionData.companyImage}`;
+                        } else if (heroSectionData.companyImage.startsWith('/')) {
+                          imageUrl = `${MEDIA_BASE_URL}${heroSectionData.companyImage}`;
+                        } else {
+                          imageUrl = `${MEDIA_BASE_URL}/uploads/images/${heroSectionData.companyImage}`;
+                        }
+                        console.log('Image URL:', imageUrl);
+                        console.log('heroSectionData.companyImage:', heroSectionData.companyImage);
+                        return imageUrl;
+                      })()}
+                      alt="Company Introduction"
+                      className="w-full h-auto rounded-lg shadow-md object-cover"
                     />
-                    Your browser does not support the video tag.
-                  </video>
+                  ) : (
+                    <video 
+                      ref={companyVideoRef}
+                      alt="Company Introduction" 
+                      className="w-full h-auto rounded-lg shadow-md"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                    >
+                      {heroSectionData?.companyVideo && (
+                        <source 
+                          src={(() => {
+                            let videoUrl;
+                            if (heroSectionData.companyVideo.startsWith('http')) {
+                              videoUrl = heroSectionData.companyVideo;
+                            } else if (heroSectionData.companyVideo.startsWith('/uploads')) {
+                              videoUrl = `${MEDIA_BASE_URL}${heroSectionData.companyVideo}`;
+                            } else if (heroSectionData.companyVideo.startsWith('/videos')) {
+                              videoUrl = `${MEDIA_BASE_URL}${heroSectionData.companyVideo}`;
+                            } else if (heroSectionData.companyVideo.startsWith('/')) {
+                              videoUrl = `${MEDIA_BASE_URL}${heroSectionData.companyVideo}`;
+                            } else {
+                              videoUrl = `${MEDIA_BASE_URL}/uploads/videos/${heroSectionData.companyVideo}`;
+                            }
+                            console.log('Video URL:', videoUrl);
+                            console.log('heroSectionData.companyVideo:', heroSectionData.companyVideo);
+                            return videoUrl;
+                          })()}
+                          type="video/mp4" 
+                        />
+                      )}
+                      Your browser does not support the video tag.
+                    </video>
+                  )}
                 </motion.div>
               </div>
               

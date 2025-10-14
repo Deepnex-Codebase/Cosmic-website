@@ -3,6 +3,12 @@ import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronDownIcon } from '@heroicons/react/24/solid'
 import { useAppContext } from '../context/AppContext'
+import axios from 'axios'
+
+// API base URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+// Image base URL
+const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'https://api.cosmicpowertech.com';
 
 // Fallback FAQs if API fails
 const fallbackFaqs = [
@@ -55,6 +61,12 @@ export default function FaqSection() {
   const [scale, setScale] = useState(1)
   const [leftImageTranslate, setLeftImageTranslate] = useState(0)
   const [rightImageTranslate, setRightImageTranslate] = useState(0)
+  const [faqImages, setFaqImages] = useState({
+    leftImage: '',
+    rightImage: '',
+    badgeImage: ''
+  });
+  
   // Removed pagination state variables
   const lastScrollY = useRef(0)
   const requestRef = useRef()
@@ -119,7 +131,20 @@ export default function FaqSection() {
     requestRef.current = requestAnimationFrame(animate)
   }
 
+  // Fetch FAQ images from API
+  const fetchFaqImages = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/faq-images`);
+      if (response.data) {
+        setFaqImages(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to load FAQ images:', error);
+    }
+  };
+
   useEffect(() => {
+    fetchFaqImages();
     requestRef.current = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(requestRef.current)
   }, [])
@@ -197,7 +222,7 @@ export default function FaqSection() {
               style={{ transform: `translateY(${leftImageTranslate}px)` }}
             >
               <img
-                src="https://zolar.wpengine.com/wp-content/uploads/2025/02/home-4-img-1.jpg"
+                src={faqImages.leftImage ? `${IMAGE_BASE_URL}/uploads/faq/${faqImages.leftImage.split('/').pop()}` : "https://zolar.wpengine.com/wp-content/uploads/2025/02/home-4-img-1.jpg"}
                 alt="Solar Worker"
                 className="rounded-xl w-full h-full object-cover left-scroll-image"
               />
@@ -208,7 +233,7 @@ export default function FaqSection() {
               style={{ transform: `translateY(${rightImageTranslate}px)` }}
             >
               <img
-                src="https://zolar.wpengine.com/wp-content/uploads/2025/02/home-4-img-2.jpg"
+                src={faqImages.rightImage ? `${IMAGE_BASE_URL}/uploads/faq/${faqImages.rightImage.split('/').pop()}` : "https://zolar.wpengine.com/wp-content/uploads/2025/02/home-4-img-2.jpg"}
                 alt="Engineer"
                 className="rounded-xl w-full h-full object-cover right-scroll-image"
               />
@@ -223,7 +248,7 @@ export default function FaqSection() {
               style={{position:'absolute', transform:'translateX(-50%) translateY(-50%)', top:'50%', left:'38%'}} 
             >
               <motion.img
-                src="https://zolar.wpengine.com/wp-content/uploads/2025/01/Home2-Rotate-img-new.png"
+                src={faqImages.badgeImage ? `${IMAGE_BASE_URL}/uploads/faq/${faqImages.badgeImage.split('/').pop()}` : "https://zolar.wpengine.com/wp-content/uploads/2025/01/Home2-Rotate-img-new.png"}
                 alt="Rotating Badge"
                 className="w-[100%] h-[100%] object-contain p-1"
                 animate={{ rotate: -rotation * 2 }}

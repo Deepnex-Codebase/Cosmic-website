@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
 
 const videoHeroSchema = new mongoose.Schema({
+  mediaType: {
+    type: String,
+    enum: ['video', 'image'],
+    default: 'video'
+  },
   videoSource: {
     type: String,
-    required: true,
     default: '/videos/zolar.mp4'
+  },
+  imageSource: {
+    type: String,
+    default: ''
   },
   heights: {
     mobile: {

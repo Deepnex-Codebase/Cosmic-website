@@ -21,6 +21,8 @@ const HeroSectionCMS = () => {
     title: 'At Cosmic Powertech',
     description: '',
     companyVideo: `${API_BASE_URL}/videos/enn.mp4`,
+    companyImage: '',
+    mediaType: 'video',
     sectionTitle: 'About Cosmic Powertech',
     sectionSubtitle: 'Happy Clients',
     ctaText: 'Learn More About Us',
@@ -28,6 +30,7 @@ const HeroSectionCMS = () => {
   });
   
   const [companyVideoFile, setCompanyVideoFile] = useState(null);
+  const [companyImageFile, setCompanyImageFile] = useState(null);
 
   const [statFormData, setStatFormData] = useState({
     value: 0,
@@ -62,16 +65,28 @@ const HeroSectionCMS = () => {
         
         // Format video URLs to ensure they use the API domain
         let companyVideo = response.data.companyVideo || '/videos/enn.mp4';
+        let companyImage = response.data.companyImage || '';
         
-        // If URLs are relative paths, prepend the API base URL
+        // If URLs are relative paths, prepend the API base URL without /api
+        const baseUrl = API_BASE_URL.replace('/api', '');
+        
         if (companyVideo && !companyVideo.startsWith('http')) {
-          companyVideo = `${API_BASE_URL}${companyVideo.startsWith('/') ? '' : '/'}${companyVideo}`;
+          companyVideo = `${baseUrl}${companyVideo.startsWith('/') ? '' : '/'}${companyVideo}`;
         }
+        
+        if (companyImage && !companyImage.startsWith('http')) {
+          companyImage = `${baseUrl}${companyImage.startsWith('/') ? '' : '/'}${companyImage}`;
+        }
+        
+        console.log('Fetched company video URL:', companyVideo);
+        console.log('Fetched company image URL:', companyImage);
         
         setFormData({
           title: response.data.title || 'At Cosmic Powertech',
           description: response.data.description || '',
           companyVideo: companyVideo,
+          companyImage: companyImage,
+          mediaType: response.data.mediaType || 'video',
           sectionTitle: response.data.sectionTitle || 'About Cosmic Powertech',
           sectionSubtitle: response.data.sectionSubtitle || 'Happy Clients',
           ctaText: response.data.ctaText || 'Learn More About Us',
@@ -81,6 +96,7 @@ const HeroSectionCMS = () => {
     } catch (error) {
       // Error handling without console.error
       toast.error('Failed to fetch hero section data');
+      console.log('Error fetching hero section data:', error);
     } finally {
       setLoading(false);
     }
@@ -127,6 +143,19 @@ const HeroSectionCMS = () => {
       ...prev,
       [name]: value
     }));
+  };
+  
+  // Handle file input change
+  const handleFileChange = (e, fileType) => {
+    if (e.target.files && e.target.files[0]) {
+      if (fileType === 'video') {
+        setCompanyVideoFile(e.target.files[0]);
+        setFormData(prev => ({ ...prev, mediaType: 'video' }));
+      } else if (fileType === 'image') {
+        setCompanyImageFile(e.target.files[0]);
+        setFormData(prev => ({ ...prev, mediaType: 'image' }));
+      }
+    }
   };
 
   // Convert RGB color to hex format
@@ -202,9 +231,23 @@ const HeroSectionCMS = () => {
         }
       });
       
-      // Add video files if selected
-      if (companyVideoFile) {
-        formDataToSend.append('companyVideo', companyVideoFile);
+      // Add media files if selected
+      if (formData.mediaType === 'video' && companyVideoFile) {
+        console.log('Uploading company video file:', companyVideoFile.name);
+        formDataToSend.delete('companyVideo'); // Remove text URL if file is selected
+        formDataToSend.append('companyVideo', companyVideoFile); // Use companyVideo to match server expectation
+      } else if (formData.mediaType === 'image' && companyImageFile) {
+        console.log('Uploading company image file:', companyImageFile.name);
+        formDataToSend.delete('companyImage'); // Remove text URL if file is selected
+        formDataToSend.append('companyImage', companyImageFile); // Use companyImage to match server expectation
+      }
+      
+      // Always send mediaType
+      formDataToSend.append('mediaType', formData.mediaType);
+      
+      // Log form data entries for debugging
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(`Form data entry - ${key}:`, typeof value === 'object' ? 'File object' : value);
       }
       
       const response = await axios.put(`${API_BASE_URL}/cms/hero-section`, formDataToSend, {
@@ -219,7 +262,7 @@ const HeroSectionCMS = () => {
         
         // Reset file states
         setCompanyVideoFile(null);
-        setBackgroundVideoFile(null);
+        setCompanyImageFile(null);
         
         // Refresh data to ensure URLs are properly formatted
         fetchHeroSectionData();
@@ -412,40 +455,119 @@ const HeroSectionCMS = () => {
         </div>
 
         <div className="mb-6">
-          <div>
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Company Video (Happy Clients)
+              Media Type
             </label>
-            <div className="flex flex-col space-y-2">
-              <input
-                type="text"
-                name="companyVideo"
-                value={formData.companyVideo}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="/enn.mp4"
-              />
-              <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-4 mb-4">
+              <label className="inline-flex items-center">
                 <input
-                  type="file"
-                  accept="video/*"
-                  id="companyVideoUpload"
-                  onChange={(e) => setCompanyVideoFile(e.target.files[0])}
-                  className="hidden"
+                  type="radio"
+                  name="mediaType"
+                  value="video"
+                  checked={formData.mediaType === 'video'}
+                  onChange={() => setFormData({...formData, mediaType: 'video'})}
+                  className="form-radio h-4 w-4 text-blue-600"
                 />
-                <label
-                  htmlFor="companyVideoUpload"
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center"
-                >
-                  <FaUpload className="mr-2" />
-                  {companyVideoFile ? 'Change Video' : 'Upload Video'}
-                </label>
-                {companyVideoFile && (
-                  <span className="text-sm text-green-600">{companyVideoFile.name}</span>
+                <span className="ml-2">Video</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="mediaType"
+                  value="image"
+                  checked={formData.mediaType === 'image'}
+                  onChange={() => setFormData({...formData, mediaType: 'image'})}
+                  className="form-radio h-4 w-4 text-blue-600"
+                />
+                <span className="ml-2">Image</span>
+              </label>
+            </div>
+          </div>
+          
+          {formData.mediaType === 'video' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Company Video (Happy Clients)
+              </label>
+              <div className="flex flex-col space-y-2">
+                <input
+                  type="text"
+                  name="companyVideo"
+                  value={formData.companyVideo}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="/enn.mp4"
+                />
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="file"
+                    accept="video/*"
+                    id="companyVideoUpload"
+                    onChange={(e) => handleFileChange(e, 'video')}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="companyVideoUpload"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center"
+                  >
+                    <FaUpload className="mr-2" />
+                    {companyVideoFile ? 'Change Video' : 'Upload Video'}
+                  </label>
+                  {companyVideoFile && (
+                    <span className="text-sm text-green-600">{companyVideoFile.name}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {formData.mediaType === 'image' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Company Image
+              </label>
+              <div className="flex flex-col space-y-2">
+                <input
+                  type="text"
+                  name="companyImage"
+                  value={formData.companyImage}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="/company-image.jpg"
+                />
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="companyImageUpload"
+                    onChange={(e) => handleFileChange(e, 'image')}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="companyImageUpload"
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 cursor-pointer flex items-center"
+                  >
+                    <FaUpload className="mr-2" />
+                    {companyImageFile ? 'Change Image' : 'Upload Image'}
+                  </label>
+                  {companyImageFile && (
+                    <span className="text-sm text-green-600">{companyImageFile.name}</span>
+                  )}
+                </div>
+                {formData.companyImage && (
+                  <div className="mt-2">
+                    <img
+                      src={formData.companyImage}
+                      alt="Company"
+                      className="w-full h-auto rounded-md object-cover"
+                      style={{ maxHeight: '200px' }}
+                    />
+                  </div>
                 )}
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

@@ -56,18 +56,23 @@ class AchievementService {
       
       // Append text fields
       Object.keys(achievementData).forEach(key => {
-        if (key !== 'image' && achievementData[key] !== undefined) {
+        if (key !== 'image' && key !== 'video' && achievementData[key] !== undefined) {
           formData.append(key, achievementData[key]);
           console.log(`Appended ${key}:`, achievementData[key]);
         }
       });
       
-      // Append image file if exists
-      if (achievementData.image && achievementData.image instanceof File) {
-        formData.append('image', achievementData.image);
-        console.log('Image file appended:', achievementData.image.name);
+      // Append file (image or video) based on mediaType
+      if (achievementData.mediaType === 'video') {
+        if (achievementData.video && achievementData.video instanceof File) {
+          formData.append('file', achievementData.video);
+          console.log('Video file appended:', achievementData.video.name);
+        }
       } else {
-        console.log('No image file found or not a File instance:', achievementData.image);
+        if (achievementData.image && achievementData.image instanceof File) {
+          formData.append('file', achievementData.image);
+          console.log('Image file appended:', achievementData.image.name);
+        }
       }
       
       console.log('FormData entries:');
@@ -94,14 +99,20 @@ class AchievementService {
       
       // Append text fields
       Object.keys(achievementData).forEach(key => {
-        if (key !== 'image' && achievementData[key] !== undefined) {
+        if (key !== 'image' && key !== 'video' && achievementData[key] !== undefined) {
           formData.append(key, achievementData[key]);
         }
       });
       
-      // Append image file if exists
-      if (achievementData.image && achievementData.image instanceof File) {
-        formData.append('image', achievementData.image);
+      // Append file (image or video) based on mediaType
+      if (achievementData.mediaType === 'video') {
+        if (achievementData.video && achievementData.video instanceof File) {
+          formData.append('file', achievementData.video);
+        }
+      } else {
+        if (achievementData.image && achievementData.image instanceof File) {
+          formData.append('file', achievementData.image);
+        }
       }
       
       const response = await api.put(`/achievements/achievement/${achievementId}`, formData, {

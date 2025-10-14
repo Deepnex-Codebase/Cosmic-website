@@ -16,9 +16,23 @@ const timelineSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
+  mediaType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
+  },
   backgroundImage: {
     type: String,
-    required: true,
+    required: function() {
+      return this.mediaType === 'image';
+    },
+    trim: true
+  },
+  backgroundVideo: {
+    type: String,
+    required: function() {
+      return this.mediaType === 'video';
+    },
     trim: true
   },
   order: {

@@ -158,6 +158,62 @@ const VideoHeroCMS = () => {
     fetchVideoHeroData();
   }, []);
 
+  // Handle image upload
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image file size must be less than 10MB');
+      return;
+    }
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please upload a valid image file (JPG, PNG, WEBP, GIF)');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // Create form data
+      const formData = new FormData();
+      formData.append('image', file);
+
+      // Upload image
+      const response = await axios.post(`${API_BASE_URL}/cms/video-hero/upload-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.data.success) {
+        // Use the imagePath directly from the server response
+        const { imagePath } = response.data.data;
+        
+        // Update local state with the new image source
+        setVideoHeroData(prev => ({
+          ...prev,
+          mediaType: 'image',
+          imageSource: imagePath
+        }));
+        
+        toast.success('Image uploaded successfully');
+        
+        // Refresh data to ensure we have the latest from the server
+        fetchVideoHeroData();
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Process video source URL for preview
   const getVideoSrc = () => {
     if (!videoHeroData.videoSource) return '';
@@ -185,24 +241,79 @@ const VideoHeroCMS = () => {
     
     return videoSrc;
   };
+  
+  // Process image source URL for preview
+  const getImageSrc = () => {
+    if (!videoHeroData.imageSource) return '';
+    
+    let imageSrc = '';
+    
+    // If it's already a full URL with http/https, use it directly
+    if (videoHeroData.imageSource.startsWith('http')) {
+      imageSrc = videoHeroData.imageSource;
+    } 
+    // If it starts with /uploads, it's from the server uploads directory
+    else if (videoHeroData.imageSource.startsWith('/uploads')) {
+      // Format to match the server URL pattern
+      const cleanPath = videoHeroData.imageSource.replace(/^\/+/, '');
+      imageSrc = `${SERVER_URL}/${cleanPath}`;
+    } 
+    // For any other relative path
+    else {
+      imageSrc = `${window.location.origin}/${videoHeroData.imageSource.replace(/^\/+/, '')}`;
+    }
+    
+    return imageSrc;
+  };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-6">Video Hero Settings</h2>
       
-      {/* Video Upload Section */}
+      {/* Media Type Selection */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-3">Video</h3>
+        <h3 className="text-lg font-semibold mb-3">Media Type</h3>
+        <div className="flex space-x-4 mb-4">
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="mediaType"
+              value="video"
+              checked={videoHeroData.mediaType === 'video'}
+              onChange={() => setVideoHeroData(prev => ({ ...prev, mediaType: 'video' }))}
+              className="form-radio h-4 w-4 text-blue-600"
+            />
+            <span className="ml-2 text-gray-700">Video</span>
+          </label>
+          <label className="inline-flex items-center">
+            <input
+              type="radio"
+              name="mediaType"
+              value="image"
+              checked={videoHeroData.mediaType === 'image'}
+              onChange={() => setVideoHeroData(prev => ({ ...prev, mediaType: 'image' }))}
+              className="form-radio h-4 w-4 text-blue-600"
+            />
+            <span className="ml-2 text-gray-700">Image</span>
+          </label>
+        </div>
+      </div>
+
+      {/* Media Upload Section */}
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-3">
+          {videoHeroData.mediaType === 'video' ? 'Video' : 'Image'} Upload
+        </h3>
         
         <div className="flex flex-col space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Upload Video
+              Upload {videoHeroData.mediaType === 'video' ? 'Video' : 'Image'}
             </label>
             <input
               type="file"
-              accept="video/*"
-              onChange={handleVideoUpload}
+              accept={videoHeroData.mediaType === 'video' ? "video/*" : "image/*"}
+              onChange={videoHeroData.mediaType === 'video' ? handleVideoUpload : handleImageUpload}
               className="block w-full text-sm text-gray-500
                 file:mr-4 file:py-2 file:px-4
                 file:rounded-md file:border-0
@@ -210,12 +321,18 @@ const VideoHeroCMS = () => {
                 file:bg-blue-50 file:text-blue-700
                 hover:file:bg-blue-100"
             />
-            <p className="mt-1 text-sm text-gray-500">
-              Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM (max 200MB)
-            </p>
+            {videoHeroData.mediaType === 'video' ? (
+              <p className="mt-1 text-sm text-gray-500">
+                Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM (max 200MB)
+              </p>
+            ) : (
+              <p className="mt-1 text-sm text-gray-500">
+                Supported formats: JPG, PNG, WEBP, GIF (max 10MB)
+              </p>
+            )}
           </div>
           
-          {videoHeroData.videoSource && (
+          {videoHeroData.mediaType === 'video' && videoHeroData.videoSource && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Current Video Source
@@ -232,6 +349,25 @@ const VideoHeroCMS = () => {
                 >
                   Your browser does not support the video tag.
                 </video>
+              </div>
+            </div>
+          )}
+          
+          {videoHeroData.mediaType === 'image' && videoHeroData.imageSource && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Current Image Source
+              </label>
+              <div className="text-sm text-gray-500 mb-2">
+                {videoHeroData.imageSource}
+              </div>
+              
+              <div className="aspect-video max-h-[300px] overflow-hidden rounded-lg bg-gray-100">
+                <img 
+                  src={getImageSrc()} 
+                  alt="Hero background" 
+                  className="w-full h-full object-contain"
+                />
               </div>
             </div>
           )}

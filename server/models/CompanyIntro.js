@@ -26,9 +26,18 @@ const companyIntroSchema = new mongoose.Schema({
     required: true,
     default: 'We are committed to delivering cutting-edge solar solutions that transform how businesses and homes harness energy. Our expertise in high-performance solar technology sets new industry standards for efficiency and reliability.'
   },
+  mediaType: {
+    type: String,
+    enum: ['video', 'image'],
+    default: 'video'
+  },
   backgroundVideo: {
     type: String,
     default: '/videos/about.mp4'
+  },
+  backgroundImage: {
+    type: String,
+    default: ''
   },
   isActive: {
     type: Boolean,

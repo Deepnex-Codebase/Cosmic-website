@@ -7,8 +7,10 @@ const {
   createOrUpdateCompanyIntro,
   deleteCompanyIntro,
   toggleCompanyIntroStatus,
-  uploadVideo,
+  videoUpload,
+  imageUpload,
   handleVideoUpload,
+  handleImageUpload,
   initializeDefaultCompanyIntro
 } = require('../controllers/companyIntroController');
 
@@ -21,10 +23,11 @@ router.get('/active', getActiveCompanyIntro);
 // Admin routes
 router.get('/', getAllCompanyIntro);
 router.get('/:id', getCompanyIntroById);
-router.post('/', uploadVideo, createOrUpdateCompanyIntro);
-router.put('/:id', uploadVideo, createOrUpdateCompanyIntro);
+router.post('/', videoUpload.single('backgroundVideo'), createOrUpdateCompanyIntro);
+router.put('/:id', videoUpload.single('backgroundVideo'), createOrUpdateCompanyIntro);
 router.delete('/:id', deleteCompanyIntro);
 router.patch('/:id/toggle-status', toggleCompanyIntroStatus);
-router.post('/upload', uploadVideo, handleVideoUpload);
+router.post('/upload-video', videoUpload.single('backgroundVideo'), handleVideoUpload);
+router.post('/upload-image', imageUpload.single('backgroundImage'), handleImageUpload);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for video uploads
+// Configure multer storage for both video and image uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = path.join(__dirname, '../uploads/company-intro');
@@ -14,13 +14,15 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
-    // Generate unique filename
+    // Generate unique filename with appropriate prefix based on file type
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'video-' + uniqueSuffix + path.extname(file.originalname));
+    const prefix = file.mimetype.startsWith('video/') ? 'video-' : 'image-';
+    cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
   }
 });
 
-const upload = multer({ 
+// Configure multer for video uploads
+const videoUpload = multer({ 
   storage: storage,
   fileFilter: function (req, file, cb) {
     // Check file type
@@ -34,6 +36,26 @@ const upload = multer({
     fileSize: 200 * 1024 * 1024 // 200MB limit
   }
 });
+
+// Configure multer for image uploads
+const imageUpload = multer({ 
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    // Check file type
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed!'), false);
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Export multer instances for route usage
+exports.videoUpload = videoUpload;
+exports.imageUpload = imageUpload;
 
 // Get active Company Intro data
 exports.getActiveCompanyIntro = async (req, res) => {
@@ -281,9 +303,6 @@ exports.toggleCompanyIntroStatus = async (req, res) => {
   }
 };
 
-// Upload video middleware
-exports.uploadVideo = upload.single('backgroundVideo');
-
 // Handle video upload
 exports.handleVideoUpload = async (req, res) => {
   try {
@@ -302,15 +321,18 @@ exports.handleVideoUpload = async (req, res) => {
     
     console.log('Video uploaded, relative path:', relativePath);
     console.log('Video uploaded, full URL:', fullUrl);
-    console.log('BASE_URL:', process.env.BASE_URL);
     
     // Update the video source in the database
     let companyIntroData = await CompanyIntro.findOne({ isActive: true });
     
     if (!companyIntroData) {
-      companyIntroData = await CompanyIntro.create({ backgroundVideo: relativePath });
+      companyIntroData = await CompanyIntro.create({ 
+        backgroundVideo: relativePath,
+        mediaType: 'video'
+      });
     } else {
       companyIntroData.backgroundVideo = relativePath;
+      companyIntroData.mediaType = 'video';
       companyIntroData.updatedAt = new Date();
       await companyIntroData.save();
     }
@@ -329,6 +351,59 @@ exports.handleVideoUpload = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error uploading video',
+      error: error.message
+    });
+  }
+};
+
+// Handle image upload
+exports.handleImageUpload = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No image file uploaded'
+      });
+    }
+    
+    // Create a proper path that will work with the frontend
+    // Store the path in the database as a relative path starting with /uploads
+    const relativePath = `/uploads/company-intro/${req.file.filename}`;
+    // Create the full URL for the response
+    const fullUrl = `${process.env.BASE_URL}${relativePath}`;
+    
+    console.log('Image uploaded, relative path:', relativePath);
+    console.log('Image uploaded, full URL:', fullUrl);
+    
+    // Update the image source in the database
+    let companyIntroData = await CompanyIntro.findOne({ isActive: true });
+    
+    if (!companyIntroData) {
+      companyIntroData = await CompanyIntro.create({ 
+        backgroundImage: relativePath,
+        mediaType: 'image'
+      });
+    } else {
+      companyIntroData.backgroundImage = relativePath;
+      companyIntroData.mediaType = 'image';
+      companyIntroData.updatedAt = new Date();
+      await companyIntroData.save();
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: 'Image uploaded successfully',
+      data: {
+        relativePath: relativePath,
+        fullUrl: fullUrl,
+        filename: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading image',
       error: error.message
     });
   }

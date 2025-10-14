@@ -51,7 +51,7 @@ export const updateCompanyCulture = async (data) => {
   }
 };
 
-// Upload image
+// Upload company culture image (legacy function)
 export const uploadCompanyCultureImage = async (file) => {
   try {
     const formData = new FormData();
@@ -64,7 +64,7 @@ export const uploadCompanyCultureImage = async (file) => {
     }
     
     // Use fetch API instead of axios for more reliable multipart/form-data handling
-    const response = await fetch(`${API_URL}/cms/company-culture/upload`, {
+    const response = await fetch(`${API_URL}/cms/company-culture/upload-image`, {
       method: 'POST',
       body: formData,
     });
@@ -83,6 +83,42 @@ export const uploadCompanyCultureImage = async (file) => {
     return result;
   } catch (error) {
     console.error('Error uploading image:', error);
+    throw error;
+  }
+};
+
+// Upload media (image or video)
+export const uploadCompanyCultureMedia = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('media', file);
+    
+    // Check file size before uploading
+    const fileSizeInMB = file.size / (1024 * 1024);
+    if (fileSizeInMB > 100) {
+      throw new Error('File size exceeds 100MB limit. Please choose a smaller file.');
+    }
+    
+    // Use fetch API instead of axios for more reliable multipart/form-data handling
+    const response = await fetch(`${API_URL}/cms/company-culture/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to upload media: ${response.status} ${response.statusText}`);
+    }
+    
+    const result = await response.json();
+    
+    // Format the media URL before returning
+    if (result && result.mediaUrl) {
+      result.mediaUrl = formatImageUrl(result.mediaUrl);
+    }
+    
+    return result;
+  } catch (error) {
+    console.error('Error uploading media:', error);
     throw error;
   }
 };

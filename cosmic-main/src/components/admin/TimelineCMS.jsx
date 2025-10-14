@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaEye } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaImage, FaEye, FaVideo } from 'react-icons/fa';
 
 // Use environment variable directly
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com';
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || 'https://api.cosmicpowertech.com';
 
 const TimelineCMS = () => {
   const [timelineItems, setTimelineItems] = useState([]);
@@ -15,11 +16,13 @@ const TimelineCMS = () => {
     title: '',
     description: '',
     backgroundImage: '',
+    backgroundVideo: '',
+    mediaType: 'image',
     order: 0,
     isActive: true
   });
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [mediaFile, setMediaFile] = useState(null);
+  const [mediaPreview, setMediaPreview] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   // Fetch timeline items
@@ -51,14 +54,22 @@ const TimelineCMS = () => {
     }));
   };
 
-  // Handle image file selection
-  const handleImageChange = (e) => {
+  // Handle media file selection
+  const handleMediaChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImageFile(file);
+      setMediaFile(file);
+      
+      // Determine media type based on file type
+      const fileType = file.type.split('/')[0];
+      setFormData(prev => ({
+        ...prev,
+        mediaType: fileType === 'video' ? 'video' : 'image'
+      }));
+      
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);
+        setMediaPreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
@@ -71,11 +82,13 @@ const TimelineCMS = () => {
       title: '',
       description: '',
       backgroundImage: '',
+      backgroundVideo: '',
+      mediaType: 'image',
       order: 0,
       isActive: true
     });
-    setImageFile(null);
-    setImagePreview('');
+    setMediaFile(null);
+    setMediaPreview('');
     setEditingItem(null);
     setShowAddForm(false);
   };
@@ -92,11 +105,20 @@ const TimelineCMS = () => {
       year: item.year,
       title: item.title,
       description: item.description,
-      backgroundImage: item.backgroundImage,
+      backgroundImage: item.backgroundImage || '',
+      backgroundVideo: item.backgroundVideo || '',
+      mediaType: item.mediaType || 'image',
       order: item.order,
       isActive: item.isActive
     });
-    setImagePreview(item.backgroundImage);
+    
+    // Set preview based on media type
+    if (item.mediaType === 'video' && item.backgroundVideo) {
+      setMediaPreview(item.backgroundVideo);
+    } else {
+      setMediaPreview(item.backgroundImage);
+    }
+    
     setEditingItem(item._id);
     setShowAddForm(true);
   };
@@ -156,27 +178,38 @@ const TimelineCMS = () => {
       submitData.append('description', formData.description);
       submitData.append('order', formData.order);
       submitData.append('isActive', formData.isActive);
+      submitData.append('mediaType', formData.mediaType);
       
-      if (imageFile) {
-        // Compress image before uploading
-        const compressedImage = await compressImage(imageFile);
-        submitData.append('backgroundImage', compressedImage);
-      } else if (formData.backgroundImage && !imageFile) {
-        submitData.append('backgroundImage', formData.backgroundImage);
+      if (mediaFile) {
+        if (formData.mediaType === 'image') {
+          // Compress image before uploading
+          const compressedImage = await compressImage(mediaFile);
+          submitData.append('file', compressedImage);
+        } else {
+          // For video, no compression
+          submitData.append('file', mediaFile);
+        }
+      } else {
+        // If no new file uploaded, use existing URLs
+        if (formData.mediaType === 'image' && formData.backgroundImage) {
+          submitData.append('backgroundImage', formData.backgroundImage);
+        } else if (formData.mediaType === 'video' && formData.backgroundVideo) {
+          submitData.append('backgroundVideo', formData.backgroundVideo);
+        }
       }
 
       let response;
       if (editingItem) {
         response = await axios.put(`${API_BASE_URL}/cms/timeline/${editingItem}`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' },
-          maxContentLength: 10 * 1024 * 1024, // 10MB max content length
-          maxBodyLength: 10 * 1024 * 1024 // 10MB max body length
+          maxContentLength: 100 * 1024 * 1024, // 100MB max content length
+          maxBodyLength: 100 * 1024 * 1024 // 100MB max body length
         });
       } else {
         response = await axios.post(`${API_BASE_URL}/cms/timeline`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' },
-          maxContentLength: 10 * 1024 * 1024, // 10MB max content length
-          maxBodyLength: 10 * 1024 * 1024 // 10MB max body length
+          maxContentLength: 100 * 1024 * 1024, // 100MB max content length
+          maxBodyLength: 100 * 1024 * 1024 // 100MB max body length
         });
       }
 
@@ -296,20 +329,59 @@ const TimelineCMS = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Background Image
+                Media Type
+              </label>
+              <div className="flex gap-4 mb-2">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="mediaType"
+                    value="image"
+                    checked={formData.mediaType === 'image'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <span className="flex items-center"><FaImage className="mr-1" /> Image</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="mediaType"
+                    value="video"
+                    checked={formData.mediaType === 'video'}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <span className="flex items-center"><FaVideo className="mr-1" /> Video</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {formData.mediaType === 'image' ? 'Background Image' : 'Background Video'}
               </label>
               <input
                 type="file"
-                accept="image/*"
-                onChange={handleImageChange}
+                accept={formData.mediaType === 'image' ? "image/*" : "video/*"}
+                onChange={handleMediaChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
               />
-              {imagePreview && (
+              {mediaPreview && formData.mediaType === 'image' && (
                 <div className="mt-2">
                   <img
-                    src={imagePreview}
+                    src={mediaPreview}
                     alt="Preview"
                     className="w-32 h-20 object-cover rounded border"
+                  />
+                </div>
+              )}
+              {mediaPreview && formData.mediaType === 'video' && (
+                <div className="mt-2">
+                  <video
+                    src={mediaPreview}
+                    controls
+                    className="w-64 h-36 rounded border"
                   />
                 </div>
               )}
@@ -377,7 +449,12 @@ const TimelineCMS = () => {
                     </div>
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h4>
                     <p className="text-gray-600 mb-3">{item.description}</p>
-                    {item.backgroundImage && (
+                    {item.mediaType === 'video' && item.backgroundVideo ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <FaVideo />
+                        <span>Background video attached</span>
+                      </div>
+                    ) : item.backgroundImage && (
                       <div className="flex items-center gap-2 text-sm text-gray-500">
                         <FaImage />
                         <span>Background image attached</span>

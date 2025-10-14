@@ -9,6 +9,9 @@ router.get('/', videoHeroController.getVideoHero);
 router.put('/', videoHeroController.updateVideoHero);
 
 // Upload video file
-router.post('/upload', videoHeroController.upload.single('video'), videoHeroController.uploadVideo);
+router.post('/upload', videoHeroController.videoUpload.single('video'), videoHeroController.uploadVideo);
+
+// Upload image file
+router.post('/upload-image', videoHeroController.imageUpload.single('image'), videoHeroController.uploadImage);
 
 module.exports = router;

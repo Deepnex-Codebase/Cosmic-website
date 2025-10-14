@@ -193,6 +193,28 @@ export const deleteProject = async (id) => {
   }
 };
 
+// Fetch projects with pagination and filtering
+export const fetchProjects = async (params = {}) => {
+  try {
+    // Try with main API first
+    const response = await api.get(`${API_BASE_URL}`, { params });
+    return response;
+  } catch (mainError) {
+    console.error('Error fetching projects from main API:', mainError);
+    
+    // Try with direct API as fallback
+    try {
+      console.log('Attempting to fetch projects from direct API URL...');
+      const directResponse = await directApi.get(`/projects`, { params });
+      return directResponse;
+    } catch (fallbackError) {
+      console.error('Error fetching projects from fallback API:', fallbackError);
+      // Return empty array if both attempts fail
+      return { data: { data: [] } };
+    }
+  }
+};
+
 export default {
   getAllProjects,
   getFeaturedProjects,
@@ -201,5 +223,6 @@ export default {
   getProjectsByCategory,
   createProject,
   updateProject,
-  deleteProject
+  deleteProject,
+  fetchProjects
 };

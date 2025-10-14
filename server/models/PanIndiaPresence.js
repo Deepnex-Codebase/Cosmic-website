@@ -13,8 +13,18 @@ const panIndiaPresenceSchema = new mongoose.Schema({
   },
   mapImage: {
     type: String,
-    required: true,
+    required: false,
     default: '/mapindea.png'
+  },
+  mapVideo: {
+    type: String,
+    required: false,
+    default: ''
+  },
+  mediaType: {
+    type: String,
+    enum: ['image', 'video'],
+    default: 'image'
   },
   stats: [{
     title: {

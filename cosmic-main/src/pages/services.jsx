@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 // import { motion } from 'framer-motion'; // Removed unused import
 import { FiSun,FiCheck, FiZap, FiSettings, FiTool, FiCheckCircle, FiHome, FiTruck, FiCpu, FiBarChart, FiArrowRight, FiLoader } from 'react-icons/fi';
 import { getAllServices } from '../services/serviceService';
+import { getActiveServiceHero } from '../services/serviceHeroService';
 
 // Define image base URL
 const IMAGE_BASE_URL = 'https://api.cosmicpowertech.com';
@@ -31,6 +32,7 @@ const Services = () => {
   const [mainServices, setMainServices] = useState([]);
   const [additionalServices, setAdditionalServices] = useState([]);
   const [processSteps, setProcessSteps] = useState([]);
+  const [serviceHero, setServiceHero] = useState(null);
   const [pageSections, setPageSections] = useState({
     coreServicesTitle: 'Our Core Services',
     coreServicesSubtitle: 'We provide comprehensive solar solutions to meet your energy needs',
@@ -80,6 +82,17 @@ const Services = () => {
         setMainServices(coreServices);
         setAdditionalServices(specializedServices);
         setProcessSteps(processServices);
+        
+        // Fetch service hero data
+        try {
+          const heroResponse = await getActiveServiceHero();
+          if (heroResponse) {
+            setServiceHero(heroResponse);
+          }
+        } catch (heroErr) {
+          console.error('Error fetching service hero:', heroErr);
+          // Continue without hero data if fetch fails
+        }
         
         // Fetch page section titles and subtitles
         try {
@@ -140,19 +153,34 @@ const Services = () => {
       <header
         className="relative bg-cover bg-center h-64 sm:h-80 md:h-[300px] flex items-center justify-center"
         style={{
-          backgroundImage:
-            "url('https://zolar.wpengine.com/wp-content/uploads/2025/01/zolar-breadcrumb-bg.jpg')",
+          backgroundImage: serviceHero && serviceHero.backgroundType === 'image' && serviceHero.backgroundImage
+            ? `url('${formatImageUrl(serviceHero.backgroundImage)}')`
+            : "url('https://zolar.wpengine.com/wp-content/uploads/2025/01/zolar-breadcrumb-bg.jpg')",
         }}
       >
-        <div className="absolute inset-0 bg-black/50" />
+        {serviceHero && serviceHero.backgroundType === 'video' && serviceHero.backgroundVideo && (
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            src={formatImageUrl(serviceHero.backgroundVideo)}
+          />
+        )}
+        <div className="absolute inset-0 bg-black" style={{ opacity: serviceHero ? serviceHero.overlayOpacity / 100 : 0.5 }} />
         <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4">{pageSections.heroTitle || 'Service'}</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4">
+            {serviceHero ? serviceHero.title : pageSections.heroTitle || 'Service'}
+          </h1>
           <nav className="flex items-center justify-center space-x-2 text-sm">
             <Link to="/" className="hover:text-accent-500 transition">
               Home
             </Link>
             <span>—</span>
-            <span className="text-accent-500">{pageSections.heroTitle || 'Service'}</span>
+            <span className="text-accent-500">
+              {serviceHero ? serviceHero.title : pageSections.heroTitle || 'Service'}
+            </span>
           </nav>
         </div>
       </header>

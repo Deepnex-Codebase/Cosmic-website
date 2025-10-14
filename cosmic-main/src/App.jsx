@@ -53,9 +53,10 @@ import BlogCMS from './pages/admin/BlogCMS'
 import HomeCMS from './pages/admin/HomeCMS'
 import AchievementCMS from './pages/admin/AchievementCMS'
 import PressReleaseCMS from './pages/admin/PressReleaseCMS'
-import PrivacyPolicyCMS from './pages/admin/PrivacyPolicyCMS'
+import PrivacyPolicyCMS from './pages/admin/PrivacyPolicyCMS';
 import FormCMS from './pages/admin/FormCMS';
 import FooterCMS from './pages/admin/FooterCMS';
+import BlogHeroCMS from './pages/admin/BlogHeroCMS';
 import AdminTeamCelebration from './pages/admin/team-celebration';
 import SolarConfigPage from './pages/admin/solar-config';
 import Settings from './pages/admin/Settings';
@@ -67,6 +68,9 @@ import RateCMS from './pages/admin/RateCMS';
 import WhatsAppConfig from './pages/admin/WhatsAppConfig';
 import NavbarCMS from './components/NavbarCMS';
 import CareerCMS from './components/admin/CareerCMS';
+import DirectorDeskHeroCMS from './components/admin/DirectorDeskHeroCMS';
+import ProjectHeroCMS from './pages/admin/ProjectHeroCMS';
+import ServiceHeroCMS from './pages/admin/ServiceHeroCMS';
 
 
 // AppContent component to handle transitions
@@ -175,11 +179,15 @@ const AdminRoutes = () => {
               <Route path="/settings" element={<Settings />} />
               <Route path="/offers" element={<OfferCMS />} />
               <Route path="/offer-cards" element={<OfferCardCMS />} />
+              <Route path="/blog-hero" element={<BlogHeroCMS />} />
               <Route path="/cookie-consent" element={<CookieConsentCMS />} />
               <Route path="/privacy-policy" element={<PrivacyPolicyCMS />} />
               <Route path="/brochures" element={<BrochureCMS />} />
               <Route path="/rates" element={<RateCMS />} />
               <Route path="/whatsapp-config" element={<WhatsAppConfig />} />
+              <Route path="/director-desk-hero" element={<DirectorDeskHeroCMS />} />
+              <Route path="/project-hero" element={<ProjectHeroCMS />} />
+              <Route path="/service-hero" element={<ServiceHeroCMS />} />
               </Routes>
           </AdminLayout>
         </ProtectedRoute>

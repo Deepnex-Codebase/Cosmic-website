@@ -4,7 +4,9 @@ const AboutSchema = new mongoose.Schema({
   hero: {
     title: { type: String, default: 'About' },
     subtitle: { type: String, default: '' },
-    videoUrl: { type: String, default: '/aboutvideo.mp4' }
+    mediaType: { type: String, enum: ['video', 'image'], default: 'video' },
+    videoUrl: { type: String, default: '/aboutvideo.mp4' },
+    imageUrl: { type: String, default: '' }
   },
   aboutUs: {
     title: { type: String, default: 'About Us :' },

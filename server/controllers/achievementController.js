@@ -21,18 +21,32 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage: storage,
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    
-    if (mimetype && extname) {
-      return cb(null, true);
+    // Check if this is a video upload based on mediaType in the request body
+    if (req.body && req.body.mediaType === 'video') {
+      const allowedVideoTypes = /mp4|webm|ogg|mov|avi/;
+      const extname = allowedVideoTypes.test(path.extname(file.originalname).toLowerCase());
+      const mimetype = file.mimetype.startsWith('video/');
+      
+      if (mimetype && extname) {
+        return cb(null, true);
+      } else {
+        cb(new Error('Only video files (mp4, webm, ogg, mov, avi) are allowed'));
+      }
     } else {
-      cb(new Error('Only image files are allowed'));
+      // Default to image upload validation
+      const allowedImageTypes = /jpeg|jpg|png|gif|webp/;
+      const extname = allowedImageTypes.test(path.extname(file.originalname).toLowerCase());
+      const mimetype = allowedImageTypes.test(file.mimetype);
+      
+      if (mimetype && extname) {
+        return cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed'));
+      }
     }
   },
   limits: {
-    fileSize: 40 * 1024 * 1024 // 40MB limit
+    fileSize: 100 * 1024 * 1024 // 100MB limit for videos
   }
 });
 
@@ -205,7 +219,30 @@ exports.updateAchievementPage = async (req, res) => {
     if (!achievementData) {
       achievementData = new Achievement(req.body);
     } else {
-      Object.assign(achievementData, req.body);
+      // Handle hero section media type
+      if (req.body.hero) {
+        // If mediaType is video, ensure backgroundVideo is set
+        if (req.body.hero.mediaType === 'video' && req.body.hero.backgroundVideo) {
+          achievementData.hero.backgroundVideo = req.body.hero.backgroundVideo;
+          achievementData.hero.mediaType = 'video';
+        } 
+        // If mediaType is image or not specified, ensure backgroundImage is set
+        else if ((req.body.hero.mediaType === 'image' || !req.body.hero.mediaType) && req.body.hero.backgroundImage) {
+          achievementData.hero.backgroundImage = req.body.hero.backgroundImage;
+          achievementData.hero.mediaType = 'image';
+        }
+        
+        // Update other hero fields
+        if (req.body.hero.title) achievementData.hero.title = req.body.hero.title;
+        if (req.body.hero.subtitle) achievementData.hero.subtitle = req.body.hero.subtitle;
+      }
+      
+      // Update other sections
+      Object.keys(req.body).forEach(key => {
+        if (key !== 'hero') {
+          achievementData[key] = req.body[key];
+        }
+      });
     }
     
     await achievementData.save();
@@ -239,15 +276,24 @@ exports.addAchievement = async (req, res) => {
       });
     }
     
+    const mediaType = req.body.mediaType || 'image';
+    
     const newAchievement = {
       title: req.body.title,
       year: req.body.year,
       organization: req.body.organization,
       description: req.body.description,
-      image: req.file ? `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}` : req.body.image,
+      mediaType: mediaType,
       order: req.body.order || achievementData.awardWinningSolutions.achievements.length + 1,
       rowId: req.body.rowId || 1
     };
+    
+    // Set the appropriate media field based on mediaType
+    if (mediaType === 'video') {
+      newAchievement.video = req.file ? `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}` : req.body.video;
+    } else {
+      newAchievement.image = req.file ? `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}` : req.body.image;
+    }
     
     console.log('New achievement object:', newAchievement);
     
@@ -299,10 +345,24 @@ exports.updateAchievement = async (req, res) => {
     achievement.order = req.body.order || achievement.order;
     achievement.rowId = req.body.rowId || achievement.rowId || 1;
     
-    if (req.file) {
-      achievement.image = `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}`;
-    } else if (req.body.image) {
-      achievement.image = req.body.image;
+    // Update mediaType if provided
+    if (req.body.mediaType) {
+      achievement.mediaType = req.body.mediaType;
+    }
+    
+    // Handle file upload based on mediaType
+    if (req.body.mediaType === 'video') {
+      if (req.file) {
+        achievement.video = `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}`;
+      } else if (req.body.video) {
+        achievement.video = req.body.video;
+      }
+    } else {
+      if (req.file) {
+        achievement.image = `${process.env.BASE_URL}/uploads/achievements/${req.file.filename}`;
+      } else if (req.body.image) {
+        achievement.image = req.body.image;
+      }
     }
     
     await achievementData.save();

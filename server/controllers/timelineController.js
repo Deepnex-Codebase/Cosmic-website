@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for image uploads
+// Configure multer for media uploads (images and videos)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadPath = 'uploads/timeline';
@@ -14,25 +14,30 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'timeline-' + uniqueSuffix + path.extname(file.originalname));
+    const fileType = file.mimetype.startsWith('video/') ? 'video' : 'image';
+    cb(null, `timeline-${fileType}-${uniqueSuffix}${path.extname(file.originalname)}`);
   }
 });
 
 const upload = multer({ 
   storage: storage,
   fileFilter: function (req, file, cb) {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    // Allow both image and video files
+    const allowedImageTypes = /jpeg|jpg|png|gif|webp/;
+    const allowedVideoTypes = /mp4|avi|mov|wmv|flv|webm|mkv/;
     
-    if (mimetype && extname) {
+    const extname = path.extname(file.originalname).toLowerCase();
+    
+    if (file.mimetype.startsWith('image/') && allowedImageTypes.test(extname)) {
+      return cb(null, true);
+    } else if (file.mimetype.startsWith('video/') && allowedVideoTypes.test(extname)) {
       return cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed'));
+      cb(new Error('Only image or video files are allowed'));
     }
   },
   limits: {
-    fileSize: 40 * 1024 * 1024 // 40MB limit
+    fileSize: 100 * 1024 * 1024 // 100MB limit for videos
   }
 });
 
@@ -86,22 +91,38 @@ const getTimelineById = async (req, res) => {
 // Create new timeline item
 const createTimeline = async (req, res) => {
   try {
-    const { year, title, description, order, isActive } = req.body;
+    const { year, title, description, order, isActive, mediaType } = req.body;
     
-    // Handle background image
-    let backgroundImage = req.body.backgroundImage || '';
-    if (req.file) {
-      backgroundImage = `${process.env.BASE_URL}/uploads/timeline/${req.file.filename}`;
-    }
-    
+    // Create timeline item object
     const timelineItem = new Timeline({
       year,
       title,
       description,
-      backgroundImage,
+      mediaType: mediaType || 'image',
       order: order || 0,
       isActive: isActive !== undefined ? isActive : true
     });
+    
+    // Handle media file (image or video)
+    if (req.file) {
+      const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+      const filePath = `${baseUrl}/uploads/timeline/${req.file.filename}`;
+      
+      if (mediaType === 'video' || req.file.mimetype.startsWith('video/')) {
+        timelineItem.backgroundVideo = filePath;
+        timelineItem.mediaType = 'video';
+      } else {
+        timelineItem.backgroundImage = filePath;
+        timelineItem.mediaType = 'image';
+      }
+    } else {
+      // Handle URLs provided in request body
+      if (mediaType === 'video') {
+        timelineItem.backgroundVideo = req.body.backgroundVideo || '';
+      } else {
+        timelineItem.backgroundImage = req.body.backgroundImage || '';
+      }
+    }
     
     await timelineItem.save();
     
@@ -123,7 +144,7 @@ const createTimeline = async (req, res) => {
 // Update timeline item
 const updateTimeline = async (req, res) => {
   try {
-    const { year, title, description, order, isActive } = req.body;
+    const { year, title, description, order, isActive, mediaType } = req.body;
     
     const timelineItem = await Timeline.findById(req.params.id);
     
@@ -134,20 +155,53 @@ const updateTimeline = async (req, res) => {
       });
     }
     
-    // Handle background image update
-    let backgroundImage = timelineItem.backgroundImage;
+    // Handle media file update (image or video)
     if (req.file) {
-      // Keep old image and just update the path in database
-      backgroundImage = `${process.env.BASE_URL}/uploads/timeline/${req.file.filename}`;
-    } else if (req.body.backgroundImage) {
-      backgroundImage = req.body.backgroundImage;
+      const baseUrl = process.env.BASE_URL || 'http://localhost:8000';
+      const filePath = `${baseUrl}/uploads/timeline/${req.file.filename}`;
+      
+      if (mediaType === 'video' || req.file.mimetype.startsWith('video/')) {
+        timelineItem.backgroundVideo = filePath;
+        timelineItem.mediaType = 'video';
+        // Clear image if switching from image to video
+        if (timelineItem.mediaType === 'image') {
+          timelineItem.backgroundImage = '';
+        }
+      } else {
+        timelineItem.backgroundImage = filePath;
+        timelineItem.mediaType = 'image';
+        // Clear video if switching from video to image
+        if (timelineItem.mediaType === 'video') {
+          timelineItem.backgroundVideo = '';
+        }
+      }
+    } else {
+      // Handle URLs provided in request body
+      if (mediaType === 'video') {
+        if (req.body.backgroundVideo) {
+          timelineItem.backgroundVideo = req.body.backgroundVideo;
+        }
+        timelineItem.mediaType = 'video';
+        // Clear image if switching from image to video
+        if (timelineItem.mediaType === 'image') {
+          timelineItem.backgroundImage = '';
+        }
+      } else if (mediaType === 'image') {
+        if (req.body.backgroundImage) {
+          timelineItem.backgroundImage = req.body.backgroundImage;
+        }
+        timelineItem.mediaType = 'image';
+        // Clear video if switching from video to image
+        if (timelineItem.mediaType === 'video') {
+          timelineItem.backgroundVideo = '';
+        }
+      }
     }
     
-    // Update fields
+    // Update other fields
     timelineItem.year = year || timelineItem.year;
     timelineItem.title = title || timelineItem.title;
     timelineItem.description = description || timelineItem.description;
-    timelineItem.backgroundImage = backgroundImage;
     timelineItem.order = order !== undefined ? order : timelineItem.order;
     timelineItem.isActive = isActive !== undefined ? isActive : timelineItem.isActive;
     
@@ -167,6 +221,7 @@ const updateTimeline = async (req, res) => {
     });
   }
 };
+
 
 // Delete timeline item
 const deleteTimeline = async (req, res) => {

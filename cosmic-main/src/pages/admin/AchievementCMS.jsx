@@ -207,23 +207,34 @@ export default function AchievementCMS() {
     }));
   };
 
-  // Handle image upload for hero section
-  const handleHeroImageUpload = async (e) => {
+  // Handle media upload for hero section (image or video)
+  const handleHeroMediaUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       const formData = new FormData();
-      formData.append('image', file);
+      const isVideo = file.type.startsWith('video/');
+      const fieldName = isVideo ? 'video' : 'image';
+      
+      formData.append(fieldName, file);
+      formData.append('mediaType', isVideo ? 'video' : 'image');
       
       try {
-        // You can implement a separate endpoint for hero image upload
+        // You can implement a separate endpoint for hero media upload
         // For now, we'll use local preview
         const reader = new FileReader();
         reader.onloadend = () => {
-          handlePageDataChange('hero', 'backgroundImage', reader.result);
+          // Update the appropriate field based on media type
+          if (isVideo) {
+            handlePageDataChange('hero', 'backgroundVideo', reader.result);
+            handlePageDataChange('hero', 'mediaType', 'video');
+          } else {
+            handlePageDataChange('hero', 'backgroundImage', reader.result);
+            handlePageDataChange('hero', 'mediaType', 'image');
+          }
         };
         reader.readAsDataURL(file);
       } catch (error) {
-        toast.error('Failed to upload image');
+        toast.error(`Failed to upload ${isVideo ? 'video' : 'image'}`);
       }
     }
   };
@@ -469,16 +480,21 @@ export default function AchievementCMS() {
     }
   };
 
-  // Handle image change
-  const handleImageChange = (e) => {
+  // Handle media file change (image or video)
+  const handleMediaChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const fieldName = modalType === 'partner' ? 'logo' : 'image';
-      setFormData({ ...formData, [fieldName]: file });
+      // Store the file in a 'file' field for the API
+      setFormData({ ...formData, file: file });
+      
+      // Also keep track of the original field for UI display purposes
+      const fieldName = modalType === 'partner' ? 'logo' : 
+                        (formData.mediaType === 'video' ? 'video' : 'image');
+      setFormData(prev => ({ ...prev, [fieldName]: file }));
       
       // Create a temporary URL for the file
-      const imageUrl = URL.createObjectURL(file);
-      setImagePreview(imageUrl);
+      const fileUrl = URL.createObjectURL(file);
+      setImagePreview(fileUrl);
       
       // Optional: Revoke the URL when it's no longer needed to free up memory
       // This could be done in a useEffect cleanup function if needed
@@ -578,15 +594,23 @@ export default function AchievementCMS() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Background Image
+                  Background Media (Image or Video)
                 </label>
                 <input
                   type="file"
-                  accept="image/*"
-                  onChange={handleHeroImageUpload}
+                  accept="image/*,video/*"
+                  onChange={handleHeroMediaUpload}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {pageData.hero?.backgroundImage && (
+                {pageData.hero?.mediaType === 'video' && pageData.hero?.backgroundVideo ? (
+                  <div className="mt-2">
+                    <video
+                      src={pageData.hero?.backgroundVideo && pageData.hero?.backgroundVideo.startsWith('/uploads') ? SERVER_URL + pageData.hero?.backgroundVideo : pageData.hero?.backgroundVideo}
+                      controls
+                      className="h-32 w-48 object-cover rounded-lg"
+                    />
+                  </div>
+                ) : pageData.hero?.backgroundImage && (
                   <div className="mt-2">
                     <img
                       src={pageData.hero?.backgroundImage && pageData.hero?.backgroundImage.startsWith('/uploads') ? SERVER_URL + pageData.hero?.backgroundImage : pageData.hero?.backgroundImage}
@@ -1028,6 +1052,21 @@ export default function AchievementCMS() {
                         placeholder="Achievement description"
                       />
                     </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Media Type
+                      </label>
+                      <select
+                        name="mediaType"
+                        value={formData.mediaType || 'image'}
+                        onChange={handleInputChange}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="image">Image</option>
+                        <option value="video">Video</option>
+                      </select>
+                    </div>
                   </>
                 )}
                 
@@ -1108,22 +1147,31 @@ export default function AchievementCMS() {
                 {modalType !== 'certificate' && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {modalType === 'partner' ? 'Logo' : 'Image'} {modalType === 'achievement' && !editingItem && '*'}
+                      {modalType === 'partner' ? 'Logo' : 
+                       (modalType === 'achievement' && formData.mediaType === 'video' ? 'Video' : 'Image')} {modalType === 'achievement' && !editingItem && '*'}
                     </label>
                     <input
                       type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
+                      accept={modalType === 'achievement' && formData.mediaType === 'video' ? "video/*" : "image/*"}
+                      onChange={handleMediaChange}
                       required={modalType === 'achievement' && !editingItem}
                       className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {imagePreview && (
                       <div className="mt-2">
-                        <img
-                          src={imagePreview.startsWith('/uploads') ? `${SERVER_URL}${imagePreview}` : imagePreview}
-                          alt="Preview"
-                          className="h-32 w-32 object-cover rounded-lg"
-                        />
+                        {modalType === 'achievement' && formData.mediaType === 'video' ? (
+                          <video 
+                            src={imagePreview.startsWith('/uploads') ? `${SERVER_URL}${imagePreview}` : imagePreview} 
+                            controls 
+                            className="h-32 w-auto rounded-lg"
+                          />
+                        ) : (
+                          <img
+                            src={imagePreview.startsWith('/uploads') ? `${SERVER_URL}${imagePreview}` : imagePreview}
+                            alt="Preview"
+                            className="h-32 w-32 object-cover rounded-lg"
+                          />
+                        )}
                       </div>
                     )}
                   </div>

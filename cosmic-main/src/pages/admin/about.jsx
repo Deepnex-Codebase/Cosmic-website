@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
 import { FaPlus, FaTrash, FaEdit, FaSave, FaUpload } from 'react-icons/fa';
-import { getAboutPage, updateAboutPage, uploadExpertiseImage, uploadHeroVideo, addExpertiseItem, removeExpertiseItem, formatImageUrl, uploadTestimonialImage } from '../../services/aboutService';
+import { getAboutPage, updateAboutPage, uploadExpertiseImage, uploadHeroVideo, uploadHeroImage, addExpertiseItem, removeExpertiseItem, formatImageUrl, uploadTestimonialImage } from '../../services/aboutService';
 
 const AdminAbout = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [aboutData, setAboutData] = useState({
-    hero: { title: '', subtitle: '', videoUrl: '' },
+    hero: { title: '', subtitle: '', videoUrl: '', imageUrl: '', mediaType: 'video' },
     aboutUs: { title: '', content: [''] },
     whoWeAre: { title: '', content: '' },
     expertise: { title: '', description: '', items: [] },
@@ -29,6 +29,7 @@ const AdminAbout = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const videoInputRef = useRef(null);
+  const imageInputRef = useRef(null);
 
   // Fetch about page data
   useEffect(() => {
@@ -192,7 +193,8 @@ const AdminAbout = () => {
         ...prevData,
         hero: {
           ...prevData.hero,
-          videoUrl: result.videoUrl
+          videoUrl: result.videoUrl,
+          mediaType: 'video'
         }
       }));
       
@@ -204,10 +206,51 @@ const AdminAbout = () => {
     }
   };
   
+  // Handle hero image upload
+  const handleHeroImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    // Validate file type
+    const validImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validImageTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (JPEG, PNG, GIF, or WEBP)');
+      return;
+    }
+    
+    try {
+      setUploadingImage(true);
+      const result = await uploadHeroImage(file);
+      
+      // Update the state with the new image URL
+      setAboutData(prevData => ({
+        ...prevData,
+        hero: {
+          ...prevData.hero,
+          imageUrl: result.imageUrl,
+          mediaType: 'image'
+        }
+      }));
+      
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      toast.error(error.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+  
   // Trigger video file input click
   const triggerVideoUpload = () => {
     if (videoInputRef.current) {
       videoInputRef.current.click();
+    }
+  };
+  
+  // Trigger image file input click
+  const triggerImageUpload = () => {
+    if (imageInputRef.current) {
+      imageInputRef.current.click();
     }
   };
 
@@ -386,57 +429,144 @@ const AdminAbout = () => {
           </div>
           
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Video</label>
-            <div className="flex items-center space-x-2">
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={aboutData.hero.videoUrl || ''}
-                onChange={(e) => handleInputChange('hero', 'videoUrl', e.target.value)}
-                placeholder="Video URL will appear here after upload"
-                readOnly
-              />
-              <button
-                type="button"
-                onClick={triggerVideoUpload}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
-                disabled={uploadingVideo}
-              >
-                {uploadingVideo ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Uploading...
-                  </span>
-                ) : (
-                  <>
-                    <FaUpload className="mr-2" /> Upload Video
-                  </>
-                )}
-              </button>
-              <input
-                type="file"
-                ref={videoInputRef}
-                onChange={handleHeroVideoUpload}
-                accept="video/mp4,video/webm,video/ogg,video/avi,video/mov"
-                className="hidden"
-              />
+            <label className="block text-gray-700 mb-2">Media Type</label>
+            <div className="flex space-x-4 mb-2">
+              <div className="flex items-center">
+                <input
+                  id="media-video"
+                  type="radio"
+                  name="mediaType"
+                  checked={aboutData.hero.mediaType === 'video'}
+                  onChange={() => handleInputChange('hero', 'mediaType', 'video')}
+                  className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="media-video" className="ml-2 block text-sm text-gray-700">
+                  Video
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="media-image"
+                  type="radio"
+                  name="mediaType"
+                  checked={aboutData.hero.mediaType === 'image'}
+                  onChange={() => handleInputChange('hero', 'mediaType', 'image')}
+                  className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="media-image" className="ml-2 block text-sm text-gray-700">
+                  Image
+                </label>
+              </div>
             </div>
-            <p className="text-sm text-gray-500 mt-1">Upload a video file (MP4, WebM, Ogg, AVI, MOV) - Max size: 200MB</p>
           </div>
           
-          {aboutData.hero.videoUrl && (
+          {aboutData.hero.mediaType === 'video' ? (
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Video Preview</label>
-              <video 
-                className="w-full h-64 object-cover rounded" 
-                controls
-              >
-                <source src={aboutData.hero.videoUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <label className="block text-gray-700 mb-2">Video</label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={aboutData.hero.videoUrl || ''}
+                  onChange={(e) => handleInputChange('hero', 'videoUrl', e.target.value)}
+                  placeholder="Video URL will appear here after upload"
+                  readOnly
+                />
+                <button
+                  type="button"
+                  onClick={triggerVideoUpload}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+                  disabled={uploadingVideo}
+                >
+                  {uploadingVideo ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
+                    </span>
+                  ) : (
+                    <>
+                      <FaUpload className="mr-2" /> Upload Video
+                    </>
+                  )}
+                </button>
+                <input
+                  type="file"
+                  ref={videoInputRef}
+                  onChange={handleHeroVideoUpload}
+                  accept="video/mp4,video/webm,video/ogg,video/avi,video/mov"
+                  className="hidden"
+                />
+              </div>
+              <p className="text-sm text-gray-500 mt-1">Upload a video file (MP4, WebM, Ogg, AVI, MOV) - Max size: 200MB</p>
+              
+              {aboutData.hero.videoUrl && (
+                <div className="mt-4">
+                  <label className="block text-gray-700 mb-2">Video Preview</label>
+                  <video 
+                    className="w-full h-64 object-cover rounded" 
+                    controls
+                  >
+                    <source src={aboutData.hero.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Image</label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={aboutData.hero.imageUrl || ''}
+                  onChange={(e) => handleInputChange('hero', 'imageUrl', e.target.value)}
+                  placeholder="Image URL will appear here after upload"
+                  readOnly
+                />
+                <button
+                  type="button"
+                  onClick={triggerImageUpload}
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+                  disabled={uploadingImage}
+                >
+                  {uploadingImage ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Uploading...
+                    </span>
+                  ) : (
+                    <>
+                      <FaUpload className="mr-2" /> Upload Image
+                    </>
+                  )}
+                </button>
+                <input
+                  type="file"
+                  ref={imageInputRef}
+                  onChange={handleHeroImageUpload}
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  className="hidden"
+                />
+              </div>
+              <p className="text-sm text-gray-500 mt-1">Upload an image file (JPEG, PNG, GIF, WEBP) - Max size: 10MB</p>
+              
+              {aboutData.hero.imageUrl && (
+                <div className="mt-4">
+                  <label className="block text-gray-700 mb-2">Image Preview</label>
+                  <img 
+                    src={formatImageUrl(aboutData.hero.imageUrl)} 
+                    alt="Hero" 
+                    className="w-full h-64 object-cover rounded" 
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

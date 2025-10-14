@@ -5,6 +5,7 @@ import { FaLinkedin, FaTwitter, FaEnvelope, FaQuoteLeft, FaQuoteRight, FaFaceboo
 import { FaTimesCircle } from 'react-icons/fa';
 import { FaMessage } from 'react-icons/fa6';
 import TeamSection from '../components/TeamSection';
+import DirectorDeskHero from '../components/DirectorDeskHero';
 import { directorService } from '../services/api';
 import { toast } from 'react-toastify';
 
@@ -177,25 +178,11 @@ const DirectorDesk = () => {
       />
       
       {/* HERO SECTION */}
-      <motion.header
-        initial="hidden"
-        animate="visible"
-        variants={fadeUpVariant}
-        className="relative h-[400px] sm:h-[500px] md:h-[800px] flex items-center justify-center overflow-hidden"
-      >
-        <video 
-          className="absolute inset-0 w-full h-full object-cover" 
-          autoPlay 
-          muted 
-          loop
-          playsInline
-        >
-          <source src="/directordesk_new.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 text-center text-white px-4 max-w-full">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Director's Desk</h1>
+      <DirectorDeskHero />
+      
+      {/* Breadcrumb Navigation */}
+      <div className="bg-gray-100 py-4">
+        <div className="container mx-auto px-4">
           <nav className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm">
             <Link to="/" className="hover:text-accent-500 transition">
               Home
@@ -208,7 +195,7 @@ const DirectorDesk = () => {
             <span className="text-accent-500">Director's Desk</span>
           </nav>
         </div>
-      </motion.header>
+      </div>
 
       {/* DIRECTORS PROFILES SECTION */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">

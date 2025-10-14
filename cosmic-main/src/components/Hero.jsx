@@ -116,6 +116,20 @@ export default function Hero() {
         imgUrl = slide.fullUrl || `${API_BASE_URL}/uploads/${cleanPath}`;
       }
       
+      // Handle video source if available
+      let videoUrl = null;
+      if (slide.mediaType === 'video' && slide.videoSource) {
+        if (slide.videoSource.startsWith('/uploads/')) {
+          const cleanPath = slide.videoSource.replace(/^\/+/, '').replace(/^uploads\//, '');
+          videoUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${cleanPath}`;
+        } else if (slide.videoSource.startsWith('/')) {
+          videoUrl = `${API_BASE_URL.replace('/api', '')}${slide.videoSource}`;
+        } else {
+          videoUrl = slide.videoSource;
+        }
+        console.log('Video URL processed:', videoUrl);
+      }
+      
       return {
         key: slide.key || `slide-${index}`,
         num: slide.num || `0${index + 1}`,
@@ -125,7 +139,9 @@ export default function Hero() {
         body: slide.body || 'Clean energy solutions for a sustainable future.',
         img: imgUrl || 'https://zolar.wpengine.com/wp-content/uploads/2024/08/zolar-h1-slider-img-alt.jpg',
         icon: slide.icon || FALLBACK_SLIDES[index % FALLBACK_SLIDES.length].icon,
-        customSvgIcon: slide.customSvgIcon || ''
+        customSvgIcon: slide.customSvgIcon || '',
+        mediaType: slide.mediaType || 'image',
+        videoSource: videoUrl
       };
     });
     
@@ -165,19 +181,40 @@ export default function Hero() {
 
   return (
     <section className="relative bg-black h-[650px] sm:h-[750px] lg:h-screen overflow-hidden">
-      {/* BACKGROUND CROSS-FADE */}
+      {/* BACKGROUND CROSS-FADE - IMAGE OR VIDEO */}
       <AnimatePresence mode="wait">
-        <motion.div
-          key={slide.key}
-          className="absolute inset-0 bg-cover bg-center bg-fixed"
-          style={{ backgroundImage: `url(${slide.img})` }}
-          variants={bgVariant}
-          initial="enter"
-          animate="center"
-          exit="exit"
-        >
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-[#142334]/80" />
-        </motion.div>
+        {slide.mediaType === 'video' && slide.videoSource ? (
+          <motion.div
+            key={`${slide.key}-video`}
+            className="absolute inset-0"
+            variants={bgVariant}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
+            <video
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+              src={slide.videoSource}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-[#142334]/80" />
+          </motion.div>
+        ) : (
+          <motion.div
+            key={`${slide.key}-image`}
+            className="absolute inset-0 bg-cover bg-center bg-fixed"
+            style={{ backgroundImage: `url(${slide.img})` }}
+            variants={bgVariant}
+            initial="enter"
+            animate="center"
+            exit="exit"
+          >
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-[#142334]/80" />
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <div className="relative z-10 w-full h-full flex flex-col xl2:flex-row items-center pb-16 xl2:pb-24">

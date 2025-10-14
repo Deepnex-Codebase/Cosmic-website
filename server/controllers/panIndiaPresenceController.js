@@ -24,14 +24,14 @@ const upload = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
     // Check file type
-    if (file.mimetype.startsWith('image/')) {
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+      cb(new Error('Only image or video files are allowed!'), false);
     }
   },
   limits: {
-    fileSize: 40 * 1024 * 1024 // 40MB limit
+    fileSize: 100 * 1024 * 1024 // 100MB limit for videos
   }
 });
 
@@ -134,12 +134,22 @@ exports.getPanIndiaPresenceById = async (req, res) => {
 // Create or Update Pan India Presence
 exports.createOrUpdatePanIndiaPresence = async (req, res) => {
   try {
-    const { title, description, stats } = req.body;
+    const { title, description, stats, mediaType } = req.body;
     let mapImage = req.body.mapImage;
+    let mapVideo = req.body.mapVideo;
+    let fileMediaType = mediaType || 'image';
 
     // Handle file upload
     if (req.file) {
-      mapImage = `${process.env.BASE_URL}/uploads/pan-india/${req.file.filename}`;
+      fileMediaType = req.file.mimetype.startsWith('video/') ? 'video' : 'image';
+      
+      if (fileMediaType === 'video') {
+        mapVideo = `/uploads/pan-india/${req.file.filename}`;
+        mapImage = ''; // Clear image if video is uploaded
+      } else {
+        mapImage = `/uploads/pan-india/${req.file.filename}`;
+        mapVideo = ''; // Clear video if image is uploaded
+      }
     }
 
     // Parse stats if it's a string
@@ -162,7 +172,16 @@ exports.createOrUpdatePanIndiaPresence = async (req, res) => {
       // Update existing data
       panIndiaData.title = title || panIndiaData.title;
       panIndiaData.description = description || panIndiaData.description;
-      panIndiaData.mapImage = mapImage || panIndiaData.mapImage;
+      panIndiaData.mediaType = fileMediaType;
+      
+      if (fileMediaType === 'video') {
+        panIndiaData.mapVideo = mapVideo || panIndiaData.mapVideo;
+        if (mapVideo) panIndiaData.mapImage = ''; // Clear image if video is uploaded
+      } else {
+        panIndiaData.mapImage = mapImage || panIndiaData.mapImage;
+        if (mapImage) panIndiaData.mapVideo = ''; // Clear video if image is uploaded
+      }
+      
       panIndiaData.stats = parsedStats || panIndiaData.stats;
       panIndiaData.updatedAt = new Date();
       
@@ -172,7 +191,9 @@ exports.createOrUpdatePanIndiaPresence = async (req, res) => {
       panIndiaData = new PanIndiaPresence({
         title: title || 'Pan India Presence',
         description: description || 'Our growing network spans across India, providing reliable solar solutions to homes and businesses nationwide.',
-        mapImage: mapImage || '/mapindea.png',
+        mediaType: fileMediaType,
+        mapImage: fileMediaType === 'image' ? (mapImage || '/mapindea.png') : '',
+        mapVideo: fileMediaType === 'video' ? mapVideo : '',
         stats: parsedStats || [
           {
             title: '25+ States',

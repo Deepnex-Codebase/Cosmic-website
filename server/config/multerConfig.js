@@ -9,7 +9,9 @@ const aboutUploadDir = path.join(__dirname, '../uploads/about');
 const productUploadDir = path.join(__dirname, '../uploads/products');
 const footerUploadDir = path.join(__dirname, '../uploads/footer');
 const videosUploadDir = path.join(__dirname, '../uploads/videos');
+const imagesUploadDir = path.join(__dirname, '../uploads/images');
 const serviceUploadDir = path.join(__dirname, '../uploads/service');
+const directorDeskHeroUploadDir = path.join(__dirname, '../uploads/director-desk-hero');
 
 if (!fs.existsSync(directorUploadDir)) {
   fs.mkdirSync(directorUploadDir, { recursive: true });
@@ -38,6 +40,16 @@ if (!fs.existsSync(videosUploadDir)) {
 // Create service upload directory if it doesn't exist
 if (!fs.existsSync(serviceUploadDir)) {
   fs.mkdirSync(serviceUploadDir, { recursive: true });
+}
+
+// Create director desk hero upload directory if it doesn't exist
+if (!fs.existsSync(directorDeskHeroUploadDir)) {
+  fs.mkdirSync(directorDeskHeroUploadDir, { recursive: true });
+}
+
+// Create images upload directory if it doesn't exist
+if (!fs.existsSync(imagesUploadDir)) {
+  fs.mkdirSync(imagesUploadDir, { recursive: true });
 }
 
 // Configure storage for directors
@@ -75,6 +87,19 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// Configure storage for director desk hero
+const directorDeskHeroStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, directorDeskHeroUploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename with original extension
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const ext = path.extname(file.originalname);
+    cb(null, 'director-desk-hero-' + uniqueSuffix + ext);
+  }
+});
+
 // Create multer upload instances
 const directorUpload = multer({
   storage: directorStorage,
@@ -82,6 +107,24 @@ const directorUpload = multer({
     fileSize: 100 * 1024 * 1024, // 100MB max file size
   },
   fileFilter: fileFilter
+});
+
+// File filter to accept images and videos
+const mediaFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image and video files are allowed!'), false);
+  }
+};
+
+// Create director desk hero upload instance
+const directorDeskHeroUpload = multer({
+  storage: directorDeskHeroStorage,
+  limits: {
+    fileSize: 100 * 1024 * 1024, // 100MB max file size
+  },
+  fileFilter: mediaFileFilter
 });
 
 const teamUpload = multer({
@@ -115,7 +158,13 @@ const aboutUpload = multer({
 // Configure storage for videos
 const videoStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, videosUploadDir);
+    if (file.mimetype.startsWith('video/')) {
+      cb(null, videosUploadDir);
+    } else if (file.mimetype.startsWith('image/')) {
+      cb(null, imagesUploadDir);
+    } else {
+      cb(new Error('Invalid file type'), null);
+    }
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -133,6 +182,15 @@ const videoFileFilter = (req, file, cb) => {
   }
 };
 
+// File filter to accept both videos and images
+const mixedFileFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('video/') || file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only video or image files are allowed!'), false);
+  }
+};
+
 // Create multer upload instance for videos
 const videoUpload = multer({
   storage: videoStorage,
@@ -140,6 +198,15 @@ const videoUpload = multer({
     fileSize: 300 * 1024 * 1024, // 300MB max file size
   },
   fileFilter: videoFileFilter
+});
+
+// Create multer upload instance for mixed content (videos and images)
+const mixedUpload = multer({
+  storage: videoStorage, // Using the same storage as videos
+  limits: {
+    fileSize: 300 * 1024 * 1024, // 300MB max file size
+  },
+  fileFilter: mixedFileFilter
 });
 
 // Configure storage for products
@@ -222,5 +289,7 @@ module.exports = {
   productUpload,
   productUploadFields,
   footerUpload,
-  videoUpload
+  videoUpload,
+  mixedUpload,
+  directorDeskHeroUpload
 };

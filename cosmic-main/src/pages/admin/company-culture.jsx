@@ -4,7 +4,7 @@ import {
   FaPlus, FaTrash, FaEdit, FaSave, FaUpload, FaSearch
 } from 'react-icons/fa';
 import * as FaIcons from 'react-icons/fa';
-import { getCompanyCulture, updateCompanyCulture, uploadCompanyCultureImage, formatImageUrl, getFontAwesomeIcons } from '../../services/companyCultureService';
+import { getCompanyCulture, updateCompanyCulture, uploadCompanyCultureImage, uploadCompanyCultureMedia, formatImageUrl, getFontAwesomeIcons } from '../../services/companyCultureService';
 
 const AdminCompanyCulture = () => {
   const [loading, setLoading] = useState(true);
@@ -366,7 +366,44 @@ const AdminCompanyCulture = () => {
     });
   };
 
-  // Handle image upload
+  // Handle media upload (image or video)
+  const handleMediaUpload = async (event, section, field) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Validate file size before uploading
+    const fileSizeInMB = file.size / (1024 * 1024);
+    const isVideo = file.type.startsWith('video/');
+    const maxSize = isVideo ? 100 : 40; // 100MB for videos, 40MB for images
+    
+    if (fileSizeInMB > maxSize) {
+      toast.error(`File size exceeds ${maxSize}MB limit. Please choose a smaller file.`);
+      return;
+    }
+
+    try {
+      setUploadingImage(true);
+      const result = await uploadCompanyCultureMedia(file);
+      
+      // Update the appropriate field based on media type
+      if (result.mediaType === 'image') {
+        handleInputChange(section, 'backgroundImage', result.mediaUrl);
+        handleInputChange(section, 'mediaType', 'image');
+      } else if (result.mediaType === 'video') {
+        handleInputChange(section, 'backgroundVideo', result.mediaUrl);
+        handleInputChange(section, 'mediaType', 'video');
+      }
+      
+      toast.success(`${result.mediaType.charAt(0).toUpperCase() + result.mediaType.slice(1)} uploaded successfully`);
+    } catch (error) {
+      console.error('Error uploading media:', error);
+      toast.error('Failed to upload media. Please try again.');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+  
+  // Handle image upload (legacy function)
   const handleImageUpload = async (event, section, field) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -609,31 +646,90 @@ const AdminCompanyCulture = () => {
           </div>
           
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Background Image</label>
-            <label className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer flex items-center w-fit">
-              <FaUpload className="mr-2" />
-              {uploadingImage ? 'Uploading...' : 'Upload Image'}
-              <input
-                type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
-                className="hidden"
-                onChange={(e) => handleImageUpload(e, 'hero', 'backgroundImage')}
-                disabled={uploadingImage}
-              />
-            </label>
-            {companyCultureData.hero?.backgroundImage && (
-              <p className="text-sm text-gray-600 mt-2">Current: {companyCultureData.hero.backgroundImage.split('/').pop()}</p>
-            )}
+            <label className="block text-gray-700 mb-2">Media Type</label>
+            <div className="flex space-x-4 mb-2">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  className="form-radio"
+                  name="mediaType"
+                  value="image"
+                  checked={companyCultureData.hero?.mediaType === 'image'}
+                  onChange={() => handleInputChange('hero', 'mediaType', 'image')}
+                />
+                <span className="ml-2">Image</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  className="form-radio"
+                  name="mediaType"
+                  value="video"
+                  checked={companyCultureData.hero?.mediaType === 'video'}
+                  onChange={() => handleInputChange('hero', 'mediaType', 'video')}
+                />
+                <span className="ml-2">Video</span>
+              </label>
+            </div>
           </div>
           
-          {companyCultureData.hero?.backgroundImage && (
+          {companyCultureData.hero?.mediaType === 'image' ? (
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Image Preview</label>
-              <img 
-                src={companyCultureData.hero.backgroundImage} 
-                alt="Hero Background" 
-                className="w-full h-64 object-cover rounded" 
-              />
+              <label className="block text-gray-700 mb-2">Background Image</label>
+              <label className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer flex items-center w-fit">
+                <FaUpload className="mr-2" />
+                {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => handleMediaUpload(e, 'hero', 'backgroundImage')}
+                  disabled={uploadingImage}
+                />
+              </label>
+              {companyCultureData.hero?.backgroundImage && (
+                <p className="text-sm text-gray-600 mt-2">Current: {companyCultureData.hero.backgroundImage.split('/').pop()}</p>
+              )}
+              
+              {companyCultureData.hero?.backgroundImage && (
+                <div className="mt-4">
+                  <label className="block text-gray-700 mb-2">Image Preview</label>
+                  <img 
+                    src={companyCultureData.hero.backgroundImage} 
+                    alt="Hero Background" 
+                    className="w-full h-64 object-cover rounded" 
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">Background Video</label>
+              <label className="bg-blue-500 text-white px-4 py-2 rounded cursor-pointer flex items-center w-fit">
+                <FaUpload className="mr-2" />
+                {uploadingImage ? 'Uploading...' : 'Upload Video'}
+                <input
+                  type="file"
+                  accept="video/mp4,video/webm,video/ogg"
+                  className="hidden"
+                  onChange={(e) => handleMediaUpload(e, 'hero', 'backgroundVideo')}
+                  disabled={uploadingImage}
+                />
+              </label>
+              {companyCultureData.hero?.backgroundVideo && (
+                <p className="text-sm text-gray-600 mt-2">Current: {companyCultureData.hero.backgroundVideo.split('/').pop()}</p>
+              )}
+              
+              {companyCultureData.hero?.backgroundVideo && (
+                <div className="mt-4">
+                  <label className="block text-gray-700 mb-2">Video Preview</label>
+                  <video 
+                    src={companyCultureData.hero.backgroundVideo} 
+                    controls
+                    className="w-full h-64 object-cover rounded" 
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

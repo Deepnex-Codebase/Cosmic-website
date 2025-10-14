@@ -153,33 +153,122 @@ export default function BlogGrid() {
     page * PAGE_SIZE
   );
 
+  const [heroData, setHeroData] = useState({
+    title: 'Our Blog',
+    backgroundImage: 'https://zolar.wpengine.com/wp-content/uploads/2025/01/zolar-breadcrumb-bg.jpg',
+    backgroundVideo: '',
+    mediaType: 'image',
+    overlayOpacity: 0.5,
+    height: '300px',
+    textColor: '#FFFFFF',
+    accentColor: '#cae28e'
+  });
+
+  // Fetch hero data
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        const imageUrl = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiUrl}/blog-hero`);
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Process background image URL if it exists
+          if (data.backgroundImage && data.mediaType === 'image') {
+            // If it's not an absolute URL (doesn't start with http)
+            if (!data.backgroundImage.startsWith('http')) {
+              // Remove /api/ prefix if present
+              let processedImageUrl = data.backgroundImage;
+              if (processedImageUrl.startsWith('/api/')) {
+                processedImageUrl = processedImageUrl.substring(4);
+              }
+              
+              // Ensure path starts with /
+              if (!processedImageUrl.startsWith('/')) {
+                processedImageUrl = '/' + processedImageUrl;
+              }
+              
+              // Set the full image URL
+              data.backgroundImage = `${imageUrl}${processedImageUrl}`;
+            }
+          }
+          
+          // Process background video URL if it exists
+          if (data.backgroundVideo && data.mediaType === 'video') {
+            // If it's not an absolute URL (doesn't start with http)
+            if (!data.backgroundVideo.startsWith('http')) {
+              // Remove /api/ prefix if present
+              let processedVideoUrl = data.backgroundVideo;
+              if (processedVideoUrl.startsWith('/api/')) {
+                processedVideoUrl = processedVideoUrl.substring(4);
+              }
+              
+              // Ensure path starts with /
+              if (!processedVideoUrl.startsWith('/')) {
+                processedVideoUrl = '/' + processedVideoUrl;
+              }
+              
+              // Set the full video URL
+              data.backgroundVideo = `${imageUrl}${processedVideoUrl}`;
+            }
+          }
+          
+          setHeroData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching blog hero data:', error);
+      }
+    };
+
+    fetchHeroData();
+  }, []);
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Background Image */}
+      {/* Hero Section with Background Image or Video */}
       <div 
-        className="relative bg-cover bg-center h-[300px] flex items-center justify-center"
+        className="relative bg-cover bg-center flex items-center justify-center"
         style={{
-          backgroundImage: `url('https://zolar.wpengine.com/wp-content/uploads/2025/01/zolar-breadcrumb-bg.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          height: heroData.height
         }}
       >
+        {/* Background Media - Image or Video */}
+        {heroData.mediaType === 'video' && heroData.backgroundVideo ? (
+          <video 
+            className="absolute inset-0 w-full h-full object-cover"
+            src={heroData.backgroundVideo}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : (
+          <div 
+            className="absolute inset-0 w-full h-full bg-cover bg-center"
+            style={{ backgroundImage: `url('${heroData.backgroundImage}')` }}
+          ></div>
+        )}
+        
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div className="absolute inset-0 bg-black" style={{ opacity: heroData.overlayOpacity }}></div>
         
         {/* Content */}
-        <div className="relative z-10 text-center text-white px-4">
+        <div className="relative z-10 text-center px-4" style={{ color: heroData.textColor }}>
           <h1 className="text-5xl font-bold mb-4">
-            {categoryParam ? `${categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)} Articles` : 'Our Blog'}
+            {categoryParam ? `${categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)} Articles` : heroData.title}
           </h1>
           <div className="flex items-center justify-center space-x-2 text-sm">
-            <Link to="/" className="hover:text-accent-500 transition-colors">Home</Link>
+            <Link to="/" className="hover:text-accent-500 transition-colors" style={{ color: heroData.textColor, ':hover': { color: heroData.accentColor } }}>Home</Link>
             <span>—</span>
-            <Link to="/blog" className={!categoryParam ? 'text-accent-500' : 'hover:text-accent-500 transition-colors'}>Blog</Link>
+            <Link to="/blog" 
+              className={!categoryParam ? 'transition-colors' : 'hover:text-accent-500 transition-colors'} 
+              style={{ color: !categoryParam ? heroData.accentColor : heroData.textColor }}
+            >Blog</Link>
             {categoryParam && (
               <>
                 <span>—</span>
-                <span className="text-accent-500">{categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)}</span>
+                <span style={{ color: heroData.accentColor }}>{categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1)}</span>
               </>
             )}
           </div>

@@ -53,8 +53,35 @@ const TimelineSection = () => {
         // Transform API data to match component structure
         const timelineData = response.data.data.map(item => {
           let bgImage = 'https://unsplash.it/1920/500?image=11';
+          let isVideo = false;
+          let mediaType = item.mediaType || 'image';
           
-          if (item.backgroundImage) {
+          // Handle video background
+          if (mediaType === 'video' && item.backgroundVideo) {
+            if (item.backgroundVideo.startsWith('http')) {
+              bgImage = item.backgroundVideo;
+            } else {
+              // Remove any leading slashes and construct the URL
+              // Also remove duplicate 'uploads/' if present
+              const cleanPath = item.backgroundVideo.replace(/^\/+/, '').replace(/^uploads\//, '');
+              
+              // Extract base URL without '/api' suffix if present
+              let baseUrl = API_BASE_URL;
+              if (baseUrl.endsWith('/api')) {
+                baseUrl = baseUrl.substring(0, baseUrl.length - 4);
+              }
+              
+              // Make sure we don't add double slashes
+              if (baseUrl.endsWith('/')) {
+                bgImage = `${baseUrl}uploads/${cleanPath}`;
+              } else {
+                bgImage = `${baseUrl}/uploads/${cleanPath}`;
+              }
+            }
+            isVideo = true;
+          }
+          // Handle image background
+          else if (item.backgroundImage) {
             if (item.backgroundImage.startsWith('http')) {
               bgImage = item.backgroundImage;
             } else {
@@ -77,12 +104,13 @@ const TimelineSection = () => {
             }
           }
           
-          
           return {
             year: item.year,
             title: item.title,
             description: item.description,
-            bg: bgImage
+            bg: bgImage,
+            isVideo: isVideo,
+            mediaType: mediaType
           };
         });
         setSlides(timelineData);
@@ -211,24 +239,62 @@ const TimelineSection = () => {
       {/* Backgrounds */}
       <div className="absolute inset-0 z-0">
         {prevIndex !== null && (
+          <>
+            {slides[prevIndex]?.isVideo ? (
+              <div
+                key={`prev-video-${prevIndex}`}
+                className="absolute inset-0 z-0 animate-fadeOutUp"
+                style={{ filter: 'grayscale(40%)' }}
+              >
+                <video
+                  src={slides[prevIndex]?.bg}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                />
+              </div>
+            ) : (
+              <div
+                key={`prev-${prevIndex}`}
+                className="absolute inset-0 bg-cover bg-center z-0 animate-fadeOutUp"
+                style={{ 
+                  backgroundImage: `url(${slides[prevIndex]?.bg || 'https://unsplash.it/1920/500?image=11'})`,
+                  filter: 'grayscale(40%)' 
+                }}
+              />
+            )}
+          </>
+        )}
+        
+        {slides[currentIndex]?.isVideo ? (
           <div
-            key={`prev-${prevIndex}`}
-            className="absolute inset-0 bg-cover bg-center z-0 animate-fadeOutUp"
+            key={`current-video-${currentIndex}`}
+            className="absolute inset-0 z-10 animate-fadeInUp"
+            style={{ filter: 'grayscale(40%)' }}
+            onAnimationEnd={() => setAnimating(false)}
+          >
+            <video
+              src={slides[currentIndex]?.bg}
+              className="absolute inset-0 w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              playsInline
+            />
+          </div>
+        ) : (
+          <div
+            key={`current-${currentIndex}`}
+            className="absolute inset-0 bg-cover bg-center z-10 animate-fadeInUp"
             style={{ 
-              backgroundImage: `url(${slides[prevIndex]?.bg || 'https://unsplash.it/1920/500?image=11'})`,
+              backgroundImage: `url(${slides[currentIndex]?.bg || 'https://unsplash.it/1920/500?image=11'})`,
               filter: 'grayscale(40%)' 
             }}
+            onAnimationEnd={() => setAnimating(false)}
           />
         )}
-        <div
-          key={`current-${currentIndex}`}
-          className="absolute inset-0 bg-cover bg-center z-10 animate-fadeInUp"
-          style={{ 
-            backgroundImage: `url(${slides[currentIndex]?.bg || 'https://unsplash.it/1920/500?image=11'})`,
-            filter: 'grayscale(40%)' 
-          }}
-          onAnimationEnd={() => setAnimating(false)}
-        />
       </div>
 
       {/* Gradient */}

@@ -35,32 +35,49 @@ export default function CompanyIntro() {
 
   return (
     <section className="relative w-full h-[600px] overflow-hidden">
-      {/* Background Video */}
-      <video
-        className="absolute inset-0 w-full h-full object-cover z-0"
-        autoPlay
-        muted
-        loop
-        playsInline
-      >
-        <source 
+      {/* Background Media (Video or Image) */}
+      {companyIntroData?.mediaType === 'image' ? (
+        <img
+          className="absolute inset-0 w-full h-full object-cover z-0"
           src={
-            companyIntroData?.backgroundVideo 
-              ? (companyIntroData.backgroundVideo.startsWith('http') 
-                ? companyIntroData.backgroundVideo 
-                : companyIntroData.backgroundVideo.startsWith('/uploads/') 
-                  ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
-                  : companyIntroData.backgroundVideo.startsWith('/videos/') 
-                    ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
-                    : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/company-intro/${companyIntroData.backgroundVideo.replace(/^\//,'')}` 
+            companyIntroData?.backgroundImage 
+              ? (companyIntroData.backgroundImage.startsWith('http') 
+                ? companyIntroData.backgroundImage 
+                : companyIntroData.backgroundImage.startsWith('/uploads/') 
+                  ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundImage}` 
+                  : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/company-intro/${companyIntroData.backgroundImage.replace(/^\//,'')}` 
                 )
-              : "/videos/about.mp4"
-          } 
-          type="video/mp4" 
+              : "/images/default-bg.jpg"
+          }
+          alt="Company background"
         />
-        
-        Your browser does not support the video tag.
-      </video>
+      ) : (
+        <video
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source 
+            src={
+              companyIntroData?.backgroundVideo 
+                ? (companyIntroData.backgroundVideo.startsWith('http') 
+                  ? companyIntroData.backgroundVideo 
+                  : companyIntroData.backgroundVideo.startsWith('/uploads/') 
+                    ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
+                    : companyIntroData.backgroundVideo.startsWith('/videos/') 
+                      ? `${API_BASE_URL.replace(/\/api$/, '')}${companyIntroData.backgroundVideo}` 
+                      : `${API_BASE_URL.replace(/\/api$/, '')}/uploads/company-intro/${companyIntroData.backgroundVideo.replace(/^\//,'')}` 
+                  )
+                : "/videos/about.mp4"
+            } 
+            type="video/mp4" 
+          />
+          
+          Your browser does not support the video tag.
+        </video>
+      )}
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/70 z-10" />
