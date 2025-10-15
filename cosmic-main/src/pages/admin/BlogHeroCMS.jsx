@@ -144,10 +144,14 @@ const BlogHeroCMS = () => {
         }
       }
       
+      // Get auth token from localStorage
+      const token = localStorage.getItem('token');
+      
       // Send update request
       const response = await axios.put(`${API_URL}/blog-hero`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'Authorization': token ? `Bearer ${token}` : ''
         },
         withCredentials: true
       });

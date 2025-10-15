@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Create a dedicated instance for director desk hero API calls
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.cosmicpowertech.com/api';
 
 const directorDeskApi = axios.create({
   baseURL: API_BASE_URL,

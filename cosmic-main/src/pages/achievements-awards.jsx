@@ -8,14 +8,109 @@ const SERVER_URL = API_BASE_URL.replace(/\/api$/, '');
 
 // Achievement Card Component
 function AchievementCard({ achievement }) {
+  // Log the entire achievement object to see what we're working with
+  console.log('Achievement data:', achievement);
+  
+  // Function to properly format media URLs
+  const formatMediaUrl = (url) => {
+    if (!url) return '';
+    
+    // Handle URLs with proper formatting
+    if (url.startsWith('http')) return url;
+    
+    // Handle uploads directory specifically
+    if (url.startsWith('/uploads')) {
+      console.log('Formatting uploads URL:', `${SERVER_URL}${url}`);
+      return `${SERVER_URL}${url}`;
+    }
+    
+    // Handle other server paths
+    if (url.startsWith('/')) {
+      console.log('Formatting server URL:', `${SERVER_URL}${url}`);
+      return `${SERVER_URL}${url}`;
+    }
+    
+    // Default case
+    return url;
+  };
+
+  // Direct video rendering function - simplified approach
+  const renderVideo = () => {
+    // Always check for video property first
+    if (achievement.video) {
+      const videoUrl = formatMediaUrl(achievement.video);
+      console.log('Direct video URL:', videoUrl);
+      
+      // Force video to load by creating a new element
+      const videoElement = document.createElement('video');
+      videoElement.src = videoUrl;
+      videoElement.load();
+      
+      return (
+        <div className="w-full h-full">
+          <video 
+            key={videoUrl} // Force re-render when URL changes
+            src={videoUrl} 
+            controls
+            autoPlay={false}
+            muted={false}
+            playsInline
+            preload="auto"
+            loop={false}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              console.error("Video error:", e);
+              console.error("Video src:", videoUrl);
+            }}
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      );
+    }
+    return null;
+  };
+  
+  // Direct image rendering function
+  const renderImage = () => {
+    if (achievement.image) {
+      const imageUrl = formatMediaUrl(achievement.image);
+      console.log('Direct image URL:', imageUrl);
+      return (
+        <img 
+          src={imageUrl} 
+          alt={achievement.title} 
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+          onError={(e) => console.error("Image error:", e.target.src)}
+        />
+      );
+    }
+    return null;
+  };
+
+  // Determine which media to display
+  const getMediaContent = () => {
+    // Try to render video first
+    const videoContent = renderVideo();
+    if (videoContent) return videoContent;
+    
+    // If no video, try to render image
+    const imageContent = renderImage();
+    if (imageContent) return imageContent;
+    
+    // Fallback if neither is available
+    console.log('No media found for achievement');
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+        <p className="text-gray-500">No media available</p>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-accent-200">
       <div className="relative h-56 overflow-hidden">
-        <img 
-          src={achievement.image?.startsWith('/uploads') ? `${SERVER_URL}${achievement.image}` : achievement.image} 
-          alt={achievement.title} 
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-        />
+        {getMediaContent()}
         <div className="absolute top-0 right-0 bg-accent-500 text-white px-4 py-2 rounded-bl-lg font-medium">
           {achievement.year}
         </div>
@@ -127,14 +222,13 @@ function RecognitionSection({ industryRecognition }) {
     return null;
   }
 
-  // Function to format image URL properly
-  const formatImageUrl = (imageUrl) => {
-    if (!imageUrl) return '';
-    if (imageUrl.startsWith('http')) return imageUrl;
-    // All paths starting with / should be treated as relative to the base URL
-    return imageUrl.startsWith('/') ? 
-      `${SERVER_URL}${imageUrl}` : 
-      imageUrl;
+  // Function to properly format media URLs
+  const formatMediaUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    if (url.startsWith('/uploads')) return `${SERVER_URL}${url}`;
+    if (url.startsWith('/')) return `${SERVER_URL}${url}`;
+    return url;
   };
 
   return (
@@ -153,7 +247,7 @@ function RecognitionSection({ industryRecognition }) {
           {industryRecognition.partners.map((partner, index) => (
             <div key={partner._id || index} className="grayscale hover:grayscale-0 transition-all duration-300 hover:scale-110">
               <img 
-                src={formatImageUrl(partner.logo)} 
+                src={formatMediaUrl(partner.logo)} 
                 alt={partner.name || `Partner logo ${index + 1}`} 
                 className="h-16 object-contain" 
               />

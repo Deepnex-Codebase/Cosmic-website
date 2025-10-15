@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.cosmicpowertech.com';
 
 // Get auth token from localStorage
 const getAuthToken = () => {
@@ -42,9 +42,11 @@ export const getAllServiceHeroes = async () => {
 // Create new service hero
 export const createServiceHero = async (formData) => {
   try {
+    const token = getAuthToken();
     const response = await axios.post(`${API_URL}/api/service-hero`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        Authorization: token ? `Bearer ${token}` : '',
       },
     });
     return response.data;
