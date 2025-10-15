@@ -325,13 +325,13 @@ const TestimonialVideo = () => {
                             if (heroSectionData.companyVideo.startsWith('http')) {
                               videoUrl = heroSectionData.companyVideo;
                             } else if (heroSectionData.companyVideo.startsWith('/uploads')) {
-                              videoUrl = `${MEDIA_BASE_URL}${heroSectionData.companyVideo}`;
+                              videoUrl = `https://api.cosmicpowertech.com${heroSectionData.companyVideo}`;
                             } else if (heroSectionData.companyVideo.startsWith('/videos')) {
-                              videoUrl = `${MEDIA_BASE_URL}${heroSectionData.companyVideo}`;
+                              videoUrl = `https://api.cosmicpowertech.com${heroSectionData.companyVideo}`;
                             } else if (heroSectionData.companyVideo.startsWith('/')) {
-                              videoUrl = `${MEDIA_BASE_URL}${heroSectionData.companyVideo}`;
+                              videoUrl = `https://api.cosmicpowertech.com${heroSectionData.companyVideo}`;
                             } else {
-                              videoUrl = `${MEDIA_BASE_URL}/uploads/videos/${heroSectionData.companyVideo}`;
+                              videoUrl = `https://api.cosmicpowertech.com/uploads/videos/${heroSectionData.companyVideo}`;
                             }
                             console.log('Video URL:', videoUrl);
                             console.log('heroSectionData.companyVideo:', heroSectionData.companyVideo);
