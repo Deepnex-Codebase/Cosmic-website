@@ -121,7 +121,7 @@ export default function Hero() {
       if (slide.mediaType === 'video' && slide.videoSource) {
         if (slide.videoSource.startsWith('/uploads/')) {
           const cleanPath = slide.videoSource.replace(/^\/+/, '').replace(/^uploads\//, '');
-          videoUrl = `${API_BASE_URL.replace('/api', '')}/uploads/${cleanPath}`;
+          videoUrl = `https://api.cosmicpowertech.com/uploads/${cleanPath}`;
         } else if (slide.videoSource.startsWith('/')) {
           videoUrl = `${API_BASE_URL.replace('/api', '')}${slide.videoSource}`;
         } else {
